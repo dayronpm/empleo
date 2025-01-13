@@ -23,7 +23,7 @@ const Eventos = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <h1 className="text-4xl font-bold text-center text-black mb-8">Eventos y Noticias</h1>
+            <h1 className="text-4xl font-bold text-center text-black mb-8">Eventos y Noticias y más</h1>
 
             {/* Barra de Navegación */}
             <NavBar activeTab={activeTab} setActiveTab={setActiveTab} />
