@@ -1,0 +1,102 @@
+import React, { useState } from 'react';
+import { allJobs } from './allJobs';
+import Pagination from './Pagination';
+import JobDetails from './JobDetails';
+import JobList from './JobList';
+import SearchBar from './SearchBar'; // Componente de búsqueda importado
+import Filters from './Filters'; // Componente de filtros importado
+
+const Ofertas = () => {
+    const [filteredJobs, setFilteredJobs] = useState(allJobs);
+    const [currentPage, setCurrentPage] = useState(1);
+    const jobsPerPage = 10;
+    const [selectedJob, setSelectedJob] = useState(null);
+
+    const handleSearch = (event) => {
+        const query = event.target.value.toLowerCase();
+        const filtered = allJobs.filter(job =>
+            job.title.toLowerCase().includes(query) ||
+            job.company.toLowerCase().includes(query) ||
+            job.location.toLowerCase().includes(query)
+        );
+        setFilteredJobs(filtered);
+        setCurrentPage(1); // Reset to first page on search
+    };
+
+    const handleFilterChange = (event) => {
+        const { name, value } = event.target;
+
+        let filtered = allJobs;
+
+        if (value) {
+            filtered = filtered.filter(job => job[name] === value);
+        }
+
+        setFilteredJobs(filtered);
+        setCurrentPage(1); // Reset to first page on filter change
+    };
+
+    const handleSort = (event) => {
+        const sortBy = event.target.value;
+        let sortedJobs = [...filteredJobs];
+
+        if (sortBy === 'date') {
+            sortedJobs.sort((a, b) => new Date(b.date) - new Date(a.date));
+        } else if (sortBy === 'salary') {
+            sortedJobs.sort((a, b) => parseInt(b.salary) - parseInt(a.salary)); // Assumes salaries are formatted as strings with numbers
+        }
+
+        setFilteredJobs(sortedJobs);
+    };
+
+    const indexOfLastJob = currentPage * jobsPerPage;
+    const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+    const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+
+    return (
+        <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+            <header className="flex justify-between items-center mb-6">
+                <h1 className="text-4xl font-bold text-blue-600 flex-grow">Ofertas de Empleo</h1>
+                <div className="flex-shrink-0 w-1/3">
+                    <SearchBar onSearch={handleSearch} />
+                </div>
+            </header>
+
+
+
+            <div className="mb-4">
+                <label htmlFor="sort" className="mr-2 text-gray-700">Filtrar por:</label>
+                <Filters onFilterChange={handleFilterChange} /> {/* Uso del componente de filtros */}
+                
+            </div>
+
+            {/* Ordenación */}
+            <div className="mb-4">
+                <label htmlFor="sort" className="mr-2 text-gray-700">Ordenar por:</label>
+                <select id="sort" onChange={handleSort} className="border border-gray-300 rounded-lg p-2">
+                    <option value="">Relevancia</option>
+                    <option value="date">Fecha de Publicación</option>
+                    <option value="salary">Salario</option>
+                </select>
+            </div>
+
+            {/* Listado de Ofertas */}
+            <JobList jobs={currentJobs} onJobSelect={setSelectedJob} />
+
+            {/* Paginación */}
+            <Pagination 
+                currentPage={currentPage} 
+                totalJobs={filteredJobs.length} 
+                jobsPerPage={jobsPerPage} 
+                onPageChange={setCurrentPage} 
+            />
+
+            {/* Pop-up para detalles del trabajo */}
+            {selectedJob && (
+                <JobDetails job={selectedJob} onClose={() => setSelectedJob(null)} />
+            )}
+        </div>
+    );
+};
+
+export default Ofertas;
