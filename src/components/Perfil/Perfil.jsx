@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { technicalSkillsList, softSkillsList, provincesAndMunicipalities, languagesList } from './data'; // Importar datos
+import DatosPersonales from './DatosPersonales'; // Importar el componente de datos personales
+import ExperienciaLaboral from './ExperienciaLaboral'; // Importar el componente de experiencia laboral
+import FormacionAcademica from './FormacionAcademica'; // Importar el componente de formación académica
+import Habilidades from './Habilidades'; // Importar el componente de habilidades
+import Idiomas from './Idiomas'; // Importar el componente de idiomas
+import Certificaciones from './Certificaciones'; // Importar el componente de certificaciones
 
 const Perfil = () => {
     const [formData, setFormData] = useState({
@@ -13,7 +19,7 @@ const Perfil = () => {
         education: [{ degree: '', institution: '', dates: '' }],
         technicalSkills: [],
         softSkills: [],
-        languages: [], // Cambiado a un array para manejar múltiples idiomas
+        languages: [],
         certifications: '',
     });
 
@@ -50,23 +56,6 @@ const Perfil = () => {
         setFormData({ ...formData, education: newEducation });
     };
 
-    // Manejo de habilidades
-    const handleSkillChange = (skill, type) => {
-        const selectedSkills = type === 'technical' ? formData.technicalSkills : formData.softSkills;
-        
-        if (selectedSkills.includes(skill)) {
-            setFormData({
-                ...formData,
-                [type === 'technical' ? 'technicalSkills' : 'softSkills']: selectedSkills.filter(s => s !== skill),
-            });
-        } else if (selectedSkills.length < 10) {
-            setFormData({
-                ...formData,
-                [type === 'technical' ? 'technicalSkills' : 'softSkills']: [...selectedSkills, skill],
-            });
-        }
-    };
-
     const addExperience = () => {
         setFormData({
             ...formData,
@@ -79,6 +68,23 @@ const Perfil = () => {
             ...formData,
             education: [...formData.education, { degree: '', institution: '', dates: '' }],
         });
+    };
+
+    // Manejo de habilidades técnicas y blandas
+    const handleSkillChange = (skill, type) => {
+        const selectedSkills = type === 'technical' ? formData.technicalSkills : formData.softSkills;
+
+        if (selectedSkills.includes(skill)) {
+            setFormData({
+                ...formData,
+                [type === 'technical' ? 'technicalSkills' : 'softSkills']: selectedSkills.filter(s => s !== skill),
+            });
+        } else if (selectedSkills.length < 10) {
+            setFormData({
+                ...formData,
+                [type === 'technical' ? 'technicalSkills' : 'softSkills']: [...selectedSkills, skill],
+            });
+        }
     };
 
     // Manejo de idiomas
@@ -98,218 +104,35 @@ const Perfil = () => {
         });
     };
 
-    // Filtrado de habilidades basado en entrada
-    const [searchTermTechnical, setSearchTermTechnical] = useState('');
-    const [searchTermSoft, setSearchTermSoft] = useState('');
-    
-    // Estado para el idioma seleccionado y su nivel
-    const [searchTermLanguage, setSearchTermLanguage] = useState('');
-    
-    return (
-        <div className="max-w-3xl mx-auto p-5">
-            <h1 className="text-2xl font-bold mb-4">Generador de Currículum Vitae</h1>
-            
-            {/* Datos Personales */}
-            <div className="mb-4">
-                <label className="block mb-1">Nombre Completo</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-            </div>
+   // Filtrado de habilidades basado en entrada
+   const [searchTermTechnical, setSearchTermTechnical] = useState('');
+   const [searchTermSoft, setSearchTermSoft] = useState('');
+   const [searchTermLanguage, setSearchTermLanguage] = useState('');
 
-            {/* Selección de Provincia y Municipio */}
-            <div className="mb-4">
-                <label className="block mb-1">Provincia</label>
-                <select 
-                    name="province" 
-                    value={formData.province} 
-                    onChange={handleChange} 
-                    className="w-full p-2 border border-gray-300 rounded"
-                >
-                    <option value="">Seleccione una provincia</option>
-                    {Object.keys(provincesAndMunicipalities).map((province) => (
-                        <option key={province} value={province}>{province}</option>
-                    ))}
-                </select>
-            </div>
+   return (
+       <div className="max-w-3xl mx-auto p-5">
+           <h1 className="text-2xl font-bold mb-4">Generador de Currículum Vitae</h1>
 
-            <div className="mb-4">
-                <label className="block mb-1">Municipio</label>
-                <select 
-                    name="municipality" 
-                    value={formData.municipality} 
-                    onChange={handleChange} 
-                    className="w-full p-2 border border-gray-300 rounded"
-                    disabled={!formData.province}
-                >
-                    <option value="">Seleccione un municipio</option>
-                    {provincesAndMunicipalities[formData.province]?.map((municipality) => (
-                        <option key={municipality} value={municipality}>{municipality}</option>
-                    ))}
-                </select>
-            </div>
+           {/* Datos Personales */}
+           <DatosPersonales formData={formData} handleChange={handleChange} provincesAndMunicipalities={provincesAndMunicipalities} />
 
-            {/* Teléfono */}
-            <div className="mb-4">
-                <label className="block mb-1">Teléfono</label>
-                <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-            </div>
+           {/* Experiencia Laboral */}
+           <ExperienciaLaboral experience={formData.experience} handleExperienceChange={handleExperienceChange} removeExperience={removeExperience} addExperience={addExperience} />
 
-            {/* Correo Electrónico */}
-            <div className="mb-4">
-                <label className="block mb-1">Correo Electrónico</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-            </div>
-
-            {/* Perfil Profesional */}
-            <div className="mb-4">
-                <label className="block mb-1">Perfil Profesional</label>
-                <textarea name="profile" value={formData.profile} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-            </div>
-
-            {/* Experiencia Laboral */}
-            <h2 className="text-xl font-bold mt-6 mb-2">Experiencia Laboral</h2>
-            {formData.experience.map((exp, index) => (
-                <div key={index} className="border p-4 mb-4 rounded">
-                    <input type="text" name="jobTitle" placeholder="Cargo" value={exp.jobTitle} onChange={(e) => handleExperienceChange(index, e)} className="w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]" />
-                    <input type="text" name="company" placeholder="Empresa" value={exp.company} onChange={(e) => handleExperienceChange(index, e)} className="w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]" />
-                    <input type="text" name="dates" placeholder="Fechas (ejemplo: 2020 - 2021)" value={exp.dates} onChange={(e) => handleExperienceChange(index, e)} className="w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]" />
-                    <textarea name="responsibilities" placeholder="Responsabilidades" value={exp.responsibilities} onChange={(e) => handleExperienceChange(index, e)} className="w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]" />
-                    <button onClick={() => removeExperience(index)} className='bg-red-500 text-white px-[15px] py-[8px] rounded'>Eliminar Experiencia</button>
-                </div>
-            ))}
-            
-            <button onClick={addExperience} className='bg-blue-500 text-white px-[15px] py-[8px] rounded'>Agregar Experiencia</button>
-
-            {/* Formación Académica */}
-            <h2 className='text-xl font-bold mt-[20px] mb-[10px]'>Formación Académica</h2>
-            {formData.education.map((edu, index) => (
-                <div key={index} className='border p-[15px] mb-[15px] rounded'>
-                    <input type='text' name='degree' placeholder='Título Obtenido' value={edu.degree} onChange={(e) => handleEducationChange(index, e)} className='w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]' />
-                    <input type='text' name='institution' placeholder='Institución' value={edu.institution} onChange={(e) => handleEducationChange(index, e)} className='w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]' />
-                    <input type='text' name='dates' placeholder='Fechas (ejemplo: 2018 - 2020)' value={edu.dates} onChange={(e) => handleEducationChange(index, e)} className='w-full p-[10px] border-[1px] border-[#d1d5db] rounded mb-[10px]' />
-                    <button onClick={() => removeEducation(index)} className='bg-red-500 text-white px-[15px] py-[8px] rounded'>Eliminar Educación</button>
-                </div>
-            ))}
-            
-            <button onClick={addEducation} className='bg-blue-500 text-white px-[15px] py-[8px] rounded'>Agregar Educación</button>
+           {/* Formación Académica */}
+           <FormacionAcademica education={formData.education} handleEducationChange={handleEducationChange} removeEducation={removeEducation} addEducation={addEducation}/>
 
            {/* Habilidades Técnicas */}
-           <h2 className='text-xl font-bold mt-[20px] mb-[10px]'>Habilidades Técnicas</h2>
-           
-           {/* Buscador de habilidades técnicas */}
-           <input 
-               type='text'
-               placeholder='Buscar habilidad técnica...'
-               value={searchTermTechnical}
-               onChange={(e) => setSearchTermTechnical(e.target.value)}
-               className='w-full p-2 border border-gray-300 rounded mb-2'
-           />
-
-           {/* Habilidades Técnicas Seleccionadas */}
-           {formData.technicalSkills.map((skill) => (
-               <div key={skill} className='flex items-center justify-between bg-blue-100 p-2 my-2 rounded'>
-                   {skill}
-                   <button 
-                       onClick={() => handleSkillChange(skill, 'technical')} 
-                       className='bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600'>
-                       Eliminar
-                   </button>
-               </div>
-           ))}
-
-           {technicalSkillsList.filter(skill => skill.toLowerCase().includes(searchTermTechnical.toLowerCase())).map((skill) => (
-               !formData.technicalSkills.includes(skill) && (
-                   <button key={skill}
-                           onClick={() => handleSkillChange(skill, 'technical')} 
-                           className='bg-gray-200 text-black px-3 py-2 mr-2 mt-2 rounded hover:bg-gray-300'>
-                       {skill}
-                   </button>
-               )
-           ))}
+           <Habilidades skillsList={technicalSkillsList} selectedSkills={formData.technicalSkills} handleSkillChange={(skill) => handleSkillChange(skill,'technical')} searchTerm={searchTermTechnical} setSearchTerm={setSearchTermTechnical} title={"Habilidades Técnicas"} />
 
            {/* Habilidades Blandas */}
-           <h2 className='text-xl font-bold mt-[20px] mb-[10px]'>Habilidades Blandas</h2>
-
-           {/* Buscador de habilidades blandas */}
-           <input 
-               type='text'
-               placeholder='Buscar habilidad blanda...'
-               value={searchTermSoft}
-               onChange={(e) => setSearchTermSoft(e.target.value)}
-               className='w-full p-2 border border-gray-300 rounded mb-2'
-           />
-
-           {/* Habilidades Blandas Seleccionadas */}
-           {formData.softSkills.map((skill) => (
-               <div key={skill} className='flex items-center justify-between bg-blue-100 p-2 my-2 rounded'>
-                   {skill}
-                   <button 
-                       onClick={() => handleSkillChange(skill, 'soft')} 
-                       className='bg-red-500 text-white px=3 py=1 rounded hover:bg-red=600'>
-                       Eliminar
-                   </button>
-               </div>
-           ))}
-
-           {softSkillsList.filter(skill => skill.toLowerCase().includes(searchTermSoft.toLowerCase())).map((skill) => (
-               !formData.softSkills.includes(skill) && (
-                   <button key={skill}
-                           onClick={() => handleSkillChange(skill, 'soft')} 
-                           className='bg-gray-200 text-black px=3 py=2 mr=2 mt=2 rounded hover:bg-gray=300'>
-                       {skill}
-                   </button>
-               )
-           ))}
+           <Habilidades skillsList={softSkillsList} selectedSkills={formData.softSkills} handleSkillChange={(skill) => handleSkillChange(skill,'soft')} searchTerm={searchTermSoft} setSearchTerm={setSearchTermSoft} title={"Habilidades Blandas"} />
 
            {/* Idiomas */}
-           <h2 className='text-xl font-bold mt=[20px] mb=[10px]'>Idiomas</h2>
-
-           {/* Buscador de idiomas */}
-           <input 
-               type='text'
-               placeholder='Buscar idioma...'
-               value={searchTermLanguage}
-               onChange={(e) => setSearchTermLanguage(e.target.value)}
-               className='w-full p=2 border border-gray=300 rounded mb=2'
-           />
-
-           {/* Selección de idioma y nivel */}
-           {searchTermLanguage && languagesList.filter(language =>
-               language.toLowerCase().includes(searchTermLanguage.toLowerCase())
-           ).map(language => (
-               !formData.languages.some(langObj => langObj.language === language) && (
-                   <div key={language}>
-                       <span>{language}</span>
-                       <select 
-                           defaultValue=""
-                           onChange={(e) => addLanguage(language, e.target.value)}
-                           className='ml=2 p=1 border border-gray=300 rounded'
-                       >
-                           <option value="" disabled>Selecciona nivel</option>
-                           {['Principiante', 'Básico', 'Intermedio', 'Avanzado', 'Nativo'].map(level => (
-                               <option key={level} value={level}>{level}</option>
-                           ))}
-                       </select>
-                   </div>
-               )
-           ))}
-
-           {/* Idiomas Seleccionados */}
-           {formData.languages.map(({ language, level }) => (
-               <div key={language} className='flex items-center justify-between bg-blue=100 p=2 my=2 rounded'>
-                   {language} - {level}
-                   <button 
-                       onClick={() => removeLanguage(language)} 
-                       className='bg-red=500 text-white px=3 py=1 rounded hover:bg-red=600'>
-                       Eliminar
-                   </button>
-               </div>
-           ))}
+           <Idiomas languagesList={languagesList} formData={formData} addLanguage={addLanguage} removeLanguage={removeLanguage} searchTermLanguage={searchTermLanguage} setSearchTermLanguage={setSearchTermLanguage}/>
 
            {/* Certificaciones */}
-           <div >
-               <label>Certificaciones</label>
-               <textarea name='certifications' value={formData.certifications} onChange={handleChange} className='w-full p=[10px] border=[1px] border=[#d1d5db] rounded' />
-           </div> 
+           <Certificaciones formData={formData} handleChange={handleChange}/>
        </div>
    );
 };
