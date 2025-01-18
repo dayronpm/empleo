@@ -75,7 +75,7 @@ const RegisterModal = ({ isOpen, onClose, openLogin }) => {
                     </div>
 
                     <div>
-                        <label htmlFor="name" className="block text-lg font-medium text-gray-700 mb-1">Nombre</label>
+                        <label htmlFor="name" className="block text-lg font-medium text-gray-700 mb-1">Nombre completo</label>
                         <input
                             id="name"
                             type="text"
