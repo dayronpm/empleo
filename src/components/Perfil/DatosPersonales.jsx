@@ -3,7 +3,7 @@ import React from 'react';
 const DatosPersonales = ({ formData, handleChange, provincesAndMunicipalities }) => {
     return (
         <div className="mb-4">
-
+            <h2 className="text-xl font-bold mt-6 mb-2">Datos Personales</h2>
             {/* Selección de Provincia y Municipio */}
             <div className="mb-4">
                 <label className="block mb-1">Provincia</label>
