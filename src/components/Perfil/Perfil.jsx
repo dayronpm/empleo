@@ -1,61 +1,24 @@
-// Perfil.js
 import React from 'react';
-import usePerfil from './usePerfil'; // Importar el hook personalizado
-import DatosPersonales from './DatosPersonales';
-import ExperienciaLaboral from './ExperienciaLaboral';
-import FormacionAcademica from './FormacionAcademica';
-import Habilidades from './Habilidades';
-import Idiomas from './Idiomas';
-import Certificaciones from './Certificaciones';
-import { technicalSkillsList, softSkillsList, provincesAndMunicipalities, languagesList } from './data'; // Importar datos
+import Curriculum from './Curriculum'; // Importar el componente Curriculum
+import EmpresaInfo from './EmpresaInfo'; // Importar el nuevo componente EmpresaInfo
 
 const Perfil = () => {
-    const {
-      formData,
-      handleChange,
-      handleExperienceChange,
-      removeExperience,
-      addExperience,
-      handleEducationChange,
-      removeEducation,
-      addEducation,
-      handleSkillChange,
-      addLanguage,
-      removeLanguage,
-      searchTermTechnical,
-      setSearchTermTechnical,
-      searchTermSoft,
-      setSearchTermSoft,
-      searchTermLanguage,
-      setSearchTermLanguage
-    } = usePerfil(); // Usar el hook personalizado
+    // Obtener el tipo de usuario del localStorage
+    const userType = localStorage.getItem('tipo');
 
     return (
-       <div className="max-w-3xl mx-auto p-5">
-           <h1 className="text-2xl font-bold mb-4">Currículum Vitae</h1>
-
-           {/* Datos Personales */}
-           <DatosPersonales formData={formData} handleChange={handleChange} provincesAndMunicipalities={provincesAndMunicipalities} />
-
-           {/* Experiencia Laboral */}
-           <ExperienciaLaboral experience={formData.experience} handleExperienceChange={handleExperienceChange} removeExperience={removeExperience} addExperience={addExperience} />
-
-           {/* Formación Académica */}
-           <FormacionAcademica education={formData.education} handleEducationChange={handleEducationChange} removeEducation={removeEducation} addEducation={addEducation}/>
-
-           {/* Habilidades Técnicas */}
-           <Habilidades skillsList={technicalSkillsList} selectedSkills={formData.technicalSkills} handleSkillChange={(skill) => handleSkillChange(skill,'technical')} searchTerm={searchTermTechnical} setSearchTerm={setSearchTermTechnical} title={"Habilidades Técnicas"} />
-
-           {/* Habilidades Blandas */}
-           <Habilidades skillsList={softSkillsList} selectedSkills={formData.softSkills} handleSkillChange={(skill) => handleSkillChange(skill,'soft')} searchTerm={searchTermSoft} setSearchTerm={setSearchTermSoft} title={"Habilidades Blandas"} />
-
-           {/* Idiomas */}
-           <Idiomas languagesList={languagesList} formData={formData} addLanguage={addLanguage} removeLanguage={removeLanguage} searchTermLanguage={searchTermLanguage} setSearchTermLanguage={setSearchTermLanguage}/>
-
-           {/* Certificaciones */}
-           <Certificaciones formData={formData} handleChange={handleChange}/>
-       </div>
-   );
+        <div className="perfil-container">
+            <h1 className="text-3xl font-bold mb-6">Mi Perfil</h1>
+            {/* Verificar si el tipo de usuario es 'persona' */}
+            {userType === 'persona' ? (
+                <Curriculum /> // Renderizar Curriculum si es tipo 'persona'
+            ) : userType === 'empresa' ? (
+                <EmpresaInfo /> // Renderizar EmpresaInfo si es tipo 'empresa'
+            ) : (
+                <p className="text-red-500">Acceso denegado: solo los usuarios de tipo "persona" o "empresa" pueden ver este contenido.</p>
+            )}
+        </div>
+    );
 };
 
 export default Perfil;

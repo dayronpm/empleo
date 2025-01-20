@@ -16,7 +16,7 @@ export const loginUser = async (username, password) => {
         }
 
         const data = await response.json();
-        return data.token; // Retorna el token
+        return data; // Retorna el token
     } catch (error) {
         throw error; // Propaga el error para manejarlo en el componente
     }

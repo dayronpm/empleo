@@ -1,7 +1,7 @@
-// usePerfil.js
+// useCurriculum.js
 import { useState } from 'react';
 
-const usePerfil = () => {
+const useCurriculum = () => {
     const [formData, setFormData] = useState({
         name: '',
         province: '',
@@ -124,4 +124,4 @@ const usePerfil = () => {
    };
 };
 
-export default usePerfil;
+export default useCurriculum;

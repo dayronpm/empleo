@@ -17,10 +17,13 @@ const AuthModal = ({ isOpen, onClose, openRegister, handleLoginSuccess }) => {
         setError('');
 
         try {
-            const token = await loginUser(username, password);
-            console.log('Token recibido:', token);
-            localStorage.setItem('token', token);
+            const data = await loginUser(username, password);
+            localStorage.setItem('token', data.token);
             localStorage.setItem('username', username); // Guardar nombre de usuario
+            localStorage.setItem('tipo', data.tipo); //Guardar tipo de usuario
+
+            console.log('Tipo:', data.tipo);
+            console.log('Token:', data.token);
             
             handleLoginSuccess(username); // Llama a la función para actualizar el estado en LandingPage
             onClose(); // Cierra el modal al iniciar sesión exitosamente
