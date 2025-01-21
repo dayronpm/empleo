@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+const API_URL = 'http://localhost:3001'; // Cambia esto si tu servidor está en otra URL
+
 const RegisterModal = ({ isOpen, onClose, openLogin }) => {
     const [userType, setUserType] = useState('persona'); // Estado para tipo: Empresa o Persona
     const [name, setName] = useState('');
@@ -20,9 +22,31 @@ const RegisterModal = ({ isOpen, onClose, openLogin }) => {
             return;
         }
 
-        // Aquí puedes agregar la lógica para registrar al usuario
-        console.log('Registro:', { userType, name, username, password });
-        onClose(); // Cierra el modal al registrar exitosamente
+        try {
+            const response = await fetch(`${API_URL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password, userType, name }),
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage);
+                return;
+            }
+
+            // Clear the form and close the modal on successful registration
+            setName('');
+            setUsername('');
+            setPassword('');
+            setConfirmPassword('');
+            setError('');
+            onClose(); // Close the modal
+        } catch (error) {
+            setError('Error al registrar el usuario. Inténtalo de nuevo.');
+        }
     };
 
     // Efecto para manejar el cierre del modal con la tecla Escape
