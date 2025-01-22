@@ -4,6 +4,10 @@ import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
 
+
+const id = localStorage.getItem('id'); // Obtener el ID del usuario
+const API_URL = 'http://localhost:3001'; // Cambia esto si tu servidor está en otra URL
+
 const EmpresaInfo = () => {
     const { empresa, jobOffers } = useEmpresaInfo();
     const [isModalOpen, setModalOpen] = useState(false);
@@ -38,21 +42,53 @@ const EmpresaInfo = () => {
         setModalOpen(false);
     };
 
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch(`${API_URL}/updateempresa`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: id,
+                    nombre: editedName,
+                    tipo: editedType,
+                    descripcion: editedDescription,
+                    provincia: editedProvince,
+                    municipio: editedMunicipality,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating company information');
+            }
+
+            const result = await response.text();
+            console.log(result); // Log the response from the server
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     const handleSaveName = () => {
         setEditingName(false);
+        handleSubmit(); // Call the submit function
     };
 
     const handleSaveAddress = () => {
         setEditedAddress(`${editedProvince}, ${editedMunicipality}`);
         setEditingAddress(false);
+        handleSubmit(); // Call the submit function
     };
 
     const handleSaveType = () => {
         setEditingType(false);
+        handleSubmit(); // Call the submit function
     };
 
     const handleSaveDescription = () => {
         setEditingDescription(false);
+        handleSubmit(); // Call the submit function
     };
 
     if (!empresa) {
