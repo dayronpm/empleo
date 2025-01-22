@@ -8,7 +8,7 @@ const Perfil = () => {
 
     return (
         <div className="perfil-container">
-            <h1 className="text-3xl font-bold mb-6">Mi Perfil</h1>
+            <h1 className="text-3xl text-center font-bold mb-6">Mi Perfil</h1>
             {/* Verificar si el tipo de usuario es 'persona' */}
             {userType === 'persona' ? (
                 <Curriculum /> // Renderizar Curriculum si es tipo 'persona'

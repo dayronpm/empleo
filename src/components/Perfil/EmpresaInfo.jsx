@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useEmpresaInfo from './getEmpresaInfo';
 import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
+import { provincesAndMunicipalities } from './data';
 
 const EmpresaInfo = () => {
     const { empresa, jobOffers } = useEmpresaInfo();
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isEditingName, setEditingName] = useState(false);
+    const [isEditingAddress, setEditingAddress] = useState(false);
+    const [isEditingType, setEditingType] = useState(false);
+    const [isEditingDescription, setEditingDescription] = useState(false);
+    
+    const [editedName, setEditedName] = useState('');
+    const [editedAddress, setEditedAddress] = useState('');
+    const [editedProvince, setEditedProvince] = useState('');
+    const [editedMunicipality, setEditedMunicipality] = useState('');
+    const [editedType, setEditedType] = useState('');
+    const [editedDescription, setEditedDescription] = useState('');
+
+    useEffect(() => {
+        if (empresa) {
+            setEditedName(empresa.nombre || '');
+            setEditedAddress(`${empresa.provincia || ''}, ${empresa.municipio || ''}`);
+            setEditedProvince(empresa.provincia || '');
+            setEditedMunicipality(empresa.municipio || '');
+            setEditedType(empresa.tipo || '');
+            setEditedDescription(empresa.descripcion || '');
+        }
+    }, [empresa]);
 
     const handleOpenModal = () => {
         setModalOpen(true);
@@ -15,8 +38,21 @@ const EmpresaInfo = () => {
         setModalOpen(false);
     };
 
-    const handleSubmit = (formData) => {
-        //De esto se encarga el modal
+    const handleSaveName = () => {
+        setEditingName(false);
+    };
+
+    const handleSaveAddress = () => {
+        setEditedAddress(`${editedProvince}, ${editedMunicipality}`);
+        setEditingAddress(false);
+    };
+
+    const handleSaveType = () => {
+        setEditingType(false);
+    };
+
+    const handleSaveDescription = () => {
+        setEditingDescription(false);
     };
 
     if (!empresa) {
@@ -24,23 +60,122 @@ const EmpresaInfo = () => {
     }
 
     return (
-        <div className="empresa-info p-4 border border-gray-300 rounded-lg mt-4 shadow-lg">
-            <h2 className="text-2xl font-semibold mb-2">{empresa.nombre}</h2>
-            <p className="text-gray-600 mb-2">
-                <strong>Dirección:</strong> {empresa.provincia}, {empresa.municipio}
-                <button className="ml-2 bg-yellow-500 text-white p-1 rounded">Editar</button>
-            </p>
-            <p className="text-gray-800 mb-2">
-                <strong>Tipo:</strong> {empresa.tipo}
-                <button className="ml-2 bg-yellow-500 text-white p-1 rounded">Editar</button>
-            </p>
-            <p className="text-gray-800">
-                {empresa.descripcion}
-                <button className="ml-2 bg-yellow-500 text-white p-1 rounded">Editar descripción</button>
-            </p>
-            <button onClick={handleOpenModal} className="mt-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
-            <JobOfferModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmit} />
+        <div className="empresa-info bg-white p-6 border border-gray-300 rounded-lg mt-4 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+                {isEditingName ? (
+                    <div className="flex items-center">
+                        <input 
+                            className="text-lg" 
+                            value={editedName} 
+                            onChange={(e) => setEditedName(e.target.value)} 
+                        />
+                        <button onClick={handleSaveName} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Save
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center">
+                        <h2 className="text-2xl font-semibold mb-2">{editedName}</h2>
+                        <button onClick={() => setEditingName(true)} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Edit
+                        </button>
+                    </div>
+                )}
+
+                {isEditingAddress ? (
+                    <div className="flex items-center">
+                        <label className="text-lg font-semibold">Dirección:</label>
+                        <select 
+                            className="text-lg" 
+                            value={editedProvince} 
+                            onChange={(e) => {
+                                setEditedProvince(e.target.value);
+                                setEditedMunicipality(''); 
+                            }}
+                        >
+                            {Object.keys(provincesAndMunicipalities).map((province) => (
+                                <option key={province} value={province}>{province}</option>
+                            ))}
+                        </select>
+                        <select 
+                            className="text-lg ml-2" 
+                            value={editedMunicipality} 
+                            onChange={(e) => setEditedMunicipality(e.target.value)} 
+                        >
+                            {provincesAndMunicipalities[editedProvince]?.map((municipality) => (
+                                <option key={municipality} value={municipality}>{municipality}</option>
+                            ))}
+                        </select>
+                        <button onClick={handleSaveAddress} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Save
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center">
+                        <p className="text-gray-600 mb-2">
+                            <strong>Dirección:</strong> {editedAddress}
+                        </p>
+                        <button onClick={() => setEditingAddress(true)} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Edit
+                        </button>
+                    </div>
+                )}
+
+                {isEditingType ? (
+                    <div className="flex items-center">
+                        <label className="text-lg font-semibold">Tipo:</label>
+                        <select 
+                            className="text-lg" 
+                            value={editedType} 
+                            onChange={(e) => setEditedType(e.target.value)} 
+                        >
+                            <option value="Estatal">Estatal</option>
+                            <option value="No estatal">No estatal</option>
+                        </select>
+                        <button onClick={handleSaveType} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Save
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center">
+                        <p className={`text-gray-800 mb-2 ${editedType === "Estatal" ? "bg-green-200" : editedType === "No estatal" ? "bg-red-200" : ""}`}>
+                            <strong>Tipo:</strong> {editedType}
+                        </p>
+                        <button onClick={() => setEditingType(true)} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                            Edit
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex items-center">
+                <label className="text-lg font-semibold">Descripción:</label>
+                {isEditingDescription ? null : (
+                    <button onClick={() => setEditingDescription(true)} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                        Edit
+                    </button>
+                )}
+            </div>
+            {isEditingDescription ? (
+                <div className="flex items-center">
+                    <textarea 
+                        className="text-lg w-full" 
+                        value={editedDescription} 
+                        onChange={(e) => setEditedDescription(e.target.value)} 
+                    />
+                    <button onClick={handleSaveDescription} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                        Save
+                    </button>
+                </div>
+            ) : (
+                <div className="flex items-center">
+                    <p className="text-gray-800 mb-2">{editedDescription}</p>
+                </div>
+            )}
+
             <h3 className="text-xl font-semibold mt-4">Ofertas de Trabajo</h3>
+            <button onClick={handleOpenModal} className="mt-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
+            <JobOfferModal isOpen={isModalOpen} onClose={handleCloseModal} />
             <JobList jobs={jobOffers} />
         </div>
     );
