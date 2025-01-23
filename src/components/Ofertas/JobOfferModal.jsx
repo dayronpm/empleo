@@ -3,7 +3,7 @@ import { provincesAndMunicipalities } from '../Perfil/data'; // Import the provi
 
 const API_URL = 'http://localhost:3001'; // Cambia esto si tu servidor está en otra URL
 
-const JobOfferModal = ({ isOpen, onClose, onSubmit }) => {
+const JobOfferModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         titulo: '',
         provincia: '',
@@ -39,7 +39,6 @@ const JobOfferModal = ({ isOpen, onClose, onSubmit }) => {
             if (!response.ok) {
                 throw new Error('Error al agregar la oferta de trabajo');
             }
-            onSubmit(formData); // Call the onSubmit prop to handle the form data
             onClose();
         } catch (error) {
             console.error(error);

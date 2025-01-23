@@ -210,7 +210,7 @@ const EmpresaInfo = () => {
             )}
 
             <h3 className="text-xl font-semibold mt-4">Ofertas de Trabajo</h3>
-            <button onClick={handleOpenModal} className="mt-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
+            <button onClick={handleOpenModal} className="mt-4 mb-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
             <JobOfferModal isOpen={isModalOpen} onClose={handleCloseModal} />
             <JobList jobs={jobOffers} />
         </div>
