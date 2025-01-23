@@ -1,95 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import useEmpresaInfo from './getEmpresaInfo';
+import React from 'react';
+import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
 
-
-const id = localStorage.getItem('id'); // Obtener el ID del usuario
-const API_URL = 'http://localhost:3001'; // Cambia esto si tu servidor está en otra URL
-
 const EmpresaInfo = () => {
-    const { empresa, jobOffers } = useEmpresaInfo();
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [isEditingName, setEditingName] = useState(false);
-    const [isEditingAddress, setEditingAddress] = useState(false);
-    const [isEditingType, setEditingType] = useState(false);
-    const [isEditingDescription, setEditingDescription] = useState(false);
-    
-    const [editedName, setEditedName] = useState('');
-    const [editedAddress, setEditedAddress] = useState('');
-    const [editedProvince, setEditedProvince] = useState('');
-    const [editedMunicipality, setEditedMunicipality] = useState('');
-    const [editedType, setEditedType] = useState('');
-    const [editedDescription, setEditedDescription] = useState('');
-
-    useEffect(() => {
-        if (empresa) {
-            setEditedName(empresa.nombre || '');
-            setEditedAddress(`${empresa.provincia || ''}, ${empresa.municipio || ''}`);
-            setEditedProvince(empresa.provincia || '');
-            setEditedMunicipality(empresa.municipio || '');
-            setEditedType(empresa.tipo || '');
-            setEditedDescription(empresa.descripcion || '');
-        }
-    }, [empresa]);
-
-    const handleOpenModal = () => {
-        setModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setModalOpen(false);
-    };
-
-    const handleSubmit = async () => {
-        try {
-            const response = await fetch(`${API_URL}/updateempresa`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: id,
-                    nombre: editedName,
-                    tipo: editedType,
-                    descripcion: editedDescription,
-                    provincia: editedProvince,
-                    municipio: editedMunicipality,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Error updating company information');
-            }
-
-            const result = await response.text();
-            console.log(result); // Log the response from the server
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
-    const handleSaveName = () => {
-        setEditingName(false);
-        handleSubmit(); // Call the submit function
-    };
-
-    const handleSaveAddress = () => {
-        setEditedAddress(`${editedProvince}, ${editedMunicipality}`);
-        setEditingAddress(false);
-        handleSubmit(); // Call the submit function
-    };
-
-    const handleSaveType = () => {
-        setEditingType(false);
-        handleSubmit(); // Call the submit function
-    };
-
-    const handleSaveDescription = () => {
-        setEditingDescription(false);
-        handleSubmit(); // Call the submit function
-    };
+    const {
+        empresa,
+        jobOffers,
+        isModalOpen,
+        setModalOpen,
+        isEditingName,
+        setEditingName,
+        isEditingAddress,
+        setEditingAddress,
+        isEditingType,
+        setEditingType,
+        isEditingDescription,
+        setEditingDescription,
+        editedName,
+        setEditedName,
+        editedAddress,
+        setEditedAddress,
+        editedProvince,
+        setEditedProvince,
+        editedMunicipality,
+        setEditedMunicipality,
+        editedType,
+        setEditedType,
+        editedDescription,
+        setEditedDescription,
+        handleOpenModal,
+        handleCloseModal,
+        handleSubmit,
+    } = useEmpresaInfoLogic();
 
     if (!empresa) {
         return <p>Cargando información de la empresa...</p>;
@@ -105,7 +49,7 @@ const EmpresaInfo = () => {
                             value={editedName} 
                             onChange={(e) => setEditedName(e.target.value)} 
                         />
-                        <button onClick={handleSaveName} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                        <button onClick={() => { setEditingName(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }} className="ml-2 bg-yellow-500 text-white p-1 rounded">
                             Save
                         </button>
                     </div>
@@ -142,7 +86,7 @@ const EmpresaInfo = () => {
                                 <option key={municipality} value={municipality}>{municipality}</option>
                             ))}
                         </select>
-                        <button onClick={handleSaveAddress} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                        <button onClick={() => { setEditingAddress(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }} className="ml-2 bg-yellow-500 text-white p-1 rounded">
                             Save
                         </button>
                     </div>
@@ -168,7 +112,7 @@ const EmpresaInfo = () => {
                             <option value="Estatal">Estatal</option>
                             <option value="No estatal">No estatal</option>
                         </select>
-                        <button onClick={handleSaveType} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                        <button onClick={() => { setEditingType(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }} className="ml-2 bg-yellow-500 text-white p-1 rounded">
                             Save
                         </button>
                     </div>
@@ -199,7 +143,7 @@ const EmpresaInfo = () => {
                         value={editedDescription} 
                         onChange={(e) => setEditedDescription(e.target.value)} 
                     />
-                    <button onClick={handleSaveDescription} className="ml-2 bg-yellow-500 text-white p-1 rounded">
+                    <button onClick={() => { setEditingDescription(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }} className="ml-2 bg-yellow-500 text-white p-1 rounded">
                         Save
                     </button>
                 </div>

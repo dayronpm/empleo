@@ -44,7 +44,11 @@ const useEmpresaInfo = () => {
         fetchEmpresaData();
     }, []);
 
-    return { empresa, jobOffers }; // Return both empresa and jobOffers
+    const reloadEmpresaInfo = () => {
+        fetchEmpresaData(); // Call fetchEmpresaData to reload the data
+    };
+
+    return { empresa, jobOffers, reloadEmpresaInfo }; // Return both empresa and jobOffers
 };
 
 export default useEmpresaInfo;
