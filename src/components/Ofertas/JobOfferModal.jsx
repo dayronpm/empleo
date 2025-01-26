@@ -39,6 +39,7 @@ const JobOfferModal = ({ isOpen, onClose }) => {
             if (!response.ok) {
                 throw new Error('Error al agregar la oferta de trabajo');
             }
+            window.location.reload();
             onClose();
         } catch (error) {
             console.error(error);
