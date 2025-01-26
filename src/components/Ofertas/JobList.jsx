@@ -2,8 +2,6 @@ import React from 'react';
 
 const JobList = ({ jobs, onJobSelect }) => {
 
-    console.log(jobs);
-
     /*
     const formatDate = (dateString) => {
         const date = new Date(dateString);
