@@ -53,10 +53,10 @@ const Ofertas = () => {
         const sortBy = event.target.value;
         let sortedJobs = [...filteredJobs];
 
-        if (sortBy === 'date') {
-            sortedJobs.sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (sortBy === 'salary') {
-            sortedJobs.sort((a, b) => parseInt(b.salary) - parseInt(a.salary)); // Assumes salaries are formatted as strings with numbers
+        if (sortBy === 'fecha') {
+            sortedJobs.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        } else if (sortBy === 'salario') {
+            sortedJobs.sort((a, b) => b.salario - a.salario);
         }
 
         setFilteredJobs(sortedJobs);
@@ -84,9 +84,8 @@ const Ofertas = () => {
             <div className="mb-4">
                 <label htmlFor="sort" className="mr-2 text-gray-700">Ordenar por:</label>
                 <select id="sort" onChange={handleSort} className="border border-gray-300 rounded-lg p-2">
-                    <option value="">Relevancia</option>
-                    <option value="date">Fecha de Publicación</option>
-                    <option value="salary">Salario</option>
+                    <option value="fecha">Fecha de Publicación</option>
+                    <option value="salario">Salario</option>
                 </select>
             </div>
 

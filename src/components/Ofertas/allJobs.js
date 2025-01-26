@@ -12,7 +12,8 @@ const useAllJobs = () => {
                 const response = await fetch(`${API_URL}/getalloferta`);
                 const data = await response.json();
                 setJobs(data);
-                console.log(data);
+                console.log("Fetched job data:", data);
+
                 // Create dictionary from job data
                 const locationData = {};
                 data.forEach(job => {

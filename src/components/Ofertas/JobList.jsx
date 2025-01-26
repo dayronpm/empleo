@@ -2,12 +2,12 @@ import React from 'react';
 
 const JobList = ({ jobs, onJobSelect }) => {
 
-    /*
+    
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
     };
-    */
+    
 
     return (
         <div className="bg-white shadow-md rounded-lg divide-y divide-gray-200">
@@ -28,7 +28,7 @@ const JobList = ({ jobs, onJobSelect }) => {
                             <p className="text-gray-600 font-semibold"><strong>Salario:</strong> {job.salario}</p>
                         </div>
                         <div className="flex flex-col">
-                            <p className="text-black text-sm"><strong>Fecha:</strong> {job.fecha}</p>
+                            <p className="text-black text-sm"><strong>Fecha:</strong> {formatDate(job.fecha)}</p>
                             <p className="text-gray-600"><strong>Nivel de Experiencia:</strong> {job.experiencia}</p>
                             <p className="text-gray-600"><strong>Categoría:</strong> {job.categoria}</p>
                         </div>
