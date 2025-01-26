@@ -1,8 +1,53 @@
 import { useState, useEffect } from 'react';
-import useEmpresaInfo from './getEmpresaInfo';
+
+const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
 
 const useEmpresaInfoLogic = () => {
-    const { empresa, jobOffers, reloadEmpresaInfo } = useEmpresaInfo(); // Asegúrate de que reloadEmpresaInfo esté disponible
+    const [empresa, setEmpresa] = useState(null);
+    const [jobOffers, setJobOffers] = useState([]); // State for job offers
+    const id = localStorage.getItem('id'); // Get the user ID
+
+    const fetchEmpresaData = async () => {
+        try {
+            const response = await fetch(`${API_URL}/empresa`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id }), // Send user ID in the body
+            });
+            if (!response.ok) {
+                throw new Error('Error al cargar la información de la empresa');
+            }
+            const data = await response.json();
+            setEmpresa(data);
+
+            // Fetch job offers
+            const offersResponse = await fetch(`${API_URL}/getoferta`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id }), // Send user ID in the body
+            });
+            if (!offersResponse.ok) {
+                throw new Error('Error al cargar las ofertas de trabajo');
+            }
+            const offersData = await offersResponse.json();
+            setJobOffers(offersData); // Set job offers in state
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchEmpresaData();
+    }, []);
+
+    const reloadEmpresaInfo = () => {
+        fetchEmpresaData(); // Call fetchEmpresaData to reload the data
+    };
+
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditingName, setEditingName] = useState(false);
     const [isEditingAddress, setEditingAddress] = useState(false);
@@ -59,8 +104,8 @@ const useEmpresaInfoLogic = () => {
             const result = await response.text();
             console.log(result); // Log the response from the server
 
-            // Volver a cargar useEmpresaInfo para obtener los datos actualizados
-            reloadEmpresaInfo(); // Asegúrate de que esta función esté disponible para obtener la información actualizada
+            // Reload useEmpresaInfo to get updated data
+            reloadEmpresaInfo(); // Ensure this function is available to get updated information
 
         } catch (error) {
             console.error('Error:', error);
@@ -95,6 +140,7 @@ const useEmpresaInfoLogic = () => {
         handleOpenModal,
         handleCloseModal,
         handleSubmit,
+        reloadEmpresaInfo,
     };
 };
 

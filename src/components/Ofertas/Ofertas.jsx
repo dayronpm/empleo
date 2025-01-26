@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { allJobs } from './allJobs';
+import React, { useState, useEffect } from 'react';
+import useAllJobs from './allJobs';
 import Pagination from './Pagination';
 import JobDetails from './JobDetails';
 import JobList from './JobList';
@@ -7,17 +7,20 @@ import SearchBar from './SearchBar'; // Componente de búsqueda importado
 import Filters from './Filters'; // Componente de filtros importado
 
 const Ofertas = () => {
-    const [filteredJobs, setFilteredJobs] = useState(allJobs);
+    const allJobs = useAllJobs(); // Use the custom hook to fetch jobs
+    const [filteredJobs, setFilteredJobs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const jobsPerPage = 10;
+    const jobsPerPage = 7;
     const [selectedJob, setSelectedJob] = useState(null);
+
+    useEffect(() => {
+        setFilteredJobs(allJobs); // Update filteredJobs when allJobs is fetched
+    }, [allJobs]);
 
     const handleSearch = (event) => {
         const query = event.target.value.toLowerCase();
         const filtered = allJobs.filter(job =>
-            job.title.toLowerCase().includes(query) ||
-            job.company.toLowerCase().includes(query) ||
-            job.location.toLowerCase().includes(query)
+            job.titulo.toLowerCase().includes(query)
         );
         setFilteredJobs(filtered);
         setCurrentPage(1); // Reset to first page on search
@@ -62,12 +65,9 @@ const Ofertas = () => {
                 </div>
             </header>
 
-
-
             <div className="mb-4">
                 <label htmlFor="sort" className="mr-2 text-gray-700">Filtrar por:</label>
                 <Filters onFilterChange={handleFilterChange} /> {/* Uso del componente de filtros */}
-                
             </div>
 
             {/* Ordenación */}
