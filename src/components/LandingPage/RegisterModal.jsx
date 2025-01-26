@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { loginUser } from './auth'; // Importa la función de autenticación
 
 const API_URL = 'http://localhost:3001'; // Cambia esto si tu servidor está en otra URL
 
-const RegisterModal = ({ isOpen, onClose, openLogin }) => {
+const RegisterModal = ({ isOpen, onClose, openLogin, handleLoginSuccess }) => {
     const [userType, setUserType] = useState('persona'); // Estado para tipo: Empresa o Persona
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
@@ -44,6 +45,19 @@ const RegisterModal = ({ isOpen, onClose, openLogin }) => {
             setConfirmPassword('');
             setError('');
             onClose(); // Close the modal
+
+
+            //Login user automaticamente tras el registro
+            const data = await loginUser(username, password);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('username', username); // Guardar nombre de usuario
+            localStorage.setItem('tipo', data.tipo); //Guardar tipo de usuario
+            localStorage.setItem('id', data.id);
+            console.log('Id:', data.id);
+            console.log('Tipo:', data.tipo);
+            console.log('Token:', data.token);
+                        
+                        handleLoginSuccess(username);
         } catch (error) {
             setError('Error al registrar el usuario. Inténtalo de nuevo.');
         }

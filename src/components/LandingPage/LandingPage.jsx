@@ -119,7 +119,7 @@ const LandingPage = () => {
                 openRegister={openRegister} 
                 handleLoginSuccess={handleLoginSuccess}
             />
-            <RegisterModal isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} openLogin={openLogin} />
+            <RegisterModal isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} openLogin={openLogin} handleLoginSuccess={handleLoginSuccess} />
             
             {/* Modal de advertencia */}
             <AuthWarningModal isOpen={isWarningOpen} onClose={() => setWarningOpen(false)} />
