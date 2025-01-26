@@ -7,11 +7,12 @@ import SearchBar from './SearchBar'; // Componente de búsqueda importado
 import Filters from './Filters'; // Componente de filtros importado
 
 const Ofertas = () => {
-    const allJobs = useAllJobs(); // Use the custom hook to fetch jobs
+    const { jobs: allJobs, locationData } = useAllJobs(); // Use the custom hook to fetch jobs
     const [filteredJobs, setFilteredJobs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const jobsPerPage = 7;
     const [selectedJob, setSelectedJob] = useState(null);
+    const [filters, setFilters] = useState({}); // State to hold multiple filters
 
     useEffect(() => {
         setFilteredJobs(allJobs); // Update filteredJobs when allJobs is fetched
@@ -29,10 +30,19 @@ const Ofertas = () => {
     const handleFilterChange = (event) => {
         const { name, value } = event.target;
 
-        let filtered = allJobs;
+        // Update filters state
+        const newFilters = {
+            ...filters,
+            [name]: value
+        };
+        setFilters(newFilters);
 
-        if (value) {
-            filtered = filtered.filter(job => job[name] === value);
+        // Filter jobs based on all active filters
+        let filtered = allJobs;
+        for (const key in newFilters) {
+            if (newFilters[key]) {
+                filtered = filtered.filter(job => job[key] === newFilters[key]);
+            }
         }
 
         setFilteredJobs(filtered);
@@ -67,7 +77,7 @@ const Ofertas = () => {
 
             <div className="mb-4">
                 <label htmlFor="sort" className="mr-2 text-gray-700">Filtrar por:</label>
-                <Filters onFilterChange={handleFilterChange} /> {/* Uso del componente de filtros */}
+                <Filters onFilterChange={handleFilterChange} locationData={locationData} /> {/* Uso del componente de filtros */}
             </div>
 
             {/* Ordenación */}

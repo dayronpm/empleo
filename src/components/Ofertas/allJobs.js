@@ -4,6 +4,7 @@ const API_URL = 'http://localhost:3001'; // Change this if your server is at a d
 
 const useAllJobs = () => {
     const [jobs, setJobs] = useState([]);
+    const [locationData, setLocationData] = useState({});
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -11,6 +12,21 @@ const useAllJobs = () => {
                 const response = await fetch(`${API_URL}/getalloferta`);
                 const data = await response.json();
                 setJobs(data);
+                console.log(data);
+                // Create dictionary from job data
+                const locationData = {};
+                data.forEach(job => {
+                    const province = job.provincia;
+                    const municipality = job.municipio;
+
+                    if (!locationData[province]) {
+                        locationData[province] = [];
+                    }
+                    if (!locationData[province].includes(municipality)) {
+                        locationData[province].push(municipality);
+                    }
+                });
+                setLocationData(locationData);
             } catch (error) {
                 console.error('Error fetching jobs:', error);
             }
@@ -19,7 +35,7 @@ const useAllJobs = () => {
         fetchJobs();
     }, []);
 
-    return jobs;
+    return { jobs, locationData }; // Return the dictionary along with jobs
 };
 
 export default useAllJobs;
