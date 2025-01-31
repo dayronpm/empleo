@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
 
 const useEmpresaInfoLogic = () => {
+    const navigate = useNavigate(); // Initialize useNavigate
     const [empresa, setEmpresa] = useState(null);
     const [jobOffers, setJobOffers] = useState([]); // State for job offers
     const id = localStorage.getItem('id'); // Get the user ID
@@ -61,6 +63,9 @@ const useEmpresaInfoLogic = () => {
     const [editedType, setEditedType] = useState('');
     const [editedDescription, setEditedDescription] = useState('');
 
+    // State for delete modal
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
     useEffect(() => {
         if (empresa) {
             setEditedName(empresa.nombre || '');
@@ -112,6 +117,35 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
+    // Add the logout function
+    const handleLogout = () => {
+        localStorage.clear(); // Clear all items in localStorage
+        navigate('/'); // Redirect to the landing page
+    };
+
+    // Add the delete account logic
+    const handleDeleteAccount = async (password) => {
+        const id = localStorage.getItem('id'); // Get the user ID from local storage
+        try {
+            const response = await fetch(`${API_URL}/borrarempresa`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id, password }), // Send the ID and password in the request body
+            });
+            if (response.ok) {
+                alert('Cuenta eliminada con éxito.');
+                handleLogout(); // Call the logout function
+            } else {
+                alert('Error al eliminar la cuenta.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar la cuenta.');
+        }
+    };
+
     return {
         empresa,
         jobOffers,
@@ -141,6 +175,9 @@ const useEmpresaInfoLogic = () => {
         handleCloseModal,
         handleSubmit,
         reloadEmpresaInfo,
+        handleDeleteAccount, // Add this line
+        isDeleteModalOpen, // Add delete modal state
+        setDeleteModalOpen, // Add delete modal state setter
     };
 };
 

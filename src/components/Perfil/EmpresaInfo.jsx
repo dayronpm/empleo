@@ -3,6 +3,7 @@ import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
+import DeleteAccountModal from './DeleteAccountModal'; // Import the DeleteAccountModal
 
 const EmpresaInfo = () => {
     const {
@@ -33,6 +34,9 @@ const EmpresaInfo = () => {
         handleOpenModal,
         handleCloseModal,
         handleSubmit,
+        handleDeleteAccount, // Use the existing delete account logic
+        isDeleteModalOpen, // Use the existing delete modal state
+        setDeleteModalOpen, // Use the existing delete modal state setter
     } = useEmpresaInfoLogic();
 
     if (!empresa) {
@@ -157,6 +161,18 @@ const EmpresaInfo = () => {
             <button onClick={handleOpenModal} className="mt-4 mb-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
             <JobOfferModal isOpen={isModalOpen} onClose={handleCloseModal} />
             <JobList jobs={jobOffers} />
+
+            {/* Add the delete account button */}
+            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded">
+                Eliminar Cuenta
+            </button>
+
+            {/* Render the DeleteAccountModal */}
+            <DeleteAccountModal 
+                isOpen={isDeleteModalOpen} 
+                onClose={() => setDeleteModalOpen(false)} 
+                onDelete={handleDeleteAccount} 
+            />
         </div>
     );
 };
