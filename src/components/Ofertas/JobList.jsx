@@ -1,18 +1,20 @@
 import React from 'react';
 
 const JobList = ({ jobs, onJobSelect }) => {
-
     
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
     };
     
-
     return (
         <div className="bg-white shadow-md rounded-lg divide-y divide-gray-200">
             {jobs.map((job) => (
-                <div key={job.id} className="p-4 hover:bg-gray-100 cursor-pointer transition duration-200 border-b">
+                <div 
+                    key={job.id} 
+                    className="p-4 hover:bg-gray-100 cursor-pointer transition duration-200 border-b"
+                    onClick={() => onJobSelect(job)} // Llama a la función pasada desde EmpresaInfo
+                >
                     <div className="flex justify-between mb-2">
                         <div className="flex items-center">
                             <h2 className="text-xl font-bold text-blue-600">{job.titulo}</h2>

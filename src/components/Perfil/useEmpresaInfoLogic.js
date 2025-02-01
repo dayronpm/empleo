@@ -7,6 +7,8 @@ const useEmpresaInfoLogic = () => {
     const navigate = useNavigate(); // Initialize useNavigate
     const [empresa, setEmpresa] = useState(null);
     const [jobOffers, setJobOffers] = useState([]); // State for job offers
+    const [courses, setCourses] = useState([]); // State for courses
+    const courseData = '';
     const id = localStorage.getItem('id'); // Get the user ID
 
     const fetchEmpresaData = async () => {
@@ -37,6 +39,20 @@ const useEmpresaInfoLogic = () => {
             }
             const offersData = await offersResponse.json();
             setJobOffers(offersData); // Set job offers in state
+
+            // Fetch courses
+            const coursesResponse = await fetch(`${API_URL}/getcourses`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id }), // Send user ID in the body
+            });
+            if (!offersResponse.ok) {
+                throw new Error('Error al cargar las ofertas de trabajo');
+            }
+            const courses = await coursesResponse.json();
+            setCourses(courses); // Set job offers in state
         } catch (error) {
             console.error(error);
         }
@@ -65,6 +81,19 @@ const useEmpresaInfoLogic = () => {
 
     // State for delete modal
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+
+    // State for Course Modal
+    const [isCourseModalOpen, setCourseModalOpen] = useState(false);
+
+    // Function to open Course Modal
+    const handleOpenCourseModal = () => {
+        setCourseModalOpen(true);
+    };
+
+    // Function to close Course Modal
+    const handleCloseCourseModal = () => {
+        setCourseModalOpen(false);
+    };
 
     useEffect(() => {
         if (empresa) {
@@ -117,13 +146,11 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
-    // Add the logout function
     const handleLogout = () => {
         localStorage.clear(); // Clear all items in localStorage
         navigate('/'); // Redirect to the landing page
     };
 
-    // Add the delete account logic
     const handleDeleteAccount = async (password) => {
         const id = localStorage.getItem('id'); // Get the user ID from local storage
         try {
@@ -145,6 +172,15 @@ const useEmpresaInfoLogic = () => {
             alert('Error al eliminar la cuenta.');
         }
     };
+
+        // Nuevo estado para almacenar la oferta seleccionada
+        const [selectedJob, setSelectedJob] = useState(null);
+
+        // Función para manejar la selección de un trabajo
+        const handleJobSelect = (job) => {
+            setSelectedJob(job); // Guarda la oferta seleccionada
+            setModalOpen(true); // Abre el modal
+        };
 
     return {
         empresa,
@@ -175,9 +211,16 @@ const useEmpresaInfoLogic = () => {
         handleCloseModal,
         handleSubmit,
         reloadEmpresaInfo,
-        handleDeleteAccount, // Add this line
-        isDeleteModalOpen, // Add delete modal state
-        setDeleteModalOpen, // Add delete modal state setter
+        handleDeleteAccount,
+        isDeleteModalOpen,
+        setDeleteModalOpen,
+        isCourseModalOpen,
+        handleOpenCourseModal,
+        handleCloseCourseModal,
+        courses,
+        courseData,
+        selectedJob,
+        handleJobSelect
     };
 };
 

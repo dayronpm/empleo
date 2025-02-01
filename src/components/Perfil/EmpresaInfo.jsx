@@ -1,10 +1,13 @@
 import React from 'react';
+import { useState } from 'react';
 import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
 import DeleteAccountModal from './DeleteAccountModal';
 import EditableField from './EditableField'; // Import the EditableField component
+import CourseModal from '../Cursos/CourseModal'; // Import CourseModal
+import CourseList from '../Cursos/CourseList'; // Import CourseList
 
 const EmpresaInfo = () => {
     const {
@@ -38,6 +41,14 @@ const EmpresaInfo = () => {
         handleDeleteAccount,
         isDeleteModalOpen,
         setDeleteModalOpen,
+        isCourseModalOpen, // Import course modal state
+        handleOpenCourseModal, // Import course modal open function
+        handleCloseCourseModal, // Import course modal close function
+        handleAddCourse,
+        courseData,
+        courses,
+        selectedJob,
+        handleJobSelect // Import handleAddCourse function
     } = useEmpresaInfoLogic();
 
     if (!empresa) {
@@ -55,7 +66,6 @@ const EmpresaInfo = () => {
                     onSave={() => { setEditingName(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
                     onChange={(e) => setEditedName(e.target.value)}
                 />
-
                 <EditableField 
                     label="Dirección"
                     value={editedMunicipality}
@@ -71,7 +81,6 @@ const EmpresaInfo = () => {
                         setEditedMunicipality('');
                     }}
                 />
-
                 <EditableField 
                     label="Tipo"
                     value={editedType}
@@ -82,7 +91,6 @@ const EmpresaInfo = () => {
                     options={["Estatal", "No estatal"]}
                 />
             </div>
-
             <EditableField 
                 label="Descripción"
                 value={editedDescription}
@@ -91,16 +99,21 @@ const EmpresaInfo = () => {
                 onSave={() => { setEditingDescription(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
                 onChange={(e) => setEditedDescription(e.target.value)}
             />
-
             <h3 className="text-xl font-semibold mt-4">Ofertas de Trabajo</h3>
             <button onClick={handleOpenModal} className="mt-4 mb-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
-            <JobOfferModal isOpen={isModalOpen} onClose={handleCloseModal} />
-            <JobList jobs={jobOffers} />
-
-            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded">
+            <JobOfferModal 
+                isOpen={isModalOpen} 
+                onClose={handleCloseModal} 
+                selectedJob={selectedJob} // Pasa la oferta seleccionada al modal
+            />
+            <JobList jobs={jobOffers} onJobSelect={handleJobSelect} /> {/* Pasa la función de selección */}
+            <h3 className="text-xl font-semibold mt-4">Cursos</h3>
+            <button onClick={handleOpenCourseModal} className="mt-4 mb-4 bg-green-500 text-white p-2 rounded">Agregar Curso</button>
+            <CourseModal isOpen={isCourseModalOpen} onClose={handleCloseCourseModal} />
+            <CourseList courses={courses} />
+            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded"> 
                 Eliminar Cuenta
             </button>
-
             <DeleteAccountModal 
                 isOpen={isDeleteModalOpen} 
                 onClose={() => setDeleteModalOpen(false)} 
