@@ -48,7 +48,11 @@ const EmpresaInfo = () => {
         courseData,
         courses,
         selectedJob,
-        handleJobSelect // Import handleAddCourse function
+        handleJobSelect,
+        selectedCourse, // Agregar el estado del curso seleccionado
+        setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
+        handleCourseSelect, // Agregar la función para seleccionar un curso
+        handleEditCourse,  // Import handleAddCourse function
     } = useEmpresaInfoLogic();
 
     if (!empresa) {
@@ -109,8 +113,9 @@ const EmpresaInfo = () => {
             <JobList jobs={jobOffers} onJobSelect={handleJobSelect} /> {/* Pasa la función de selección */}
             <h3 className="text-xl font-semibold mt-4">Cursos</h3>
             <button onClick={handleOpenCourseModal} className="mt-4 mb-4 bg-green-500 text-white p-2 rounded">Agregar Curso</button>
-            <CourseModal isOpen={isCourseModalOpen} onClose={handleCloseCourseModal} />
-            <CourseList courses={courses} />
+            <CourseModal isOpen={isCourseModalOpen} onClose={handleCloseCourseModal} course={selectedCourse}/>
+            <CourseList courses={courses} onCourseSelect={handleCourseSelect} // Pasar la función para seleccionar un curso
+/>
             <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded"> 
                 Eliminar Cuenta
             </button>

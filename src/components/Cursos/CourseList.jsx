@@ -1,12 +1,15 @@
 import React from 'react';
 
-const CourseList = ({ courses }) => {
+const CourseList = ({ courses, onCourseSelect }) => {
     return (
         <div>
-
             <ul>
                 {courses.map(course => (
-                    <li key={course.id} className="border p-4 mb-2">
+                    <li 
+                        key={course.id} 
+                        className="border p-4 mb-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                        onClick={() => onCourseSelect(course)} // Agregar onClick para seleccionar el curso
+                    >
                         <h4 className="font-bold">{course.titulo}</h4>
                         <p>{course.descripcion}</p>
                         <p><strong>Nivel:</strong> {course.nivel}</p>

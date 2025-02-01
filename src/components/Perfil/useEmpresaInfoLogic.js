@@ -10,6 +10,7 @@ const useEmpresaInfoLogic = () => {
     const [courses, setCourses] = useState([]); // State for courses
     const courseData = '';
     const id = localStorage.getItem('id'); // Get the user ID
+    const [selectedCourse, setSelectedCourse] = useState(null); // State for selected course
 
     const fetchEmpresaData = async () => {
         try {
@@ -182,6 +183,25 @@ const useEmpresaInfoLogic = () => {
             setModalOpen(true); // Abre el modal
         };
 
+        const handleCourseSelect = (course) => {
+            setSelectedCourse(course); // Guarda el curso seleccionado
+            setCourseModalOpen(true); // Abre el modal
+        };
+
+        const handleEditCourse = async (courseId, updatedData) => {
+            try {
+                const response = await fetch(`${API_URL}/editcourse`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: courseId, ...updatedData }),
+                });
+                if (!response.ok) throw new Error('Error al editar el curso');
+                reloadEmpresaInfo(); // Refresca la lista de cursos
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
     return {
         empresa,
         jobOffers,
@@ -220,7 +240,11 @@ const useEmpresaInfoLogic = () => {
         courses,
         courseData,
         selectedJob,
-        handleJobSelect
+        handleJobSelect,
+        selectedCourse, // Agregar el estado del curso seleccionado
+        setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
+        handleCourseSelect, // Agregar la función para seleccionar un curso
+        handleEditCourse, 
     };
 };
 
