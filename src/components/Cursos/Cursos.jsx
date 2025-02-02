@@ -15,24 +15,15 @@ const Cursos = () => {
   const [error, setError] = useState(null); // Estado para manejar errores
 
   const API_URL = 'http://localhost:3001'; // URL del servidor
-  const id = localStorage.getItem('id'); // ID del usuario o empresa
 
   // Función para cargar los cursos desde la API
   useEffect(() => {
     const fetchCursos = async () => {
       try {
-        const response = await fetch(`${API_URL}/getcourses`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id }), // Enviamos el ID en el cuerpo de la solicitud
-        });
-
+        const response = await fetch(`${API_URL}/getallcourses`); // Usar siempre /getallcourses
         if (!response.ok) {
           throw new Error('Error al cargar los cursos');
         }
-
         const data = await response.json();
         setCursosData(data); // Guardamos los cursos en el estado
         setLoading(false); // Finalizamos la carga
@@ -43,10 +34,10 @@ const Cursos = () => {
     };
 
     fetchCursos(); // Llamamos a la función al montar el componente
-  }, [API_URL, id]); // Dependencias: API_URL e id
+  }, [API_URL]); // Dependencia: API_URL
 
   // Filtrar cursos según los filtros aplicados
-  const cursosFiltrados = cursosData.filter(curso =>
+  const cursosFiltrados = cursosData.filter((curso) =>
     curso.titulo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
     (filtroModalidad === '' || curso.modalidad === filtroModalidad) &&
     (filtroNivel === '' || curso.nivel === filtroNivel) &&
@@ -105,7 +96,7 @@ const Cursos = () => {
         setFiltroPrecio={setFiltroPrecio}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cursosFiltrados.map(curso => (
+        {cursosFiltrados.map((curso) => (
           <Curso key={curso.id} curso={curso} onClick={() => abrirPopup(curso)} />
         ))}
       </div>

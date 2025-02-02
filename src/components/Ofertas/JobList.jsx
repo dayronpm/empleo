@@ -1,12 +1,9 @@
-import React from 'react';
-
-const JobList = ({ jobs, onJobSelect }) => {
-    
+const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+        return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
     };
-    
+
     return (
         <div className="bg-white shadow-md rounded-lg divide-y divide-gray-200">
             {jobs.map((job) => (
@@ -22,6 +19,18 @@ const JobList = ({ jobs, onJobSelect }) => {
                                 {job.tipo}
                             </span>
                         </div>
+                        {/* Mostrar el botón Eliminar solo si showDeleteButton es true */}
+                        {showDeleteButton && (
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Evita que se seleccione el trabajo al hacer clic en el botón
+                                    onDeleteJob(job); // Llama a la función de eliminación
+                                }} 
+                                className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                            >
+                                Eliminar
+                            </button>
+                        )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex flex-col">

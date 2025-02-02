@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CourseList = ({ courses, onCourseSelect }) => {
+const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton = false, showMoreInfo = true }) => {
     return (
         <div>
             <ul>
@@ -15,7 +15,26 @@ const CourseList = ({ courses, onCourseSelect }) => {
                         <p><strong>Nivel:</strong> {course.nivel}</p>
                         <p><strong>Modalidad:</strong> {course.modalidad}</p>
                         <p><strong>Precio:</strong> {course.precio}</p>
-                        <a href={course.direccion} target="_blank" rel="noopener noreferrer">Más Información</a>
+
+                        {/* Mostrar "Más información" solo si showMoreInfo es true */}
+                        {showMoreInfo && (
+                            <a href={course.direccion} target="_blank" rel="noopener noreferrer" className="block mt-2 text-blue-500 hover:underline">
+                                Más Información
+                            </a>
+                        )}
+
+                        {/* Mostrar el botón Eliminar solo si showDeleteButton es true */}
+                        {showDeleteButton && (
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Evitar que el clic se propague al elemento padre
+                                    onDeleteCourse(course); // Llamar a la función de eliminación
+                                }} 
+                                className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                                Eliminar
+                            </button>
+                        )}
                     </li>
                 ))}
             </ul>

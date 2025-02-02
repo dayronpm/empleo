@@ -10,7 +10,8 @@ const EditableField = ({
     provinces, 
     municipalities, 
     selectedProvince, 
-    onProvinceChange 
+    onProvinceChange,
+    options // Agregamos esta propiedad para manejar las opciones del desplegable
 }) => {
     return (
         <div className="flex items-center">
@@ -38,18 +39,33 @@ const EditableField = ({
                                 ))}
                             </select>
                         </>
+                    ) : options ? (
+                        // Si hay opciones, mostramos un desplegable
+                        <>
+                            <label className="text-lg font-semibold">{label}:</label>
+                            <select 
+                                className="text-lg ml-2" 
+                                value={value} 
+                                onChange={onChange}
+                            >
+                                {options.map((option) => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                        </>
                     ) : (
+                        // Si no hay opciones, mostramos un input normal
                         <>
                             <label className="text-lg font-semibold">{label}:</label>
                             <input 
-                                className="text-lg" 
+                                className="text-lg ml-2" 
                                 value={value} 
                                 onChange={onChange} 
                             />
                         </>
                     )}
                     <button onClick={onSave} className="ml-2 bg-yellow-500 text-white p-1 rounded">
-                        Save
+                        Guardar
                     </button>
                 </>
             ) : (
@@ -64,7 +80,7 @@ const EditableField = ({
                         </p>
                     )}
                     <button onClick={onEditToggle} className="ml-2 bg-yellow-500 text-white p-1 rounded">
-                        Edit
+                        Editar
                     </button>
                 </>
             )}

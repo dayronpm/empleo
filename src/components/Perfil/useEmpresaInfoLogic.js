@@ -11,6 +11,9 @@ const useEmpresaInfoLogic = () => {
     const courseData = '';
     const id = localStorage.getItem('id'); // Get the user ID
     const [selectedCourse, setSelectedCourse] = useState(null); // State for selected course
+    // Estado para manejar el modal de confirmación de eliminación de oferta
+    const [isDeleteJobModalOpen, setIsDeleteJobModalOpen] = useState(false);
+    const [selectedJobForDeletion, setSelectedJobForDeletion] = useState(null);
 
     const fetchEmpresaData = async () => {
         try {
@@ -202,6 +205,70 @@ const useEmpresaInfoLogic = () => {
             }
         };
 
+        const deleteJob = async (jobId) => {
+            try {
+                const response = await fetch(`${API_URL}/deleteoferta`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: jobId }), // Enviar el ID de la oferta a eliminar
+                });
+                if (!response.ok) {
+                    throw new Error('Error al eliminar la oferta de trabajo');
+                }
+                const result = await response.text();
+                console.log(result); // Log the response from the server
+                // Recargar los datos de la empresa después de eliminar la oferta
+                reloadEmpresaInfo();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No se pudo eliminar la oferta de trabajo.');
+            }
+        };
+
+        const deleteCourse = async (courseId) => {
+            try {
+                const response = await fetch(`${API_URL}/deletecourse`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: courseId }), // Enviar el ID del curso a eliminar
+                });
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el curso');
+                }
+                const result = await response.text();
+                console.log(result); // Log the response from the server
+                reloadEmpresaInfo(); // Recargar los datos después de eliminar el curso
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No se pudo eliminar el curso.');
+            }
+        };
+
+        // Función para abrir el modal de confirmación de eliminación
+    const handleDeleteJob = (job) => {
+        setSelectedJobForDeletion(job);
+        setIsDeleteJobModalOpen(true);
+    };
+
+    // Función para confirmar la eliminación de una oferta
+    const handleConfirmDeleteJob = () => {
+        if (selectedJobForDeletion) {
+            deleteJob(selectedJobForDeletion.id); // Llama al método de eliminación
+            setIsDeleteJobModalOpen(false);
+            setSelectedJobForDeletion(null);
+        }
+    };
+
+    const handleDeleteCourse = (course) => {
+        if (window.confirm(`¿Estás seguro de que deseas eliminar el curso "${course.titulo}"?`)) {
+            deleteCourse(course.id); // Llamar al método deleteCourse del custom hook
+        }
+    };
+
     return {
         empresa,
         jobOffers,
@@ -244,7 +311,16 @@ const useEmpresaInfoLogic = () => {
         selectedCourse, // Agregar el estado del curso seleccionado
         setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
         handleCourseSelect, // Agregar la función para seleccionar un curso
-        handleEditCourse, 
+        handleEditCourse,
+        deleteJob,
+        deleteCourse,
+        isDeleteJobModalOpen,
+        setIsDeleteJobModalOpen,
+        selectedJobForDeletion,
+        setSelectedJobForDeletion,
+        handleDeleteJob,
+        handleConfirmDeleteJob,
+        handleDeleteCourse 
     };
 };
 
