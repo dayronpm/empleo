@@ -4,17 +4,73 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
 
 const useEmpresaInfoLogic = () => {
-    const navigate = useNavigate(); // Initialize useNavigate
-    const [empresa, setEmpresa] = useState(null);
-    const [jobOffers, setJobOffers] = useState([]); // State for job offers
-    const [courses, setCourses] = useState([]); // State for courses
-    const courseData = '';
-    const id = localStorage.getItem('id'); // Get the user ID
-    const [selectedCourse, setSelectedCourse] = useState(null); // State for selected course
-    // Estado para manejar el modal de confirmación de eliminación de oferta
-    const [isDeleteJobModalOpen, setIsDeleteJobModalOpen] = useState(false);
-    const [selectedJobForDeletion, setSelectedJobForDeletion] = useState(null);
+    // Hook para manejar la navegación entre rutas en la aplicación
+    const navigate = useNavigate(); 
 
+    // Estado para almacenar la información de la empresa. Inicialmente es null.
+    const [empresa, setEmpresa] = useState(null);
+
+    // Estado para almacenar las ofertas de trabajo asociadas a la empresa. Inicialmente es un array vacío.
+    const [jobOffers, setJobOffers] = useState([]); 
+
+    // Estado para almacenar los cursos asociados a la empresa. Inicialmente es un array vacío.
+    const [courses, setCourses] = useState([]); 
+
+    // Obtiene el ID del usuario almacenado en localStorage para identificar la empresa.
+    const id = localStorage.getItem('id'); 
+
+    // Estado para almacenar el curso seleccionado cuando se interactúa con él. Inicialmente es null.
+    const [selectedCourse, setSelectedCourse] = useState(null); 
+
+    // Estado para controlar la apertura/cierre del modal de confirmación de eliminación de una oferta de trabajo.
+    const [isDeleteJobModalOpen, setIsDeleteJobModalOpen] = useState(false); 
+
+    // Estado para almacenar la oferta de trabajo seleccionada para ser eliminada. Inicialmente es null.
+    const [selectedJobForDeletion, setSelectedJobForDeletion] = useState(null); 
+
+    // Estado para controlar la apertura/cierre de un modal genérico utilizado en varios casos.
+    const [isModalOpen, setModalOpen] = useState(false); 
+
+    // Estados para controlar si se está editando el nombre de la empresa.
+    const [isEditingName, setEditingName] = useState(false); 
+
+    // Estados para controlar si se está editando la dirección de la empresa.
+    const [isEditingAddress, setEditingAddress] = useState(false); 
+
+    // Estados para controlar si se está editando el tipo de la empresa.
+    const [isEditingType, setEditingType] = useState(false); 
+
+    // Estados para controlar si se está editando la descripción de la empresa.
+    const [isEditingDescription, setEditingDescription] = useState(false); 
+
+    // Estado para almacenar el nuevo nombre de la empresa durante la edición.
+    const [editedName, setEditedName] = useState(''); 
+
+    // Estado para almacenar la nueva dirección de la empresa durante la edición.
+    const [editedAddress, setEditedAddress] = useState(''); 
+
+    // Estado para almacenar la provincia de la empresa durante la edición.
+    const [editedProvince, setEditedProvince] = useState(''); 
+
+    // Estado para almacenar el municipio de la empresa durante la edición.
+    const [editedMunicipality, setEditedMunicipality] = useState(''); 
+
+    // Estado para almacenar el nuevo tipo de la empresa durante la edición.
+    const [editedType, setEditedType] = useState(''); 
+
+    // Estado para almacenar la nueva descripción de la empresa durante la edición.
+    const [editedDescription, setEditedDescription] = useState(''); 
+
+    // Estado para almacenar la oferta de trabajo seleccionada cuando se interactúa con ella.
+    const [selectedJob, setSelectedJob] = useState(null); 
+
+    // Estado para controlar la apertura/cierre del modal de eliminación de cuenta.
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false); 
+
+    // Estado para controlar la apertura/cierre del modal relacionado con los cursos.
+    const [isCourseModalOpen, setCourseModalOpen] = useState(false); 
+
+    //Cargar datos de la empresa, incluidos trabajos y cursos
     const fetchEmpresaData = async () => {
         try {
             const response = await fetch(`${API_URL}/empresa`, {
@@ -56,49 +112,33 @@ const useEmpresaInfoLogic = () => {
                 throw new Error('Error al cargar las ofertas de trabajo');
             }
             const courses = await coursesResponse.json();
-            setCourses(courses); // Set job offers in state
+            setCourses(courses); // Set courses in state
         } catch (error) {
             console.error(error);
         }
     };
 
+    //Llamar a la función para cargar datos de la empresa
     useEffect(() => {
         fetchEmpresaData();
     }, []);
 
+    //Función para volver a cargar los datos de la empresa 
     const reloadEmpresaInfo = () => {
         fetchEmpresaData(); // Call fetchEmpresaData to reload the data
     };
 
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [isEditingName, setEditingName] = useState(false);
-    const [isEditingAddress, setEditingAddress] = useState(false);
-    const [isEditingType, setEditingType] = useState(false);
-    const [isEditingDescription, setEditingDescription] = useState(false);
-    
-    const [editedName, setEditedName] = useState('');
-    const [editedAddress, setEditedAddress] = useState('');
-    const [editedProvince, setEditedProvince] = useState('');
-    const [editedMunicipality, setEditedMunicipality] = useState('');
-    const [editedType, setEditedType] = useState('');
-    const [editedDescription, setEditedDescription] = useState('');
-
-    // State for delete modal
-    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-
-    // State for Course Modal
-    const [isCourseModalOpen, setCourseModalOpen] = useState(false);
-
-    // Function to open Course Modal
+    // Funcion para abrir el modal de curso
     const handleOpenCourseModal = () => {
         setCourseModalOpen(true);
     };
 
-    // Function to close Course Modal
+    // Funcion para cerrar el cmodal de curso
     const handleCloseCourseModal = () => {
         setCourseModalOpen(false);
     };
 
+    //Sincronizar los campos editables del formulario con los datos actuales de la empresa cada vez que algo cambia
     useEffect(() => {
         if (empresa) {
             setEditedName(empresa.nombre || '');
@@ -177,8 +217,7 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
-        // Nuevo estado para almacenar la oferta seleccionada
-        const [selectedJob, setSelectedJob] = useState(null);
+        
 
         // Función para manejar la selección de un trabajo
         const handleJobSelect = (job) => {
@@ -305,7 +344,6 @@ const useEmpresaInfoLogic = () => {
         handleOpenCourseModal,
         handleCloseCourseModal,
         courses,
-        courseData,
         selectedJob,
         handleJobSelect,
         selectedCourse, // Agregar el estado del curso seleccionado
