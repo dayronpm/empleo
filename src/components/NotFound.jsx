@@ -3,7 +3,7 @@ const NotFound = () => {
       <div>
         <h1>NotFound</h1>
         <p>Para gestionar errores de url</p>
-        {/* Agrega más contenido según sea necesario */}
+        {/* Agrega más contenido según sea necesario xd */}
       </div>
     );
   };
