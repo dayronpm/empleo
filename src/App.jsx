@@ -6,6 +6,7 @@ import Cursos from './components/Cursos/Cursos'; // Asegúrate de crear este com
 import Eventos from './components/Eventos/Eventos'; // Asegúrate de crear este componente
 import Bibliografia from './components/Bibliografia/Bibliografia'; // Asegúrate de crear este componente
 import NotFound from './components/NotFound';
+import Administracion from './components/Administracion/Administracion';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 
@@ -21,7 +22,9 @@ function App() {
         <Route path="/cursos" element={<Cursos />} />
         <Route path="/eventos" element={<Eventos />} />
         <Route path="/bibliografia" element={<Bibliografia />} />
-        <Route path="*" element={< NotFound/>} /> 
+        <Route path="/administracion" element={<Administracion />} />
+        <Route path="*" element={< NotFound/>} />
+
       </Routes>
     </Router>
   );

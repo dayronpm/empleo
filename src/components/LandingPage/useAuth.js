@@ -15,8 +15,7 @@ const useAuth = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+        localStorage.clear();
         setIsAuthenticated(false);
         setUsername('');
     };
