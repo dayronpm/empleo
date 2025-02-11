@@ -1,6 +1,7 @@
 // Curriculum.js
 import React from 'react';
 import useCurriculum from './useCurriculum';// Importar el hook personalizado
+import usePersonalInfo from './usePersonalInfo';
 import DatosPersonales from './DatosPersonales';
 import ExperienciaLaboral from './ExperienciaLaboral';
 import FormacionAcademica from './FormacionAcademica';
@@ -29,6 +30,12 @@ const Curriculum = () => {
       searchTermLanguage,
       setSearchTermLanguage
     } = useCurriculum(); // Usar el hook personalizado
+
+    const {
+      usuario
+    } = usePersonalInfo();
+
+    console.log(usuario);
 
     return (
        <div className="max-w-3xl mx-auto p-5">

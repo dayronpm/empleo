@@ -198,7 +198,7 @@ export const provincesAndMunicipalities = {
 'Holguín': ['Holguín','Antilla','Báguanos','Banes','Cacocum','Calixto García','Cueto','Frank País','Gibara'],
 'Santiago de Cuba': ['Santiago de Cuba ','Contramaestre ','Guamá ','Julio Antonio Mella ','Palma Soriano ','San Luis ','Segundo Frente ','Songo la Maya ','Tercer Frente'],
 'Guantánamo': ['Guantánamo ','Baracoa ','Caimanera ','El Salvador ','Imías ','Maisí ','Manuel Tames ','Niceto Pérez ','San Antonio del Sur ','Yateras'],
-'Isla de la Juventud': [],
+'Isla de la Juventud': ['Isla de la Juventud'],
 'Granma': ['Granma ',  'Bartolomé Masó ',  'Bayamo ',  'Buey Arriba ',  'Campechuela ',  'Cauto Cristo ',  'Guisa ',  'Jiguaní ',  'Manzanillo ',  'Media Luna ',  'Niquero ',  'Pilón ',  'Río Cauto ',  'Yara']
     // Agrega más provincias y municipios aquí
 };
