@@ -11,7 +11,7 @@ const Perfil = () => {
             <h1 className="text-3xl text-center font-bold mb-6">Mi Perfil</h1>
             {/* Verificar si el tipo de usuario es 'persona' */}
             {userType === 'persona' ? (
-                <Curriculum /> // Renderizar Curriculum si es tipo 'persona'
+                <Curriculum  /> // Renderizar Curriculum si es tipo 'persona'
             ) : userType === 'empresa' ? (
                 <EmpresaInfo /> // Renderizar EmpresaInfo si es tipo 'empresa'
             ) : (
