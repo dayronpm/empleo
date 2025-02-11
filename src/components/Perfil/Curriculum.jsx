@@ -1,58 +1,68 @@
-import React, { useState } from "react";
-import { FaFileExport } from "react-icons/fa"; // Importing an export icon
-import Header from "./Header";
-import PersonalInfo from "./PersonalInfo";
-import ProfessionalInfo from "./ProfessionalInfo";
-import ExportButton from "./ExportButton";
-import HistoryModal from "./HistoryModal";
+// Curriculum.js
+import React from 'react';
+import useCurriculum from './useCurriculum';// Importar el hook personalizado
+import usePersonalInfo from './usePersonalInfo';
+import DatosPersonales from './DatosPersonales';
+import ExperienciaLaboral from './ExperienciaLaboral';
+import FormacionAcademica from './FormacionAcademica';
+import Habilidades from './Habilidades';
+import Idiomas from './Idiomas';
+import Certificaciones from './Certificaciones';
+import { technicalSkillsList, softSkillsList, provincesAndMunicipalities, languagesList } from './data'; // Importar datos
 
-function CurriculumII() {
-  const [showHistory, setShowHistory] = useState(false);
+const Curriculum = () => {
+    const {
+      formData,
+      handleChange,
+      handleExperienceChange,
+      removeExperience,
+      addExperience,
+      handleEducationChange,
+      removeEducation,
+      addEducation,
+      handleSkillChange,
+      addLanguage,
+      removeLanguage,
+      searchTermTechnical,
+      setSearchTermTechnical,
+      searchTermSoft,
+      setSearchTermSoft,
+      searchTermLanguage,
+      setSearchTermLanguage
+    } = useCurriculum(); // Usar el hook personalizado
 
-  // Función para regresar a la página anterior
-  const goBack = () => {
-    window.history.back();
-  };
+    const {
+      usuario
+    } = usePersonalInfo();
 
-  return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Encabezado */}
-      <Header />
-      {/* Contenido principal */}
-      <div className="container mx-auto p-6">
-        {/* Información personal */}
-        <PersonalInfo />
-        {/* Información profesional */}
-        <ProfessionalInfo />
-        {/* Botón de exportación */}
-        <div className="absolute top-4 right-4">
-          <button
-            onClick={() => setShowHistory(true)}
-            className="bg-transparent border-none cursor-pointer"
-          >
-            {/* Ícono o contenido del botón */}
-          </button>
-          <ExportButton />
-        </div>
-        {/* Historial de cambios */}
-        <button
-          onClick={() => setShowHistory(true)}
-          className="mt-4 text-blue-500 hover:underline"
-        >
-          Historial de cambios
-        </button>
-        {/* Modal de historial */}
-        {showHistory && <HistoryModal onClose={() => setShowHistory(false)} />}
-      </div>
-      {/* Botón Cerrar */}
-      <button
-        onClick={goBack} // Asociamos la función goBack al evento onClick
-        className="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 transition-colors text-white px-6 py-3 rounded-full shadow-md"
-      >
-        Cerrar
-      </button>
-    </div>
-  );
-}
+    console.log(usuario);
 
-export default CurriculumII;
+    return (
+       <div className="max-w-3xl mx-auto p-5">
+           <h1 className="text-2xl font-bold mb-4">Currículum Vitae</h1>
+
+           {/* Datos Personales */}
+           <DatosPersonales formData={formData} handleChange={handleChange} provincesAndMunicipalities={provincesAndMunicipalities} />
+
+           {/* Experiencia Laboral */}
+           <ExperienciaLaboral experience={formData.experience} handleExperienceChange={handleExperienceChange} removeExperience={removeExperience} addExperience={addExperience} />
+
+           {/* Formación Académica */}
+           <FormacionAcademica education={formData.education} handleEducationChange={handleEducationChange} removeEducation={removeEducation} addEducation={addEducation}/>
+
+           {/* Habilidades Técnicas */}
+           <Habilidades skillsList={technicalSkillsList} selectedSkills={formData.technicalSkills} handleSkillChange={(skill) => handleSkillChange(skill,'technical')} searchTerm={searchTermTechnical} setSearchTerm={setSearchTermTechnical} title={"Habilidades Técnicas"} />
+
+           {/* Habilidades Blandas */}
+           <Habilidades skillsList={softSkillsList} selectedSkills={formData.softSkills} handleSkillChange={(skill) => handleSkillChange(skill,'soft')} searchTerm={searchTermSoft} setSearchTerm={setSearchTermSoft} title={"Habilidades Blandas"} />
+
+           {/* Idiomas */}
+           <Idiomas languagesList={languagesList} formData={formData} addLanguage={addLanguage} removeLanguage={removeLanguage} searchTermLanguage={searchTermLanguage} setSearchTermLanguage={setSearchTermLanguage}/>
+
+           {/* Certificaciones */}
+           <Certificaciones formData={formData} handleChange={handleChange}/>
+       </div>
+   );
+};
+
+export default Curriculum;
