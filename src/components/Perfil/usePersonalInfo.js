@@ -10,7 +10,7 @@ const usePersonalInfo = () => {
     telefono : [""],
 
   });
-
+  const telefono = [""];
   // Obtiene el ID del usuario almacenado en localStorage.
   const id = localStorage.getItem('id');
 
@@ -28,14 +28,43 @@ const usePersonalInfo = () => {
               throw new Error('Error al cargar la información del usuario');
           }
           const data = await response.json();
-          console.log(data);
-          data.telefono = JSON.parse(data.telefono);
+
+          if (!data.telefono) {
+            data.telefono = [];
+          }
+          else{
+            data.telefono = JSON.parse(data.telefono);
+          }
           setInfo(data);
-          console.log(info.telefono);
       } catch (error) {
           console.error(error);
       }
   };
+
+  //Actualizar datos del usuario
+  const updateUserData = async (id, info) => {
+    try {
+        alert(id);
+        console.log(info.telefono);
+        alert("Actualizando información.");
+        const response = await fetch(`${API_URL}/updateusuario`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id, info }), // Send user ID in the body
+        });
+        if (!response.ok) {
+            throw new Error('Error al actualizar la información del usuario');
+        }
+        else{
+          // Simulación de guardado exitoso
+          alert("Información actualizada exitosamente.");
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 
   //Llamar a la función para cargar datos del usuario
   useEffect(() => {
@@ -92,8 +121,7 @@ const usePersonalInfo = () => {
       return;
     }
 
-    // Simulación de guardado exitoso
-    alert("Información actualizada exitosamente.");
+    updateUserData(id, info);
     closeEditModal();
   };
 
