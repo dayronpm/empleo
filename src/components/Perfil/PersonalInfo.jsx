@@ -33,7 +33,7 @@ const PersonalInfo = () => {
         {/* Nombre completo */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Nombre completo:</strong>
-          <span>{info.fullName}</span>
+          <span>{info.nombre}</span>
         </div>
 
         {/* Nombre de usuario */}
@@ -45,29 +45,32 @@ const PersonalInfo = () => {
         {/* Provincia */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Provincia:</strong>
-          <span>{info.province}</span>
+          <span>{info.provincia}</span>
         </div>
 
         {/* Municipio */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Municipio:</strong>
-          <span>{info.municipality}</span>
+          <span>{info.municipio}</span>
         </div>
 
         {/* Teléfono */}
+        
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Teléfonos:</strong>
           <div className="flex flex-col">
-            {info.phones.map((phone, index) => (
+            {info.telefono.map((phone, index) => (
               <span key={index}>{phone}</span>
             ))}
           </div>
         </div>
+        
+        
 
         {/* Correo electrónico */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Correo electrónico:</strong>
-          <span>{info.email}</span>
+          <span>{info.correo}</span>
         </div>
 
         {/* Botón para editar información personal */}
