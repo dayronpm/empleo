@@ -70,7 +70,7 @@ const usePersonalInfo = () => {
 
   // Función para agregar un nuevo teléfono
   const addPhone = () => {
-    setInfo((prevInfo) => ({ ...prevInfo, phones: [...prevInfo.phones, ""] }));
+    setInfo((prevInfo) => ({ ...prevInfo, telefono: [...prevInfo.telefono, ""] }));
   };
 
   // Función para eliminar un teléfono
@@ -87,7 +87,7 @@ const usePersonalInfo = () => {
   // Función para guardar los cambios de información personal
   const handleSaveChanges = () => {
     // Validación: Asegúrate de que todos los campos estén completos
-    if (!info.fullName || !info.username || !info.province || !info.municipality || !info.email) {
+    if (!info.nombre || !info.username || !info.provincia || !info.municipio || !info.correo) {
       alert("Todos los campos son obligatorios.");
       return;
     }

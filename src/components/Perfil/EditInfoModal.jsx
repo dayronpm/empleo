@@ -23,8 +23,8 @@ const EditInfoModal = ({
           <label className="block text-sm font-medium mb-1">Nombre completo</label>
           <input
             type="text"
-            value={info.fullName}
-            onChange={(e) => onInputChange("fullName", e.target.value)}
+            value={info.nombre}
+            onChange={(e) => onInputChange("nombre", e.target.value)}
             className="w-full p-2 border rounded"
             placeholder="Ingrese su nombre completo"
           />
@@ -46,8 +46,8 @@ const EditInfoModal = ({
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Provincia</label>
           <select
-            value={info.province}
-            onChange={(e) => onInputChange("province", e.target.value)}
+            value={info.provincia}
+            onChange={(e) => onInputChange("provincia", e.target.value)}
             className="w-full p-2 border rounded"
           >
             <option value="La Habana">La Habana</option>
@@ -61,8 +61,8 @@ const EditInfoModal = ({
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Municipio</label>
           <select
-            value={info.municipality}
-            onChange={(e) => onInputChange("municipality", e.target.value)}
+            value={info.municipio}
+            onChange={(e) => onInputChange("municipio", e.target.value)}
             className="w-full p-2 border rounded"
           >
             <option value="Plaza">Plaza</option>
@@ -81,7 +81,7 @@ const EditInfoModal = ({
               value={phone}
               onChange={(value) =>
                 onInputChange(
-                  "phones",
+                  "telefono",
                   info.telefono.map((p, i) => (i === index ? value : p))
                 )
               }
@@ -103,8 +103,8 @@ const EditInfoModal = ({
           <label className="block text-sm font-medium mb-1">Correo electrónico</label>
           <input
             type="email"
-            value={info.email}
-            onChange={(e) => onInputChange("email", e.target.value)}
+            value={info.correo}
+            onChange={(e) => onInputChange("correo", e.target.value)}
             className="w-full p-2 border rounded"
             placeholder="Ingrese su correo electrónico"
           />
