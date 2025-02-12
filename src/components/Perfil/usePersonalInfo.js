@@ -8,7 +8,7 @@ const usePersonalInfo = () => {
   const [info, setInfo] = useState({
 
     telefono : [""],
-    
+
   });
 
   // Obtiene el ID del usuario almacenado en localStorage.
@@ -76,9 +76,9 @@ const usePersonalInfo = () => {
   // Función para eliminar un teléfono
   const removePhone = (index) => {
     setInfo((prevInfo) => {
-      if (prevInfo.phones.length > 1) {
-        const updatedPhones = prevInfo.phones.filter((_, i) => i !== index);
-        return { ...prevInfo, phones: updatedPhones };
+      if (prevInfo.telefono.length > 1) {
+        const updatedPhones = prevInfo.telefono.filter((_, i) => i !== index);
+        return { ...prevInfo, telefono: updatedPhones };
       }
       return prevInfo;
     });

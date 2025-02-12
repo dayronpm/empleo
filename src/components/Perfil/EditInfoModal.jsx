@@ -75,18 +75,18 @@ const EditInfoModal = ({
         {/* Campos de teléfono */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Teléfonos</label>
-          {info.phones.map((phone, index) => (
+          {info.telefono.map((phone, index) => (
             <PhoneInput
               key={index}
               value={phone}
               onChange={(value) =>
                 onInputChange(
                   "phones",
-                  info.phones.map((p, i) => (i === index ? value : p))
+                  info.telefono.map((p, i) => (i === index ? value : p))
                 )
               }
               onDelete={() => removePhone(index)}
-              showDeleteButton={info.phones.length > 1}
+              showDeleteButton={info.telefono.length > 1}
             />
           ))}
           {/* Botón para agregar un nuevo teléfono */}
