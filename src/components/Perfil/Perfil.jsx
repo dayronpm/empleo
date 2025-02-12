@@ -1,5 +1,5 @@
 import React from 'react';
-import Curriculum from './Curriculum'; // Importar el componente Curriculum
+import CurriculumII from './CurriculumII'; // Correctly import the CurriculumII component
 import EmpresaInfo from './EmpresaInfo'; // Update to import the logic instead
 
 const Perfil = () => {
@@ -11,7 +11,7 @@ const Perfil = () => {
             <h1 className="text-3xl text-center font-bold mb-6">Mi Perfil</h1>
             {/* Verificar si el tipo de usuario es 'persona' */}
             {userType === 'persona' ? (
-                <Curriculum  /> // Renderizar Curriculum si es tipo 'persona'
+                <CurriculumII/> // Renderizar CurriculumII si es tipo 'persona'
             ) : userType === 'empresa' ? (
                 <EmpresaInfo /> // Renderizar EmpresaInfo si es tipo 'empresa'
             ) : (
