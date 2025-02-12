@@ -3,7 +3,6 @@ import { CgExport } from "react-icons/cg"; // Importamos el ícono
 
 const ExportButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-
   const handleExport = (format) => {
     console.log(`Exportando como ${format}`);
     setIsOpen(false);
@@ -15,10 +14,10 @@ const ExportButton = () => {
       <div
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer text-black"
+        title="Exportar" // Agregamos el atributo title para el tooltip
       >
         <CgExport size={24} /> {/* Ícono negro de tamaño 24 */}
       </div>
-
       {/* Menú desplegable */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
