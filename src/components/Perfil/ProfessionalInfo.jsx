@@ -33,6 +33,26 @@ const ProfessionalInfo = () => {
 
   const saveChanges = () => setIsEditing(false);
 
+  // Verificar si hay algo que guardar en la sección activa
+  const hasChanges = () => {
+    switch (activeSection) {
+      case "summary":
+        return summary.trim() !== ""; // Hay cambios si el resumen no está vacío
+      case "experience":
+        return experiences.length > 0; // Hay cambios si hay experiencias
+      case "education":
+        return educations.length > 0; // Hay cambios si hay educación
+      case "skills":
+        return skills.length > 0; // Hay cambios si hay habilidades
+      case "languages":
+        return languages.length > 0; // Hay cambios si hay idiomas
+      case "certifications":
+        return certifications.length > 0; // Hay cambios si hay certificaciones
+      default:
+        return false;
+    }
+  };
+
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
       <h1 className="text-xl font-bold mb-4">Información profesional</h1>
@@ -114,43 +134,24 @@ const ProfessionalInfo = () => {
             <BsPencilSquare size={16} /> {/* Ícono de lápiz */}
             Editar
           </button>
-          {/* Botón Eliminar */}
-          <button
-            onClick={() => {
-              if (window.confirm("¿Estás seguro de que deseas eliminar esta sección?")) {
-                switch (activeSection) {
-                  case "summary":
-                    setSummary("");
-                    break;
-                  case "experience":
-                    setExperiences([]);
-                    break;
-                  case "education":
-                    setEducations([]);
-                    break;
-                  case "skills":
-                    setSkills([]);
-                    break;
-                  case "languages":
-                    setLanguages([]);
-                    break;
-                  case "certifications":
-                    setCertifications([]);
-                    break;
-                  default:
-                    break;
+          {/* Botón Eliminar (Solo visible para Resumen Profesional si hay contenido) */}
+          {activeSection === "summary" && summary.trim() !== "" && (
+            <button
+              onClick={() => {
+                if (window.confirm("¿Estás seguro de que deseas eliminar el resumen profesional?")) {
+                  setSummary("");
                 }
-              }
-            }}
-            className="flex items-center gap-1 text-red-500 hover:underline"
-          >
-            <BsTrash size={16} /> {/* Ícono de basura */}
-            Eliminar
-          </button>
+              }}
+              className="flex items-center gap-1 text-red-500 hover:underline"
+            >
+              <BsTrash size={16} /> {/* Ícono de basura */}
+              Eliminar
+            </button>
+          )}
         </div>
       )}
       {/* Botones Aceptar y Cancelar */}
-      {isEditing && (
+      {isEditing && hasChanges() && (
         <div className="flex justify-start space-x-2 mt-4">
           {/* Botón Aceptar */}
           <button
