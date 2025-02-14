@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PhoneInput from "./PhoneInput";
 import { MdClose } from "react-icons/md"; // Importamos el ícono de cruz
+import { provincesAndMunicipalities } from "./data";// Importamos los datos de provincias y municipios
 
 const EditInfoModal = ({
   isOpen,
@@ -16,16 +17,28 @@ const EditInfoModal = ({
   // Estado local para la copia temporal de los datos
   const [tempInfo, setTempInfo] = useState(info);
 
+  // Estado para almacenar los municipios disponibles según la provincia seleccionada
+  const [availableMunicipalities, setAvailableMunicipalities] = useState([]);
+
   // Actualizar la copia temporal cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
       setTempInfo(info); // Inicializar la copia temporal con los datos actuales
+      // Cargar los municipios iniciales basados en la provincia actual
+      const initialProvince = info.provincia || Object.keys(provincesAndMunicipalities)[0];
+      setAvailableMunicipalities(provincesAndMunicipalities[initialProvince]);
     }
   }, [isOpen, info]);
 
   // Función para manejar cambios en los campos del formulario
   const handleInputChange = (field, value) => {
     setTempInfo((prevInfo) => ({ ...prevInfo, [field]: value }));
+
+    // Si el campo es "provincia", actualizar los municipios disponibles
+    if (field === "provincia") {
+      setAvailableMunicipalities(provincesAndMunicipalities[value]);
+      setTempInfo((prevInfo) => ({ ...prevInfo, municipio: "" })); // Limpiar el municipio seleccionado
+    }
   };
 
   // Función para agregar un nuevo teléfono
@@ -47,12 +60,46 @@ const EditInfoModal = ({
     });
   };
 
+  // Validación del nombre completo
+  const validateFullName = (name) => {
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; // Solo letras y espacios
+    return nameRegex.test(name);
+  };
+
+  // Validación del teléfono
+  const validatePhone = (phone) => {
+    const phoneRegex = /^\+53\d{6,8}$/; // Debe empezar con +53 y tener 6-8 dígitos
+    return phoneRegex.test(phone);
+  };
+
+  // Validación del correo electrónico
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Formato básico de correo
+    return emailRegex.test(email);
+  };
+
   // Función para guardar los cambios
   const handleSave = () => {
-    if (!tempInfo.nombre) {
-      alert("El campo 'Nombre completo' es obligatorio.");
+    // Validación del nombre completo
+    if (!tempInfo.nombre || !validateFullName(tempInfo.nombre)) {
+      alert("El campo 'Nombre completo' es obligatorio y no puede contener números ni caracteres especiales.");
       return;
     }
+
+    // Validación de los teléfonos
+    const invalidPhones = tempInfo.telefono.some((phone) => phone && !validatePhone(phone));
+    if (invalidPhones) {
+      alert("Los teléfonos deben comenzar con '+53' y tener entre 6 y 8 dígitos.");
+      return;
+    }
+
+    //Validación del correo
+    if (!validateEmail(tempInfo.correo)) {
+      alert("El correo electrónico no tiene un formato válido.");
+      return;
+    }
+
+    // Si pasa todas las validaciones, guardar los cambios
     onSaveChanges(tempInfo); // Actualizar el estado global con los datos temporales
     onClose(); // Cerrar el modal
   };
@@ -104,10 +151,12 @@ const EditInfoModal = ({
               onChange={(e) => handleInputChange("provincia", e.target.value)}
               className="w-full p-2 border rounded"
             >
-              <option value="La Habana">La Habana</option>
-              <option value="Matanzas">Matanzas</option>
-              <option value="Villa Clara">Villa Clara</option>
-              <option value="Cienfuegos">Cienfuegos</option>
+              <option value="">Prefiero no decirlo</option> {/* Nueva opción */}
+              {Object.keys(provincesAndMunicipalities).map((province) => (
+                <option key={province} value={province}>
+                  {province}
+                </option>
+              ))}
             </select>
           </div>
           {/* Campo de municipio */}
@@ -118,10 +167,16 @@ const EditInfoModal = ({
               onChange={(e) => handleInputChange("municipio", e.target.value)}
               className="w-full p-2 border rounded"
             >
-              <option value="Plaza">Plaza</option>
-              <option value="Centro Habana">Centro Habana</option>
-              <option value="Vedado">Vedado</option>
-              <option value="Marianao">Marianao</option>
+              {/* Opción "Prefiero no decirlo" siempre visible */}
+              <option value="">Prefiero no decirlo</option>
+
+              {/* Opciones de municipios según la provincia seleccionada */}
+              {tempInfo.provincia &&
+                availableMunicipalities.map((municipality) => (
+                  <option key={municipality} value={municipality}>
+                    {municipality}
+                  </option>
+                ))}
             </select>
           </div>
           {/* Campos de teléfono */}
