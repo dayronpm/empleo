@@ -46,7 +46,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
             {/* Botón Eliminar */}
             <button
               onClick={() => onDelete(item.id)}
-              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition-colors"
+              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors"
             >
               <BsTrash size={16} /> {/* Ícono de basura */}
               Eliminar
@@ -59,7 +59,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
       {isEditing && (
         <button
           onClick={onAdd}
-          className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+          className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors"
         >
           <BsPlus size={16} /> {/* Ícono de agregar */}
           Agregar
