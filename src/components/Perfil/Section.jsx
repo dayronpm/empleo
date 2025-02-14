@@ -1,74 +1,68 @@
 import React from "react";
+import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs"; // Importamos íconos
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {
   return (
-    <div className="mt-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {items.length === 0 && !isEditing && <p>No hay elementos registrados.</p>}
-      {items.map((item) => (
-        <div key={item.id} className="mt-2">
-          {fields.map((field) => {
-            if (isEditing) {
-              if (field.type === "textarea") {
-                return (
+    <div>
+      {/* Título de la Sección */}
+      <h2 className="text-xl font-bold mt-6 mb-4">{title}</h2>
+
+      {/* Si no hay registros */}
+      {items.length === 0 ? (
+        <p className="text-gray-500">No hay registros para esta sección.</p>
+      ) : (
+        items.map((item) => (
+          <div key={item.id} className="border p-4 mb-4 rounded bg-white shadow-sm">
+            {/* Campos Dinámicos */}
+            {fields.map(({ label, key, type, placeholder }) => (
+              <div key={key} className="mb-4">
+                {/* Label */}
+                <label htmlFor={`${key}-${item.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                  {label}
+                </label>
+                {/* Campo de Entrada */}
+                {type === "textarea" ? (
                   <textarea
-                    key={field.key}
-                    value={item[field.key]}
-                    onChange={(e) => onEdit(item.id, field.key, e.target.value)}
-                    className="w-full p-2 border rounded resize-none h-20"
+                    id={`${key}-${item.id}`}
+                    name={key}
+                    placeholder={placeholder || ""}
+                    value={item[key]}
+                    onChange={(e) => onEdit(item.id, key, e.target.value)}
+                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                );
-              } else if (field.type === "select") {
-                return (
-                  <select
-                    key={field.key}
-                    value={item[field.key]}
-                    onChange={(e) => onEdit(item.id, field.key, e.target.value)}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option>{`Selecciona ${field.label.toLowerCase()}`}</option>
-                    {field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                );
-              } else {
-                return (
+                ) : (
                   <input
-                    key={field.key}
+                    id={`${key}-${item.id}`}
                     type="text"
-                    value={item[field.key]}
-                    onChange={(e) => onEdit(item.id, field.key, e.target.value)}
-                    className="w-full p-2 border rounded"
+                    name={key}
+                    placeholder={placeholder || ""}
+                    value={item[key]}
+                    onChange={(e) => onEdit(item.id, key, e.target.value)}
+                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                );
-              }
-            } else {
-              return (
-                <p key={field.key}>
-                  {field.label}: {item[field.key] || "N/A"}
-                </p>
-              );
-            }
-          })}
-          {isEditing && (
+                )}
+              </div>
+            ))}
+            {/* Botón Eliminar */}
             <button
               onClick={() => onDelete(item.id)}
-              className="text-red-500 hover:underline mt-2"
+              className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-red-500 rounded hover:bg-red-600 transition-colors"
             >
+              <BsTrash size={16} /> {/* Ícono de basura */}
               Eliminar
             </button>
-          )}
-        </div>
-      ))}
+          </div>
+        ))
+      )}
+
+      {/* Botón Agregar */}
       {isEditing && (
         <button
           onClick={onAdd}
-          className="text-blue-500 hover:underline mt-4 block"
+          className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
         >
-          + Agregar {title.toLowerCase()}
+          <BsPlus size={16} /> {/* Ícono de agregar */}
+          Agregar
         </button>
       )}
     </div>
