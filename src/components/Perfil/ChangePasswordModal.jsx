@@ -25,10 +25,8 @@ const ChangePasswordModal = ({
         >
           <MdClose size={24} /> {/* Ícono de cruz de React Icons */}
         </button>
-
         {/* Título del modal */}
         <h2 className="text-xl font-bold mb-4">Cambiar contraseña</h2>
-
         {/* Campo de contraseña actual */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Contraseña actual</label>
@@ -40,7 +38,6 @@ const ChangePasswordModal = ({
             placeholder="Ingrese su contraseña actual"
           />
         </div>
-
         {/* Campo de nueva contraseña */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Nueva contraseña</label>
@@ -52,7 +49,6 @@ const ChangePasswordModal = ({
             placeholder="Ingrese su nueva contraseña"
           />
         </div>
-
         {/* Campo de confirmar nueva contraseña */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Confirmar nueva contraseña</label>
@@ -64,7 +60,6 @@ const ChangePasswordModal = ({
             placeholder="Confirme su nueva contraseña"
           />
         </div>
-
         {/* Botones de acción */}
         <div className="flex justify-end gap-2">
           <button

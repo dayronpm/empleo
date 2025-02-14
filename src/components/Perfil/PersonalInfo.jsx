@@ -23,11 +23,15 @@ const PersonalInfo = () => {
     handleSavePassword,
   } = usePersonalInfo();
 
+  // Estados para las contraseñas
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   return (
-    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6"> {/* Fondo ligeramente más oscuro */}
+    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
       {/* Título */}
       <h2 className="text-xl font-bold mb-4 text-gray-800">Información personal</h2>
-
       {/* Contenido principal */}
       <div className="flex flex-wrap gap-8">
         {/* Nombre completo */}
@@ -35,27 +39,22 @@ const PersonalInfo = () => {
           <strong className="text-gray-700">Nombre completo:</strong>
           <span>{info.nombre}</span>
         </div>
-
         {/* Nombre de usuario */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Nombre de usuario:</strong>
           <span>{info.username}</span>
         </div>
-
         {/* Provincia */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Provincia:</strong>
           <span>{info.provincia}</span>
         </div>
-
         {/* Municipio */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Municipio:</strong>
           <span>{info.municipio}</span>
         </div>
-
         {/* Teléfono */}
-        
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Teléfonos:</strong>
           <div className="flex flex-col">
@@ -64,15 +63,11 @@ const PersonalInfo = () => {
             ))}
           </div>
         </div>
-        
-        
-
         {/* Correo electrónico */}
         <div className="flex items-center gap-2">
           <strong className="text-gray-700">Correo electrónico:</strong>
           <span>{info.correo}</span>
         </div>
-
         {/* Botón para editar información personal */}
         <button
           onClick={openEditModal}
@@ -81,7 +76,6 @@ const PersonalInfo = () => {
           <BsPencilSquare size={16} /> {/* Ícono de lápiz */}
           Editar información
         </button>
-
         {/* Botón para cambiar contraseña */}
         <button
           onClick={() => setIsPasswordModalOpen(true)}
@@ -91,7 +85,6 @@ const PersonalInfo = () => {
           Cambiar contraseña
         </button>
       </div>
-
       {/* Modal para editar información personal */}
       <EditInfoModal
         isOpen={isEditModalOpen}
@@ -102,17 +95,16 @@ const PersonalInfo = () => {
         addPhone={addPhone}
         removePhone={removePhone}
       />
-
       {/* Modal para cambiar contraseña */}
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        currentPassword={""}
-        newPassword={""}
-        confirmPassword={""}
-        onCurrentPasswordChange={() => {}}
-        onNewPasswordChange={() => {}}
-        onConfirmPasswordChange={() => {}}
+        currentPassword={currentPassword}
+        newPassword={newPassword}
+        confirmPassword={confirmPassword}
+        onCurrentPasswordChange={setCurrentPassword}
+        onNewPasswordChange={setNewPassword}
+        onConfirmPasswordChange={setConfirmPassword}
         onSave={handleSavePassword}
       />
     </div>
