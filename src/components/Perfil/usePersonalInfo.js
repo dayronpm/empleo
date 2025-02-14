@@ -49,7 +49,6 @@ const usePersonalInfo = () => {
   //Actualizar datos del usuario
   const updateUserData = async (id, info) => {
     try {
-        alert("Actualizando información.");
         const response = await fetch(`${API_URL}/updateusuario`, {
             method: 'POST',
             headers: {
@@ -103,8 +102,6 @@ const updateUserPassword = async (newPassword) => {
   // Estado para manejar el modal de edición de contraseña
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  
-
   // Función para abrir el modal de edición de información
   const openEditModal = () => {
     setIsEditModalOpen(true);
@@ -137,14 +134,20 @@ const updateUserPassword = async (newPassword) => {
   };
 
   // Función para guardar los cambios de información personal
-  const handleSaveChanges = () => {
-    // Validación: Asegúrate de que todos los campos estén completos
-    if (!info.nombre || !info.username || !info.provincia || !info.municipio || !info.correo) {
-      alert("Todos los campos son obligatorios.");
-      return;
+  const handleSaveChanges = (updatedInfo) => {
+    // Validación: Asegúrate de que el campo "nombre" esté completo
+    if (!updatedInfo.nombre) {
+      alert("El campo 'Nombre completo' es obligatorio.");
+      return; // Detener la ejecución si el campo está vacío
     }
 
-    updateUserData(id, info);
+    // Actualizar el estado global con los datos confirmados
+    setInfo(updatedInfo);
+
+    // Llamar a la función para actualizar los datos en el servidor
+    updateUserData(id, updatedInfo);
+
+    // Cerrar el modal
     closeEditModal();
   };
 
@@ -169,7 +172,7 @@ const updateUserPassword = async (newPassword) => {
       return;
     }
 
-    // Simulación de guardado exitoso
+    // Cambio de contraseña
     updateUserPassword(newPassword);
 
     setIsPasswordModalOpen(false); // Cierra el modal
