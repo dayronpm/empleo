@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
 
-
 const usePersonalInfo = () => {
   // Estado inicial de la información personal
   const [info, setInfo] = useState({
@@ -10,9 +9,15 @@ const usePersonalInfo = () => {
     telefono : [""],
 
   });
+
   const telefono = [""];
   // Obtiene el ID del usuario almacenado en localStorage.
   const id = localStorage.getItem('id');
+
+  // Estado para manejar los campos de cambio de contraseña
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   //Cargar datos del usuario
   const fetchUserData = async () => {
@@ -44,8 +49,6 @@ const usePersonalInfo = () => {
   //Actualizar datos del usuario
   const updateUserData = async (id, info) => {
     try {
-        alert(id);
-        console.log(info.telefono);
         alert("Actualizando información.");
         const response = await fetch(`${API_URL}/updateusuario`, {
             method: 'POST',
@@ -71,16 +74,36 @@ const usePersonalInfo = () => {
       fetchUserData();
   }, []);
 
+//Actualizar contraseña del usuario
+const updateUserPassword = async (newPassword) => {
+  try {
+      alert("Actualizando información.");
+      const response = await fetch(`${API_URL}/updatePassword`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id, newPassword }), // Send user ID in the body
+      });
+      if (!response.ok) {
+          throw new Error('Error al actualizar la información del usuario');
+      }
+      else{
+        // Simulación de guardado exitoso
+        alert("Contraseña actualizada exitosamente.");
+      }
+  } catch (error) {
+      console.error(error);
+  }
+};
+
   // Estado para manejar el modal de edición de información
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Estado para manejar el modal de edición de contraseña
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  // Estado para manejar los campos de cambio de contraseña
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  
 
   // Función para abrir el modal de edición de información
   const openEditModal = () => {
@@ -140,14 +163,15 @@ const usePersonalInfo = () => {
     }
 
     // Simulación de validación de la contraseña actual
-    const storedPassword = "oldpassword123"; // Contraseña almacenada (simulada)
+    const storedPassword = localStorage.getItem('password'); // Contraseña almacenada (simulada)
     if (currentPassword !== storedPassword) {
       alert("La contraseña actual es incorrecta.");
       return;
     }
 
     // Simulación de guardado exitoso
-    alert("Contraseña actualizada exitosamente.");
+    updateUserPassword(newPassword);
+
     setIsPasswordModalOpen(false); // Cierra el modal
     setCurrentPassword(""); // Limpia los campos
     setNewPassword("");

@@ -21,12 +21,15 @@ const PersonalInfo = () => {
     removePhone,
     handleSaveChanges,
     handleSavePassword,
+    currentPassword,
+    newPassword,
+    confirmPassword,
+    setCurrentPassword,
+    setNewPassword,
+    setConfirmPassword
   } = usePersonalInfo();
 
-  // Estados para las contraseñas
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  
 
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
