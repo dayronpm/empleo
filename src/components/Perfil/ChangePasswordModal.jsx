@@ -1,4 +1,5 @@
 import React from "react";
+import { MdClose } from "react-icons/md"; // Importamos el ícono de cruz
 
 const ChangePasswordModal = ({
   isOpen,
@@ -15,7 +16,16 @@ const ChangePasswordModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-[400px] max-w-full">
+      {/* Contenedor del modal */}
+      <div className="bg-white p-6 rounded-lg w-[400px] max-w-full relative">
+        {/* Botón de cierre con ícono de React */}
+        <button
+          onClick={onClose} // Cerrar el modal al hacer clic en el ícono
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          <MdClose size={24} /> {/* Ícono de cruz de React Icons */}
+        </button>
+
         {/* Título del modal */}
         <h2 className="text-xl font-bold mb-4">Cambiar contraseña</h2>
 

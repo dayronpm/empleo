@@ -2,246 +2,326 @@ import React, { useState } from "react";
 
 const ProfessionalInfo = () => {
   // Estados para manejar la información profesional
+  const [activeSection, setActiveSection] = useState("summary");
+  const [isEditing, setIsEditing] = useState(false); // Controla si está en modo edición
+  const [summary, setSummary] = useState("");
   const [experiences, setExperiences] = useState([]);
   const [educations, setEducations] = useState([]);
   const [skills, setSkills] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [certifications, setCertifications] = useState([]);
 
-  // Función para agregar nueva experiencia laboral
-  const addExperience = () => {
-    setExperiences([
-      ...experiences,
-      { id: Date.now(), company: "", position: "", period: "", description: "" },
-    ]);
+  // Función genérica para agregar un nuevo elemento
+  const addItem = (state, setState, newItem) => {
+    setState([...state, { id: Date.now(), ...newItem }]);
   };
 
-  // Función para editar experiencia laboral
-  const editExperience = (id, field, value) => {
-    setExperiences(
-      experiences.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
+  // Función genérica para editar un elemento
+  const editItem = (state, setState, id, field, value) => {
+    setState(
+      state.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
       )
     );
   };
 
-  // Función para eliminar experiencia laboral
-  const deleteExperience = (id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta experiencia?")) {
-      setExperiences(experiences.filter((exp) => exp.id !== id));
+  // Función genérica para eliminar un elemento
+  const deleteItem = (state, setState, id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
+      setState(state.filter((item) => item.id !== id));
     }
   };
 
-  // Similar para educación, habilidades, idiomas y certificaciones...
+  // Función para guardar cambios
+  const saveChanges = () => {
+    setIsEditing(false);
+  };
+
+  // Función para cancelar cambios
+  const cancelChanges = () => {
+    setIsEditing(false);
+    // Aquí podrías restaurar los valores originales si es necesario
+  };
 
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
-      <h2 className="text-xl font-bold mb-4">Información profesional</h2>
+      Información profesional
+      {/* Dropdown para seleccionar la sección */}
+      <select
+        value={activeSection}
+        onChange={(e) => setActiveSection(e.target.value)}
+        className="p-2 border rounded bg-white"
+      >
+        <option value="summary">Resumen Profesional</option>
+        <option value="experience">Experiencia Laboral</option>
+        <option value="education">Educación</option>
+        <option value="skills">Habilidades</option>
+        <option value="languages">Idiomas</option>
+        <option value="certifications">Certificaciones</option>
+      </select>
 
-      {/* Experiencia laboral */}
-      <div className="space-y-4">
-        <h3 className="font-semibold">Experiencia laboral</h3>
-        {experiences.length === 0 && (
-          <p className="text-gray-500">No hay experiencias laborales registradas.</p>
-        )}
-        {experiences.map((exp) => (
-          <div key={exp.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Empresa"
-              value={exp.company}
-              onChange={(e) => editExperience(exp.id, "company", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Puesto"
-              value={exp.position}
-              onChange={(e) => editExperience(exp.id, "position", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Período"
-              value={exp.period}
-              onChange={(e) => editExperience(exp.id, "period", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <textarea
-              placeholder="Descripción"
-              value={exp.description}
-              onChange={(e) => editExperience(exp.id, "description", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={() => deleteExperience(exp.id)}
-                className="text-red-500 hover:underline"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* Botón de edición */}
+      {!isEditing && (
         <button
-          onClick={addExperience}
-          className="text-blue-500 hover:underline"
+          onClick={() => setIsEditing(true)}
+          className="text-blue-500 hover:underline mb-4 block"
         >
-          + Agregar experiencia
+          Editar
         </button>
-      </div>
+      )}
 
-      {/* Educación */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Educación</h3>
-        {educations.length === 0 && (
-          <p className="text-gray-500">No hay estudios registrados.</p>
-        )}
-        {educations.map((edu) => (
-          <div key={edu.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Institución"
-              value={edu.institution}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
+      {/* Renderizar la sección activa */}
+      {activeSection === "summary" && (
+        <div>
+          Resumen Profesional
+          {isEditing ? (
+            <textarea
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              className="w-full p-2 border rounded resize-none h-24"
             />
-            <input
-              type="text"
-              placeholder="Título"
-              value={edu.title}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Período"
-              value={edu.period}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar estudio</button>
-      </div>
+          ) : (
+            <p>{summary || "No hay resumen registrado."}</p>
+          )}
+        </div>
+      )}
+      {activeSection === "experience" && (
+        <Section
+          title="Experiencia Laboral"
+          items={experiences}
+          onAdd={() =>
+            addItem(experiences, setExperiences, {
+              company: "",
+              position: "",
+              period: "",
+              description: "",
+            })
+          }
+          onEdit={(id, field, value) =>
+            editItem(experiences, setExperiences, id, field, value)
+          }
+          onDelete={(id) => deleteItem(experiences, setExperiences, id)}
+          fields={[
+            { label: "Empresa", key: "company" },
+            { label: "Puesto", key: "position" },
+            { label: "Período", key: "period" },
+            { label: "Descripción", key: "description", type: "textarea" },
+          ]}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "education" && (
+        <Section
+          title="Educación"
+          items={educations}
+          onAdd={() =>
+            addItem(educations, setEducations, {
+              institution: "",
+              degree: "",
+              period: "",
+              details: "",
+            })
+          }
+          onEdit={(id, field, value) =>
+            editItem(educations, setEducations, id, field, value)
+          }
+          onDelete={(id) => deleteItem(educations, setEducations, id)}
+          fields={[
+            { label: "Institución", key: "institution" },
+            { label: "Título", key: "degree" },
+            { label: "Período", key: "period" },
+            { label: "Detalles adicionales", key: "details", type: "textarea" },
+          ]}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "skills" && (
+        <Section
+          title="Habilidades"
+          items={skills}
+          onAdd={() =>
+            addItem(skills, setSkills, {
+              name: "",
+              level: "",
+            })
+          }
+          onEdit={(id, field, value) =>
+            editItem(skills, setSkills, id, field, value)
+          }
+          onDelete={(id) => deleteItem(skills, setSkills, id)}
+          fields={[
+            { label: "Nombre de la habilidad", key: "name" },
+            {
+              label: "Nivel",
+              key: "level",
+              type: "select",
+              options: ["Básico", "Intermedio", "Avanzado"],
+            },
+          ]}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "languages" && (
+        <Section
+          title="Idiomas"
+          items={languages}
+          onAdd={() =>
+            addItem(languages, setLanguages, {
+              language: "",
+              spokenLevel: "",
+              writtenLevel: "",
+            })
+          }
+          onEdit={(id, field, value) =>
+            editItem(languages, setLanguages, id, field, value)
+          }
+          onDelete={(id) => deleteItem(languages, setLanguages, id)}
+          fields={[
+            { label: "Idioma", key: "language" },
+            {
+              label: "Nivel hablado",
+              key: "spokenLevel",
+              type: "select",
+              options: ["Básico", "Intermedio", "Avanzado", "Nativo"],
+            },
+            {
+              label: "Nivel escrito",
+              key: "writtenLevel",
+              type: "select",
+              options: ["Básico", "Intermedio", "Avanzado", "Nativo"],
+            },
+          ]}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "certifications" && (
+        <Section
+          title="Certificaciones"
+          items={certifications}
+          onAdd={() =>
+            addItem(certifications, setCertifications, {
+              name: "",
+              institution: "",
+              year: "",
+            })
+          }
+          onEdit={(id, field, value) =>
+            editItem(certifications, setCertifications, id, field, value)
+          }
+          onDelete={(id) => deleteItem(certifications, setCertifications, id)}
+          fields={[
+            { label: "Nombre de la certificación", key: "name" },
+            { label: "Institución", key: "institution" },
+            { label: "Año", key: "year" },
+          ]}
+          isEditing={isEditing}
+        />
+      )}
 
-      {/* Habilidades */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Habilidades</h3>
-        {skills.length === 0 && (
-          <p className="text-gray-500">No hay habilidades registradas.</p>
-        )}
-        {skills.map((skill) => (
-          <div key={skill.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Nombre de la habilidad"
-              value={skill.name}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <select
-              value={skill.level}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
+      {/* Botones Aceptar y Cancelar al final */}
+      {isEditing && (
+        <div className="flex justify-end space-x-2 mt-4">
+          <button
+            onClick={saveChanges}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Aceptar
+          </button>
+          <button
+            onClick={cancelChanges}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Componente reutilizable para cada sección
+const Section = ({
+  title,
+  items,
+  onAdd,
+  onEdit,
+  onDelete,
+  fields,
+  isEditing,
+}) => {
+  return (
+    <div>
+      <h2>{title}</h2>
+      {items.length === 0 && !isEditing && <p>No hay elementos registrados.</p>}
+      {items.map((item) => (
+        <div key={item.id}>
+          {fields.map((field) => {
+            if (isEditing) {
+              if (field.type === "textarea") {
+                return (
+                  <textarea
+                    key={field.key}
+                    value={item[field.key]}
+                    onChange={(e) =>
+                      onEdit(item.id, field.key, e.target.value)
+                    }
+                    className="w-full p-2 mb-2 border rounded resize-none h-20"
+                  />
+                );
+              } else if (field.type === "select") {
+                return (
+                  <select
+                    key={field.key}
+                    value={item[field.key]}
+                    onChange={(e) =>
+                      onEdit(item.id, field.key, e.target.value)
+                    }
+                    className="w-full p-2 mb-2 border rounded"
+                  >
+                    <option>{`Selecciona ${field.label.toLowerCase()}`}</option>
+                    {field.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                );
+              } else {
+                return (
+                  <input
+                    key={field.key}
+                    type="text"
+                    value={item[field.key]}
+                    onChange={(e) =>
+                      onEdit(item.id, field.key, e.target.value)
+                    }
+                    className="w-full p-2 mb-2 border rounded"
+                  />
+                );
+              }
+            } else {
+              return (
+                <p key={field.key}>
+                  {field.label}: {item[field.key] || "N/A"}
+                </p>
+              );
+            }
+          })}
+          {isEditing && (
+            <button
+              onClick={() => onDelete(item.id)}
+              className="text-red-500 hover:underline"
             >
-              <option value="">Selecciona un nivel</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-            </select>
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar habilidad</button>
-      </div>
-
-      {/* Idiomas */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Idiomas</h3>
-        {languages.length === 0 && (
-          <p className="text-gray-500">No hay idiomas registrados.</p>
-        )}
-        {languages.map((lang) => (
-          <div key={lang.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Idioma"
-              value={lang.language}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <select
-              value={lang.spokenLevel}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            >
-              <option value="">Nivel hablado</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-              <option value="Nativo">Nativo</option>
-            </select>
-            <select
-              value={lang.writtenLevel}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            >
-              <option value="">Nivel escrito</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-              <option value="Nativo">Nativo</option>
-            </select>
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar idioma</button>
-      </div>
-
-      {/* Certificaciones */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Certificaciones</h3>
-        {certifications.length === 0 && (
-          <p className="text-gray-500">No hay certificaciones registradas.</p>
-        )}
-        {certifications.map((cert) => (
-          <div key={cert.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Nombre de la certificación"
-              value={cert.name}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Institución"
-              value={cert.institution}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Año"
-              value={cert.year}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar certificación</button>
-      </div>
+              Eliminar
+            </button>
+          )}
+        </div>
+      ))}
+      {isEditing && (
+        <button onClick={onAdd} className="text-blue-500 hover:underline">
+          + Agregar {title.toLowerCase()}
+        </button>
+      )}
     </div>
   );
 };
