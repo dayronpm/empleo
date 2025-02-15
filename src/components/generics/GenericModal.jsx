@@ -15,7 +15,6 @@ const GenericModal = ({
 }) => {
   const [formData, setFormData] = useState(initialValues || {});
   const [errors, setErrors] = useState({});
-  var res = 0;
 
   // Inicializar el estado cuando se abre el modal
   useEffect(() => {
@@ -63,10 +62,7 @@ const GenericModal = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      res = onSubmit(formData); // Llama al manejador de envío
-      if (res){
-        onclose();
-      }
+      onSubmit(formData); // Llama al manejador de envío
     } else {
       // No cerrar el modal si hay errores
     }
