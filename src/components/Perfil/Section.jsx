@@ -1,12 +1,13 @@
 import React from "react";
 import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs"; // Importamos íconos
+import DatePicker from "react-datepicker"; // Importamos el componente de calendario
+import "react-datepicker/dist/react-datepicker.css"; // Importamos los estilos del calendario
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {
   return (
     <div>
       {/* Título de la Sección */}
       <h2 className="text-xl font-bold mt-6 mb-4">{title}</h2>
-
       {/* Si no hay registros */}
       {items.length === 0 ? (
         <p className="text-gray-500">No hay registros para esta sección.</p>
@@ -14,14 +15,17 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
         items.map((item) => (
           <div key={item.id} className="border p-4 mb-4 rounded bg-white shadow-sm">
             {/* Campos Dinámicos */}
-            {fields.map(({ label, key, type, placeholder }) => (
+            {fields.map(({ label, key, type, placeholder, customInput }) => (
               <div key={key} className="mb-4">
                 {/* Label */}
                 <label htmlFor={`${key}-${item.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                   {label}
                 </label>
                 {/* Campo de Entrada */}
-                {type === "textarea" ? (
+                {customInput ? (
+                  // Si es un campo personalizado (por ejemplo, DatePicker)
+                  customInput(item[key], (value) => onEdit(item.id, key, value))
+                ) : type === "textarea" ? (
                   <textarea
                     id={`${key}-${item.id}`}
                     name={key}
@@ -54,7 +58,6 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
           </div>
         ))
       )}
-
       {/* Botón Agregar */}
       {isEditing && (
         <button

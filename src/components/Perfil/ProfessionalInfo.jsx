@@ -6,6 +6,7 @@ import EducationSection from "./EducationSection";
 import SkillsSection from "./SkillsSection";
 import LanguagesSection from "./LanguagesSection";
 import CertificationsSection from "./CertificationsSection";
+import ConfirmationModal from "./ConfirmationModal"; // Importamos el modal
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -16,6 +17,16 @@ const ProfessionalInfo = () => {
   const [skills, setSkills] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [certifications, setCertifications] = useState([]);
+  const [originalState, setOriginalState] = useState({
+    summary: "",
+    experiences: [],
+    educations: [],
+    skills: [],
+    languages: [],
+    certifications: [],
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
+  const [deleteAction, setDeleteAction] = useState(null); // Acción a realizar al confirmar
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
@@ -26,35 +37,76 @@ const ProfessionalInfo = () => {
   };
 
   const deleteItem = (state, setState, id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este elemento?")) {
-      setState(state.filter((item) => item.id !== id));
-    }
+    setState(state.filter((item) => item.id !== id));
   };
 
-  const saveChanges = () => setIsEditing(false);
+  const startEditing = () => {
+    setOriginalState({
+      summary,
+      experiences,
+      educations,
+      skills,
+      languages,
+      certifications,
+    });
+    setIsEditing(true);
+  };
 
-  // Verificar si hay algo que guardar en la sección activa
+  const saveChanges = () => {
+    setIsEditing(false); // Cambiar a modo de solo lectura
+  };
+
+  const cancelChanges = () => {
+    setSummary(originalState.summary);
+    setExperiences(originalState.experiences);
+    setEducations(originalState.educations);
+    setSkills(originalState.skills);
+    setLanguages(originalState.languages);
+    setCertifications(originalState.certifications);
+    setIsEditing(false); // Cambiar a modo de solo lectura
+  };
+
   const hasChanges = () => {
     switch (activeSection) {
       case "summary":
-        return summary.trim() !== ""; // Hay cambios si el resumen no está vacío
+        return summary.trim() !== "";
       case "experience":
-        return experiences.length > 0; // Hay cambios si hay experiencias
+        return experiences.length > 0;
       case "education":
-        return educations.length > 0; // Hay cambios si hay educación
+        return educations.length > 0;
       case "skills":
-        return skills.length > 0; // Hay cambios si hay habilidades
+        return skills.length > 0;
       case "languages":
-        return languages.length > 0; // Hay cambios si hay idiomas
+        return languages.length > 0;
       case "certifications":
-        return certifications.length > 0; // Hay cambios si hay certificaciones
+        return certifications.length > 0;
       default:
         return false;
     }
   };
 
+  // Función para abrir el modal
+  const openModal = (action) => {
+    setDeleteAction(action);
+    setIsModalOpen(true);
+  };
+
+  // Función para cerrar el modal
+  const closeModal = () => {
+    setDeleteAction(null);
+    setIsModalOpen(false);
+  };
+
+  // Función para confirmar la eliminación
+  const confirmDelete = () => {
+    if (deleteAction) {
+      deleteAction();
+    }
+    closeModal();
+  };
+
   return (
-    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
+    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
       <h1 className="text-xl font-bold mb-4">Información profesional</h1>
       {/* Dropdown para seleccionar la sección */}
       <select
@@ -128,7 +180,7 @@ const ProfessionalInfo = () => {
         <div className="flex gap-4 mt-4">
           {/* Botón Editar */}
           <button
-            onClick={() => setIsEditing(true)}
+            onClick={startEditing}
             className="flex items-center gap-1 text-blue-500 hover:underline"
           >
             <BsPencilSquare size={16} /> {/* Ícono de lápiz */}
@@ -137,11 +189,7 @@ const ProfessionalInfo = () => {
           {/* Botón Eliminar (Solo visible para Resumen Profesional si hay contenido) */}
           {activeSection === "summary" && summary.trim() !== "" && (
             <button
-              onClick={() => {
-                if (window.confirm("¿Estás seguro de que deseas eliminar el resumen profesional?")) {
-                  setSummary("");
-                }
-              }}
+              onClick={() => openModal(() => setSummary(""))}
               className="flex items-center gap-1 text-red-500 hover:underline"
             >
               <BsTrash size={16} /> {/* Ícono de basura */}
@@ -158,17 +206,24 @@ const ProfessionalInfo = () => {
             onClick={saveChanges}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
           >
-            Guardar
+            Aceptar
           </button>
           {/* Botón Cancelar */}
           <button
-            onClick={() => setIsEditing(false)}
+            onClick={cancelChanges}
             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
           >
             Cancelar
           </button>
         </div>
       )}
+      {/* Modal de Confirmación */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        message="¿Estás seguro de que deseas eliminar este elemento?"
+      />
     </div>
   );
 };
