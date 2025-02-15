@@ -22,6 +22,7 @@ const AuthModal = ({ isOpen, onClose, openRegister, handleLoginSuccess }) => {
             localStorage.setItem('username', username); // Guardar nombre de usuario
             localStorage.setItem('tipo', data.tipo); //Guardar tipo de usuario
             localStorage.setItem('id', data.id);
+            localStorage.setItem('password', password); //Guardar contraseña
             console.log('Id:', data.id);
             console.log('Tipo:', data.tipo);
             console.log('Token:', data.token);
