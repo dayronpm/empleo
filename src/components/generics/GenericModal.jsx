@@ -63,7 +63,6 @@ const GenericModal = ({
     e.preventDefault();
     if (validateForm()) {
       onSubmit(formData); // Llama al manejador de envío
-      onClose(); // Cierra el modal solo si la validación pasa
     } else {
       // No cerrar el modal si hay errores
     }

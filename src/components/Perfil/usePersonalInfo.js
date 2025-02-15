@@ -176,7 +176,12 @@ const updateUserPassword = async (newPassword) => {
   
     // Cambio de contraseña
     updateUserPassword(newPassword);
-    setIsPasswordModalOpen(false); // Cierra el modal solo si todo es correcto
+
+    if (newPassword === confirmPassword && currentPassword === storedPassword) {
+      console.log("Cerrando modal porque todas las validaciones pasaron.");
+      localStorage.setItem('password', newPassword);
+      setIsPasswordModalOpen(false);
+    }
     setCurrentPassword(""); // Limpia los campos
     setNewPassword("");
     setConfirmPassword("");
