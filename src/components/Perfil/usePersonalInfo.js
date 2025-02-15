@@ -152,30 +152,31 @@ const updateUserPassword = async (newPassword) => {
   };
 
   // Función para guardar la nueva contraseña
-  const handleSavePassword = () => {
+  const handleSavePassword = (formData) => {
+    const { currentPassword, newPassword, confirmPassword } = formData;
+  
     // Validación: Verificar que todos los campos estén completos
     if (!currentPassword || !newPassword || !confirmPassword) {
       alert("Todos los campos son obligatorios.");
-      return;
+      return; // No cerrar el modal
     }
-
+  
     // Validación: Verificar que las contraseñas coincidan
     if (newPassword !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
-      return;
+      return; // No cerrar el modal
     }
-
+  
     // Simulación de validación de la contraseña actual
     const storedPassword = localStorage.getItem('password'); // Contraseña almacenada (simulada)
     if (currentPassword !== storedPassword) {
       alert("La contraseña actual es incorrecta.");
-      return;
+      return; // No cerrar el modal
     }
-
+  
     // Cambio de contraseña
     updateUserPassword(newPassword);
-
-    setIsPasswordModalOpen(false); // Cierra el modal
+    setIsPasswordModalOpen(false); // Cierra el modal solo si todo es correcto
     setCurrentPassword(""); // Limpia los campos
     setNewPassword("");
     setConfirmPassword("");
