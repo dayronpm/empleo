@@ -10,9 +10,10 @@ const SkillsSection = ({ skills, setSkills, addItem, editItem, deleteItem, isEdi
   const handleInputChange = (value) => {
     setInputValue(value);
     if (value) {
-      const filtered = technicalSkillsList.filter(skill =>
-        skill.toLowerCase().includes(value.toLowerCase())
-      );
+    const filtered = technicalSkillsList.filter(skill =>
+      skill.toLowerCase().startsWith(value.toLowerCase())
+    );
+
       setFilteredSkills(filtered);
     } else {
       setFilteredSkills([]);
