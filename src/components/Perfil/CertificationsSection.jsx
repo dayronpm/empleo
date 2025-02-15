@@ -10,7 +10,7 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
         addItem(certifications, setCertifications, {
           name: "",
           institution: "",
-          year: "",
+          year: "", // Valor inicial vacío
         })
       }
       onEdit={(id, field, value) => editItem(certifications, setCertifications, id, field, value)}
@@ -18,7 +18,7 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
       fields={[
         { label: "Nombre de la certificación", key: "name" },
         { label: "Institución", key: "institution" },
-        { label: "Año", key: "year" },
+        { label: "Año", key: "year", yearSelector: true }, // Habilita el selector de años
       ]}
       isEditing={isEditing}
     />

@@ -142,7 +142,7 @@ const ProfessionalInfo = () => {
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing}
+          isEditing={isEditing} // Permite edición mientras está en modo edición global
         />
       )}
       {activeSection === "skills" && (
@@ -152,7 +152,7 @@ const ProfessionalInfo = () => {
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing}
+          isEditing={isEditing} // Permite edición mientras está en modo edición global
         />
       )}
       {activeSection === "languages" && (
@@ -162,7 +162,7 @@ const ProfessionalInfo = () => {
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing}
+          isEditing={isEditing} // Permite edición mientras está en modo edición global
         />
       )}
       {activeSection === "certifications" && (

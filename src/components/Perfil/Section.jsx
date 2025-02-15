@@ -1,9 +1,11 @@
 import React from "react";
 import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs"; // Importamos íconos
-import DatePicker from "react-datepicker"; // Importamos el componente de calendario
-import "react-datepicker/dist/react-datepicker.css"; // Importamos los estilos del calendario
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {
+  // Generar una lista de años desde 1950 hasta el año actual
+  const currentYear = new Date().getFullYear();
+  const yearsList = Array.from({ length: currentYear - 1949 }, (_, i) => 1950 + i);
+
   return (
     <div>
       {/* Título de la Sección */}
@@ -15,7 +17,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
         items.map((item) => (
           <div key={item.id} className="border p-4 mb-4 rounded bg-white shadow-sm">
             {/* Campos Dinámicos */}
-            {fields.map(({ label, key, type, placeholder, customInput }) => (
+            {fields.map(({ label, key, type, placeholder, customInput, options, yearSelector }) => (
               <div key={key} className="mb-4">
                 {/* Label */}
                 <label htmlFor={`${key}-${item.id}`} className="block text-sm font-medium text-gray-700 mb-1">
@@ -25,6 +27,37 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
                 {customInput ? (
                   // Si es un campo personalizado (por ejemplo, DatePicker)
                   customInput(item[key], (value) => onEdit(item.id, key, value))
+                ) : options ? (
+                  // Si es un dropdown (como para niveles de idioma)
+                  <select
+                    id={`${key}-${item.id}`}
+                    name={key}
+                    value={item[key]}
+                    onChange={(e) => onEdit(item.id, key, e.target.value)}
+                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {options.map((option, index) => (
+                      <option key={index} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : yearSelector ? (
+                  // Si es un selector de años
+                  <select
+                    id={`${key}-${item.id}`}
+                    name={key}
+                    value={item[key]}
+                    onChange={(e) => onEdit(item.id, key, e.target.value)}
+                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Selecciona un año</option>
+                    {yearsList.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
                 ) : type === "textarea" ? (
                   <textarea
                     id={`${key}-${item.id}`}

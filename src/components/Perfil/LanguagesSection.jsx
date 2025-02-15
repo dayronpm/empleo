@@ -18,17 +18,18 @@ const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteIt
       fields={[
         { label: "Idioma", key: "language" },
         {
-          label: "Nivel hablado",
+          label: "Nivel del idioma",
           key: "spokenLevel",
           type: "select",
-          options: ["Básico", "Intermedio", "Avanzado", "Nativo"],
+          options: [ "Below A1",
+            "A1 (Beginner)",
+            "A2 (Elementary)",
+            "B1 (Intermediate)",
+            "B2 (Upper-Intermediate)",
+            "C1 (Advanced)",
+            "C2 (Proficient)",],
         },
-        {
-          label: "Nivel escrito",
-          key: "writtenLevel",
-          type: "select",
-          options: ["Básico", "Intermedio", "Avanzado", "Nativo"],
-        },
+       
       ]}
       isEditing={isEditing}
     />
