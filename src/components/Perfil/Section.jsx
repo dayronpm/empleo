@@ -1,7 +1,26 @@
-import React from "react";
-import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs"; // Importamos íconos
+import React, { useState } from "react";
+import ConfirmationModal from "./ConfirmationModal";
+import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs";
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
+  const openModal = (itemId) => {
+    setItemToDelete(itemId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setItemToDelete(null);
+    setIsModalOpen(false);
+  };
+
+  const confirmDelete = () => {
+    onDelete(itemToDelete);
+    closeModal();
+  };
+
   // Generar una lista de años desde 1950 hasta el año actual
   const currentYear = new Date().getFullYear();
   const yearsList = Array.from({ length: currentYear - 1949 }, (_, i) => 1950 + i);
@@ -25,10 +44,8 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
                 </label>
                 {/* Campo de Entrada */}
                 {customInput ? (
-                  // Si es un campo personalizado (por ejemplo, DatePicker)
                   customInput(item[key], (value) => onEdit(item.id, key, value))
                 ) : options ? (
-                  // Si es un dropdown (como para niveles de idioma)
                   <select
                     id={`${key}-${item.id}`}
                     name={key}
@@ -43,7 +60,6 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
                     ))}
                   </select>
                 ) : yearSelector ? (
-                  // Si es un selector de años
                   <select
                     id={`${key}-${item.id}`}
                     name={key}
@@ -82,10 +98,10 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
             ))}
             {/* Botón Eliminar */}
             <button
-              onClick={() => onDelete(item.id)}
+              onClick={() => openModal(item.id)}
               className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors"
             >
-              <BsTrash size={16} /> {/* Ícono de basura */}
+              <BsTrash size={16} />
               Eliminar
             </button>
           </div>
@@ -97,10 +113,16 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
           onClick={onAdd}
           className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors"
         >
-          <BsPlus size={16} /> {/* Ícono de agregar */}
+          <BsPlus size={16} />
           Agregar
         </button>
       )}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        message="¿Estás seguro de que deseas eliminar este elemento?"
+      />
     </div>
   );
 };

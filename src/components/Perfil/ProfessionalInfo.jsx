@@ -137,7 +137,7 @@ const ProfessionalInfo = () => {
       )}
       {activeSection === "education" && (
         <EducationSection
-          educations={educations}
+          educations={educations}ion 
           setEducations={setEducations}
           addItem={addItem}
           editItem={editItem}

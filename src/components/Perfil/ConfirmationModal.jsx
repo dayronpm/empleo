@@ -12,13 +12,6 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
         <p className="text-sm text-gray-700 mb-6 text-center">{message}</p>
         {/* Botones */}
         <div className="flex justify-center space-x-4">
-          {/* Botón Cancelar */}
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            Cancelar
-          </button>
           {/* Botón Aceptar */}
           <button
             onClick={onConfirm}
@@ -26,6 +19,14 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, message }) => {
           >
             Aceptar
           </button>
+          {/* Botón Cancelar */}
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+          >
+            Cancelar
+          </button>
+
         </div>
       </div>
     </div>
