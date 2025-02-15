@@ -158,20 +158,20 @@ const updateUserPassword = async (newPassword) => {
     // Validación: Verificar que todos los campos estén completos
     if (!currentPassword || !newPassword || !confirmPassword) {
       alert("Todos los campos son obligatorios.");
-      return; // No cerrar el modal
+      return 0; // No cerrar el modal
     }
   
     // Validación: Verificar que las contraseñas coincidan
     if (newPassword !== confirmPassword) {
       alert("Las contraseñas no coinciden.");
-      return; // No cerrar el modal
+      return 0; // No cerrar el modal
     }
   
     // Simulación de validación de la contraseña actual
     const storedPassword = localStorage.getItem('password'); // Contraseña almacenada (simulada)
     if (currentPassword !== storedPassword) {
       alert("La contraseña actual es incorrecta.");
-      return; // No cerrar el modal
+      return 0; // No cerrar el modal
     }
   
     // Cambio de contraseña
@@ -180,7 +180,7 @@ const updateUserPassword = async (newPassword) => {
     if (newPassword === confirmPassword && currentPassword === storedPassword) {
       console.log("Cerrando modal porque todas las validaciones pasaron.");
       localStorage.setItem('password', newPassword);
-      setIsPasswordModalOpen(false);
+      return 1;
     }
     setCurrentPassword(""); // Limpia los campos
     setNewPassword("");
