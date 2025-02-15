@@ -1,4 +1,6 @@
 import React from "react";
+import { languagesList } from "./data";
+
 import Section from "./Section";
 
 const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteItem, isEditing }) => {
@@ -21,12 +23,19 @@ const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteIt
           key: "language",
           customInput: (value, onChange) =>
             isEditing ? (
-              <input
-                type="text"
+              <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 className="w-full p-2 border rounded"
-              />
+              >
+                <option value="">Seleccione un idioma</option>
+                {languagesList.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                ))}
+              </select>
+
             ) : (
               <span>{value || "No especificado"}</span>
             ),
