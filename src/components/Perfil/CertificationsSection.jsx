@@ -25,10 +25,12 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
+              </div>
             ),
         },
         { 
@@ -40,10 +42,12 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+              </div>
             ),
         },
         { 
@@ -55,14 +59,14 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => onChange(Math.max(1900, (value || 2025) - 1))}
+                  onClick={() => onChange(Math.max(1900, (value || new Date().getFullYear()) - 1))}
                   className="px-3 py-1 border rounded hover:bg-gray-100"
                 >
                   -
                 </button>
                 <input
                   type="number"
-                  value={value || 2025}
+                  value={value || new Date().getFullYear()}
                   onChange={(e) => {
                     const year = parseInt(e.target.value);
                     if (!isNaN(year) && year >= 1900 && year <= new Date().getFullYear()) {
@@ -75,14 +79,16 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
                 />
                 <button
                   type="button"
-                  onClick={() => onChange(Math.min(new Date().getFullYear(), (value || 2025) + 1))}
+                  onClick={() => onChange(Math.min(new Date().getFullYear(), (value || new Date().getFullYear()) + 1))}
                   className="px-3 py-1 border rounded hover:bg-gray-100"
                 >
                   +
                 </button>
               </div>
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+              </div>
             ),
         },
       ]}

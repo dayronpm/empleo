@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { BsPencilSquare, BsTrash } from "react-icons/bs"; // Importamos íconos
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import SummarySection from "./SummarySection";
 import ExperienceSection from "./ExperienceSection";
 import EducationSection from "./EducationSection";
 import SkillsSection from "./SkillsSection";
 import LanguagesSection from "./LanguagesSection";
 import CertificationsSection from "./CertificationsSection";
-import ConfirmationModal from "./ConfirmationModal"; // Importamos el modal
+import ConfirmationModal from "./ConfirmationModal";
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -25,8 +25,8 @@ const ProfessionalInfo = () => {
     languages: [],
     certifications: [],
   });
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
-  const [deleteAction, setDeleteAction] = useState(null); // Acción a realizar al confirmar
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteAction, setDeleteAction] = useState(null);
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
@@ -53,7 +53,7 @@ const ProfessionalInfo = () => {
   };
 
   const saveChanges = () => {
-    setIsEditing(false); // Cambiar a modo de solo lectura
+    setIsEditing(false);
   };
 
   const cancelChanges = () => {
@@ -63,7 +63,7 @@ const ProfessionalInfo = () => {
     setSkills(originalState.skills);
     setLanguages(originalState.languages);
     setCertifications(originalState.certifications);
-    setIsEditing(false); // Cambiar a modo de solo lectura
+    setIsEditing(false);
   };
 
   const hasChanges = () => {
@@ -85,19 +85,16 @@ const ProfessionalInfo = () => {
     }
   };
 
-  // Función para abrir el modal
   const openModal = (action) => {
-    setDeleteAction(action);
+    setDeleteAction(() => action);
     setIsModalOpen(true);
   };
 
-  // Función para cerrar el modal
   const closeModal = () => {
     setDeleteAction(null);
     setIsModalOpen(false);
   };
 
-  // Función para confirmar la eliminación
   const confirmDelete = () => {
     if (deleteAction) {
       deleteAction();
@@ -108,7 +105,6 @@ const ProfessionalInfo = () => {
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
       <h1 className="text-xl font-bold mb-4">Información profesional</h1>
-      {/* Dropdown para seleccionar la sección */}
       <select
         value={activeSection}
         onChange={(e) => setActiveSection(e.target.value)}
@@ -121,7 +117,7 @@ const ProfessionalInfo = () => {
         <option value="languages">Idiomas</option>
         <option value="certifications">Certificaciones</option>
       </select>
-      {/* Renderizar la sección activa */}
+
       {activeSection === "summary" && (
         <SummarySection summary={summary} setSummary={setSummary} isEditing={isEditing} />
       )}
@@ -137,12 +133,12 @@ const ProfessionalInfo = () => {
       )}
       {activeSection === "education" && (
         <EducationSection
-          educations={educations}ion 
+          educations={educations}
           setEducations={setEducations}
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing} // Permite edición mientras está en modo edición global
+          isEditing={isEditing}
         />
       )}
       {activeSection === "skills" && (
@@ -152,7 +148,7 @@ const ProfessionalInfo = () => {
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing} // Permite edición mientras está en modo edición global
+          isEditing={isEditing}
         />
       )}
       {activeSection === "languages" && (
@@ -162,7 +158,7 @@ const ProfessionalInfo = () => {
           addItem={addItem}
           editItem={editItem}
           deleteItem={deleteItem}
-          isEditing={isEditing} // Permite edición mientras está en modo edición global
+          isEditing={isEditing}
         />
       )}
       {activeSection === "certifications" && (
@@ -175,40 +171,36 @@ const ProfessionalInfo = () => {
           isEditing={isEditing}
         />
       )}
-      {/* Botones Editar y Eliminar */}
+
       {!isEditing && (
         <div className="flex gap-4 mt-4">
-          {/* Botón Editar */}
           <button
             onClick={startEditing}
             className="flex items-center gap-1 text-blue-500 hover:underline"
           >
-            <BsPencilSquare size={16} /> {/* Ícono de lápiz */}
+            <BsPencilSquare size={16} />
             Editar
           </button>
-          {/* Botón Eliminar (Solo visible para Resumen Profesional si hay contenido) */}
           {activeSection === "summary" && summary.trim() !== "" && (
             <button
               onClick={() => openModal(() => setSummary(""))}
               className="flex items-center gap-1 text-red-500 hover:underline"
             >
-              <BsTrash size={16} /> {/* Ícono de basura */}
+              <BsTrash size={16} />
               Eliminar
             </button>
           )}
         </div>
       )}
-      {/* Botones Aceptar y Cancelar */}
+
       {isEditing && hasChanges() && (
         <div className="flex justify-start space-x-2 mt-4">
-          {/* Botón Aceptar */}
           <button
             onClick={saveChanges}
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
           >
             Aceptar
           </button>
-          {/* Botón Cancelar */}
           <button
             onClick={cancelChanges}
             className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
@@ -217,7 +209,7 @@ const ProfessionalInfo = () => {
           </button>
         </div>
       )}
-      {/* Modal de Confirmación */}
+
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={closeModal}

@@ -31,10 +31,12 @@ const ExperienceSection = ({ experiences, setExperiences, addItem, editItem, del
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
+              </div>
             ),
         },
         { 
@@ -46,10 +48,12 @@ const ExperienceSection = ({ experiences, setExperiences, addItem, editItem, del
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+              </div>
             ),
         },
         { 
@@ -61,10 +65,12 @@ const ExperienceSection = ({ experiences, setExperiences, addItem, editItem, del
                 type="date"
                 value={value.toISOString().split("T")[0]}
                 onChange={(e) => onChange(new Date(e.target.value))}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value ? value.toISOString().split("T")[0] : "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-800">{value ? value.toLocaleDateString() : "No especificado"}</span>
+              </div>
             ),
         },
         { 
@@ -76,10 +82,12 @@ const ExperienceSection = ({ experiences, setExperiences, addItem, editItem, del
                 type="date"
                 value={value ? value.toISOString().split("T")[0] : ""}
                 onChange={(e) => onChange(new Date(e.target.value))}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value ? value.toISOString().split("T")[0] : "Actualidad"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="font-medium text-gray-800">{value ? value.toLocaleDateString() : "Actualidad"}</span>
+              </div>
             ),
         },
         { 
@@ -90,10 +98,12 @@ const ExperienceSection = ({ experiences, setExperiences, addItem, editItem, del
               <textarea
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             ) : (
-              <span>{value || "No especificado"}</span>
+              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+                <span className="text-gray-700">{value || "Sin descripción"}</span>
+              </div>
             ),
         },
       ]}
