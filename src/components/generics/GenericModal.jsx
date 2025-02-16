@@ -1,70 +1,36 @@
-// GenericModal.jsx
-
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 
 const GenericModal = ({
   isOpen,
   onClose,
   title,
-  formContent, // Prop explícita para el contenido del formulario
+  formContent,
   actions,
-  initialValues,
   validationSchema,
   onSubmit,
   customStyles,
 }) => {
-  const [formData, setFormData] = useState(initialValues || {});
-  const [errors, setErrors] = useState({});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
-  // Inicializar el estado cuando se abre el modal
-  useEffect(() => {
+  // Resetear el formulario cuando se abre el modal
+  React.useEffect(() => {
     if (isOpen) {
-      setFormData(initialValues || {});
-      setErrors({});
+      reset();
     }
-  }, [isOpen, initialValues]);
-
-  // Manejador de cambios genérico
-  const handleChange = (name, value) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    validateField(name, value);
-  };
-
-  // Validación de campos individuales
-  const validateField = (name, value) => {
-    if (validationSchema && validationSchema[name]) {
-      try {
-        validationSchema[name](value, formData);
-        setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-      } catch (error) {
-        setErrors((prevErrors) => ({ ...prevErrors, [name]: error.message }));
-      }
-    }
-  };
-
-  // Validación completa del formulario
-  const validateForm = () => {
-    let formIsValid = true;
-    const newErrors = {};
-    for (const [name, validator] of Object.entries(validationSchema || {})) {
-      try {
-        validator(formData[name], formData);
-      } catch (error) {
-        formIsValid = false;
-        newErrors[name] = error.message;
-      }
-    }
-    setErrors(newErrors);
-    return formIsValid;
-  };
+  }, [isOpen, reset]);
 
   // Manejador de envío
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      onSubmit(formData); // Llama al manejador de envío
-    } else {
-      // No cerrar el modal si hay errores
+  const handleFormSubmit = (data) => {
+    try {
+      onSubmit(data); // Llama al manejador de envío externo
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
     }
   };
 
@@ -88,16 +54,11 @@ const GenericModal = ({
         >
           X
         </button>
-
         {/* Título del modal */}
         <h2 className="text-xl font-bold mb-4">{title}</h2>
-
         {/* Contenido del modal */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {formContent
-            ? formContent({ formData, errors, handleChange }) // Usar formContent si está definido
-            : null}
-
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          {formContent({ register, errors })}
           {/* Acciones personalizadas */}
           <div className="flex justify-end gap-2">
             {actions.map(({ label, onClick, primary = false }, index) => (
@@ -105,7 +66,7 @@ const GenericModal = ({
                 key={index}
                 onClick={(e) => {
                   if (onClick === "submit") {
-                    handleSubmit(e);
+                    handleSubmit(handleFormSubmit)(e);
                   } else if (onClick === "close") {
                     onClose();
                   } else {

@@ -94,10 +94,13 @@ const EditInfoModal = ({
     }
 
     //Validación del correo
-    if (!validateEmail(tempInfo.correo)) {
-      alert("El correo electrónico no tiene un formato válido.");
-      return;
+    if(tempInfo.correo){
+      if (!validateEmail(tempInfo.correo)) {
+        alert("El correo electrónico no tiene un formato válido.");
+        return;
+      }
     }
+    
 
     // Si pasa todas las validaciones, guardar los cambios
     onSaveChanges(tempInfo); // Actualizar el estado global con los datos temporales
