@@ -30,7 +30,11 @@ const PersonalInfo = () => {
   } = usePersonalInfo();
 
   const handleSubmitPassword = (formData) => {
-    handleSavePassword(formData); // Pasar los datos del formulario directamente
+    const errors = handleSavePassword(formData); // Obtener los errores
+    if (errors) {
+      // Si hay errores, pasarlos al estado `errors` del modal
+      throw new Error(JSON.stringify(errors));
+    }
   };
   
   return (

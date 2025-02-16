@@ -59,12 +59,16 @@ const GenericModal = ({
   };
 
   // Manejador de envío
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSubmit(formData); // Llama al manejador de envío
-    } else {
-      // No cerrar el modal si hay errores
+    try {
+      if (validateForm()) {
+        await onSubmit(formData); // Llama al manejador de envío
+      }
+    } catch (error) {
+      // Capturar los errores lanzados por handleSubmitPassword
+      const newErrors = JSON.parse(error.message);
+      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
     }
   };
 
