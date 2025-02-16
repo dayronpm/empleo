@@ -153,38 +153,21 @@ const updateUserPassword = async (newPassword) => {
   };
 
   // Función para guardar la nueva contraseña
-  const handleSavePassword = (formData) => {
-    const { currentPassword, newPassword, confirmPassword } = formData;
-    const errors = {};
-  
-    // Validación: Verificar que todos los campos estén completos
-    if (!currentPassword) errors.currentPassword = "La contraseña actual es obligatoria.";
-    if (!newPassword) errors.newPassword = "La nueva contraseña es obligatoria.";
-    if (!confirmPassword) errors.confirmPassword = "La confirmación de contraseña es obligatoria.";
-  
-    // Validación: Verificar que las contraseñas coincidan
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      errors.confirmPassword = "Las contraseñas no coinciden.";
-    }
-  
-    // Validación: Verificar que la contraseña actual sea correcta
+  const handleSavePassword = (data) => {
     const storedPassword = localStorage.getItem('password'); // Contraseña almacenada (simulada)
-    if (currentPassword && currentPassword !== storedPassword) {
-      errors.currentPassword = "La contraseña actual es incorrecta.";
+    if (data.currentPassword !== storedPassword) {
+      showNotification("La contraseña actual es incorrecta.", "error");
+      return;
     }
   
-    // Si hay errores, retornarlos para que se muestren en el formulario
-    if (Object.keys(errors).length > 0) {
-      return errors; // Retornar los errores al modal
+    if (data.newPassword !== data.confirmPassword) {
+      showNotification("Las contraseñas no coinciden.", "error");
+      return;
     }
   
-    // Cambio de contraseña
-    updateUserPassword(newPassword);
-    localStorage.setItem('password', newPassword);
+    updateUserPassword(data.newPassword);
+    localStorage.setItem('password', data.newPassword);
     setIsPasswordModalOpen(false);
-    setCurrentPassword(""); // Limpia los campos
-    setNewPassword("");
-    setConfirmPassword("");
   };
 
   return {

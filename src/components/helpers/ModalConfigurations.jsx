@@ -1,22 +1,5 @@
-// ModalConfigurations.jsx
-
-import React from "react";
-
 export const changePasswordModalConfig = {
   title: "Cambiar contraseña",
-  initialValues: {
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  },
-  validationSchema: {
-    currentPassword: (value) =>
-      value ? undefined : "La contraseña actual es obligatoria.",
-    newPassword: (value) =>
-      value ? undefined : "La nueva contraseña es obligatoria.",
-    confirmPassword: (value, formData) =>
-      value === formData.newPassword ? undefined : "Las contraseñas no coinciden.",
-  },
   actions: [
     { label: "Cancelar", onClick: "close" },
     { label: "Guardar", onClick: "submit", primary: true },
@@ -25,7 +8,7 @@ export const changePasswordModalConfig = {
     overlay: "bg-black bg-opacity-70",
     content: "w-[400px]",
   },
-  formContent: ({ formData, errors, handleChange }) => {
+  formContent: ({ register, errors }) => {
     return (
       <>
         {/* Campo de contraseña actual */}
@@ -33,40 +16,39 @@ export const changePasswordModalConfig = {
           <label className="block text-sm font-medium mb-1">Contraseña actual</label>
           <input
             type="password"
-            value={formData.currentPassword || ""}
-            onChange={(e) => handleChange("currentPassword", e.target.value)}
+            {...register("currentPassword", { required: "La contraseña actual es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.currentPassword && "border-red-500"}`}
           />
           {errors.currentPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.currentPassword}</p>
+            <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
           )}
         </div>
-
         {/* Campo de nueva contraseña */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Nueva contraseña</label>
           <input
             type="password"
-            value={formData.newPassword || ""}
-            onChange={(e) => handleChange("newPassword", e.target.value)}
+            {...register("newPassword", { required: "La nueva contraseña es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.newPassword && "border-red-500"}`}
           />
           {errors.newPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.newPassword}</p>
+            <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
           )}
         </div>
-
         {/* Campo de confirmación de nueva contraseña */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Confirmar nueva contraseña</label>
           <input
             type="password"
-            value={formData.confirmPassword || ""}
-            onChange={(e) => handleChange("confirmPassword", e.target.value)}
+            {...register("confirmPassword", {
+              required: "La confirmación de contraseña es obligatoria.",
+              validate: (value, formValues) =>
+                value === formValues.newPassword || "Las contraseñas no coinciden.",
+            })}
             className={`w-full p-2 border rounded ${errors.confirmPassword && "border-red-500"}`}
           />
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
           )}
         </div>
       </>
