@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
 
-const usePersonalInfo = () => {
+const usePersonalInfo = (showNotification) => {
   // Estado inicial de la información personal
   const [info, setInfo] = useState({
 
@@ -76,23 +76,24 @@ const usePersonalInfo = () => {
 //Actualizar contraseña del usuario
 const updateUserPassword = async (newPassword) => {
   try {
-      alert("Actualizando información.");
-      const response = await fetch(`${API_URL}/updatePassword`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id, newPassword }), // Send user ID in the body
-      });
-      if (!response.ok) {
-          throw new Error('Error al actualizar la información del usuario');
-      }
-      else{
-        // Simulación de guardado exitoso
-        alert("Contraseña actualizada exitosamente.");
-      }
+    const response = await fetch(`${API_URL}/updatePassword`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, newPassword }),
+    });
+    if (!response.ok) {
+      throw new Error('Error al actualizar la contraseña');
+    }
+
+    // Mostrar notificación de éxito
+    showNotification("Contraseña actualizada exitosamente.", "success");
   } catch (error) {
-      console.error(error);
+    console.error(error);
+
+    // Mostrar notificación de error
+    showNotification("Error al actualizar la contraseña.", "error");
   }
 };
 

@@ -7,8 +7,14 @@ import GenericModal from "../generics/GenericModal";
 import { changePasswordModalConfig } from "../helpers/ModalConfigurations";
 import EditInfoModal from "./EditInfoModal";
 import usePersonalInfo from "./usePersonalInfo"; // Ícono de agregar teléfono
+import NotificationPopup from "../generics/NotificationPopup";
 
 const PersonalInfo = () => {
+  
+  const showNotification = (message, type = "info") => {
+    setNotification({ isOpen: true, message, type });
+  };
+
   const {
     info,
     isEditModalOpen,
@@ -27,7 +33,15 @@ const PersonalInfo = () => {
     setCurrentPassword,
     setNewPassword,
     setConfirmPassword,
-  } = usePersonalInfo();
+  } = usePersonalInfo(showNotification);
+
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    message: "",
+    type: "info", // Puede ser "success", "error", o "info"
+  });
+
+  
 
   const handleSubmitPassword = (formData) => {
     const errors = handleSavePassword(formData); // Obtener los errores
@@ -113,6 +127,13 @@ const PersonalInfo = () => {
       validationSchema={changePasswordModalConfig.validationSchema}
       customStyles={changePasswordModalConfig.customStyles}
       onSubmit={handleSubmitPassword}
+      />
+
+      <NotificationPopup
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ isOpen: false, message: "", type: "info" })}
+        message={notification.message}
+        type={notification.type}
       />
     </div>
   );
