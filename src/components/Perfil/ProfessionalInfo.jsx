@@ -285,7 +285,7 @@ const ProfessionalInfo = () => {
             ? "Por favor, selecciona una habilidad válida para cada entrada."
             : activeSection === "education"
             ? "Por favor, completa al menos un campo "
-            : "Por favor, completa al menos un campo ."
+            : "Por favor, completa al menos un campo "
         }
       />
     </div>
