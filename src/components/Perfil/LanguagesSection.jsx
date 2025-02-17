@@ -44,6 +44,7 @@ const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteIt
           key: "spokenLevel",
           type: "select",
           options: [
+            "No especificado",
             "Below A1",
             "A1 (Beginner)",
             "A2 (Elementary)",
@@ -59,6 +60,7 @@ const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteIt
                 onChange={(e) => onChange(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               >
+                <option value="No especificado">No especificado</option>
                 <option value="Below A1">Below A1</option>
                 <option value="A1 (Beginner)">A1 (Beginner)</option>
                 <option value="A2 (Elementary)">A2 (Elementary)</option>

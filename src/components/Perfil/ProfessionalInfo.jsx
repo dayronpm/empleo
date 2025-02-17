@@ -27,6 +27,7 @@ const ProfessionalInfo = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteAction, setDeleteAction] = useState(null);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false); // Estado para el modal de advertencia
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
@@ -52,7 +53,53 @@ const ProfessionalInfo = () => {
     setIsEditing(true);
   };
 
+  const validateLanguages = () => {
+    return languages.every((lang) => lang.language.trim() !== "");
+  };
+
+  const validateSkills = () => {
+    return skills.every((skill) => skill.name.trim() !== "");
+  };
+
+  const validateEducation = () => {
+    return educations.some(
+      (edu) =>
+        edu.institution.trim() !== "" ||
+        edu.degree.trim() !== "" ||
+        edu.details.trim() !== ""
+    );
+  };
+
+  const validateExperience = () => {
+    return experiences.some(
+      (exp) =>
+        exp.company.trim() !== "" ||
+        exp.position.trim() !== "" ||
+        exp.description.trim() !== ""
+    );
+  };
+
   const saveChanges = () => {
+    if (activeSection === "languages" && !validateLanguages()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para idiomas
+      return;
+    }
+
+    if (activeSection === "skills" && !validateSkills()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para habilidades
+      return;
+    }
+
+    if (activeSection === "education" && !validateEducation()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para educación
+      return;
+    }
+
+    if (activeSection === "experience" && !validateExperience()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para experiencia laboral
+      return;
+    }
+
     setIsEditing(false);
   };
 
@@ -102,22 +149,30 @@ const ProfessionalInfo = () => {
     closeModal();
   };
 
+  const closeWarningModal = () => {
+    setIsWarningModalOpen(false); // Cierra el modal de advertencia
+  };
+
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
-      <h1 className="text-xl font-bold mb-4">Información profesional</h1>
-      <select
-        value={activeSection}
-        onChange={(e) => setActiveSection(e.target.value)}
-        className="p-2 border rounded bg-white"
-      >
-        <option value="summary">Resumen Profesional</option>
-        <option value="experience">Experiencia Laboral</option>
-        <option value="education">Educación</option>
-        <option value="skills">Habilidades</option>
-        <option value="languages">Idiomas</option>
-        <option value="certifications">Certificaciones</option>
-      </select>
+      {/* Título y Dropdown alineados horizontalmente */}
+      <div className="flex items-center gap-4 mb-4">
+        <h1 className="text-xl font-bold">Información profesional</h1>
+        <select
+          value={activeSection}
+          onChange={(e) => setActiveSection(e.target.value)}
+          className="p-2 border rounded bg-white"
+        >
+          <option value="summary">Resumen Profesional</option>
+          <option value="experience">Experiencia Laboral</option>
+          <option value="education">Educación</option>
+          <option value="skills">Habilidades</option>
+          <option value="languages">Idiomas</option>
+          <option value="certifications">Certificaciones</option>
+        </select>
+      </div>
 
+      {/* Contenido dinámico según la sección activa */}
       {activeSection === "summary" && (
         <SummarySection summary={summary} setSummary={setSummary} isEditing={isEditing} />
       )}
@@ -172,6 +227,7 @@ const ProfessionalInfo = () => {
         />
       )}
 
+      {/* Botones de edición */}
       {!isEditing && (
         <div className="flex gap-4 mt-4">
           <button
@@ -192,7 +248,6 @@ const ProfessionalInfo = () => {
           )}
         </div>
       )}
-
       {isEditing && hasChanges() && (
         <div className="flex justify-start space-x-2 mt-4">
           <button
@@ -210,11 +265,28 @@ const ProfessionalInfo = () => {
         </div>
       )}
 
+      {/* Modal de confirmación */}
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={closeModal}
         onConfirm={confirmDelete}
         message="¿Estás seguro de que deseas eliminar este elemento?"
+      />
+
+      {/* Modal de advertencia */}
+      <ConfirmationModal
+        isOpen={isWarningModalOpen}
+        onClose={closeWarningModal}
+        onConfirm={closeWarningModal} // Solo cierra el modal, no realiza ninguna acción adicional
+        message={
+          activeSection === "languages"
+            ? "Por favor, selecciona un idioma válido para cada entrada."
+            : activeSection === "skills"
+            ? "Por favor, selecciona una habilidad válida para cada entrada."
+            : activeSection === "education"
+            ? "Por favor, completa al menos un campo "
+            : "Por favor, completa al menos un campo ."
+        }
       />
     </div>
   );
