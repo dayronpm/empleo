@@ -84,22 +84,18 @@ const ProfessionalInfo = () => {
       setIsWarningModalOpen(true); // Abre el modal de advertencia para idiomas
       return;
     }
-
     if (activeSection === "skills" && !validateSkills()) {
       setIsWarningModalOpen(true); // Abre el modal de advertencia para habilidades
       return;
     }
-
     if (activeSection === "education" && !validateEducation()) {
       setIsWarningModalOpen(true); // Abre el modal de advertencia para educación
       return;
     }
-
     if (activeSection === "experience" && !validateExperience()) {
       setIsWarningModalOpen(true); // Abre el modal de advertencia para experiencia laboral
       return;
     }
-
     setIsEditing(false);
   };
 
@@ -248,7 +244,37 @@ const ProfessionalInfo = () => {
           )}
         </div>
       )}
-      {isEditing && hasChanges() && (
+      {isEditing && activeSection === "summary" && (
+        <div className="flex justify-start space-x-2 mt-4">
+          {/* Botón Cancelar Edición visible solo si el campo está vacío */}
+          {summary.trim() === "" && (
+            <button
+              onClick={cancelChanges}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
+            >
+              Cancelar
+            </button>
+          )}
+          {/* Botones Aceptar y Cancelar visibles solo si hay texto en el resumen */}
+          {summary.trim() !== "" && (
+            <>
+              <button
+                onClick={saveChanges}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
+              >
+                Aceptar
+              </button>
+              <button
+                onClick={cancelChanges}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      {isEditing && activeSection !== "summary" && (
         <div className="flex justify-start space-x-2 mt-4">
           <button
             onClick={saveChanges}
@@ -284,8 +310,8 @@ const ProfessionalInfo = () => {
             : activeSection === "skills"
             ? "Por favor, selecciona una habilidad válida para cada entrada."
             : activeSection === "education"
-            ? "Por favor, completa al menos un campo "
-            : "Por favor, completa al menos un campo "
+            ? "Por favor, completa al menos un campo."
+            : "Por favor, completa al menos un campo."
         }
       />
     </div>

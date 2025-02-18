@@ -3,6 +3,12 @@ import { languagesList } from "./data";
 import Section from "./Section";
 
 const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteItem, isEditing }) => {
+  // Filtrar las opciones disponibles en el dropdown
+  const getAvailableLanguages = () => {
+    const selectedLanguages = languages.map((lang) => lang.language);
+    return languagesList.filter((lang) => !selectedLanguages.includes(lang));
+  };
+
   return (
     <Section
       title="Idiomas"
@@ -16,27 +22,35 @@ const LanguagesSection = ({ languages, setLanguages, addItem, editItem, deleteIt
       onEdit={(id, field, value) => editItem(languages, setLanguages, id, field, value)}
       onDelete={(id) => deleteItem(languages, setLanguages, id)}
       fields={[
-        { 
-          label: "Idioma", 
+        {
+          label: "Idioma",
           key: "language",
           customInput: (value, onChange) =>
             isEditing ? (
-              <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              >
-                <option value="">Seleccione un idioma</option>
-                {languagesList.map((lang) => (
-                  <option key={lang} value={lang}>
-                    {lang}
-                  </option>
-                ))}
-              </select>
+              <>
+                {/* Dropdown para seleccionar idioma */}
+                <select
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  <option value="">Seleccione un idioma</option>
+                  {getAvailableLanguages().map((lang) => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              </>
             ) : (
-              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-                <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
-              </div>
+              // Campo visible (input deshabilitado) para mostrar el idioma seleccionado
+              <input
+                type="text"
+                value={value || "No especificado"}
+                readOnly
+                disabled
+                className="w-full p-3 bg-gray-100 text-gray-800 border border-gray-300 rounded-lg cursor-not-allowed"
+              />
             ),
         },
         {
