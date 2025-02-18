@@ -1,3 +1,4 @@
+// GenericModal.jsx
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -10,22 +11,27 @@ const GenericModal = ({
   validationSchema,
   onSubmit,
   customStyles,
+  initialValues,
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+    watch,
+    setValue,
+  } = useForm({
+    defaultValues: initialValues, // Establecer valores iniciales del formulario
+  });
 
   // Resetear el formulario cuando se abre el modal
   React.useEffect(() => {
     if (isOpen) {
-      reset();
+      reset(initialValues); // Reiniciar el formulario con los valores iniciales
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, initialValues]);
 
-  // Manejador de envío
+  // Manejador de envío del formulario
   const handleFormSubmit = (data) => {
     try {
       onSubmit(data); // Llama al manejador de envío externo
@@ -34,50 +40,53 @@ const GenericModal = ({
     }
   };
 
+  // Si el modal no está abierto, no renderizar nada
   if (!isOpen) return null;
 
   return (
     <div
-      className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ${
-        customStyles?.overlay || ""
+      className={`fixed inset-0 flex items-center justify-center z-50 ${
+        customStyles?.overlay || "bg-black bg-opacity-70"
       }`}
     >
       <div
-        className={`bg-white p-6 rounded-lg shadow-lg w-[400px] max-w-full relative ${
-          customStyles?.content || ""
+        className={`bg-white rounded-lg shadow-lg p-6 relative ${
+          customStyles?.content || "w-[600px]"
         }`}
       >
         {/* Botón de cierre */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors"
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
         >
           X
         </button>
+
         {/* Título del modal */}
         <h2 className="text-xl font-bold mb-4">{title}</h2>
-        {/* Contenido del modal */}
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          {formContent({ register, errors })}
+
+        {/* Contenido del formulario */}
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
+          {formContent({ register, errors, watch, setValue })}
+
           {/* Acciones personalizadas */}
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end mt-4 space-x-2">
             {actions.map(({ label, onClick, primary = false }, index) => (
               <button
                 key={index}
-                onClick={(e) => {
-                  if (onClick === "submit") {
-                    handleSubmit(handleFormSubmit)(e);
-                  } else if (onClick === "close") {
-                    onClose();
-                  } else {
-                    onClick();
-                  }
-                }}
-                className={`px-4 py-2 rounded ${
+                type={onClick === "submit" ? "submit" : "button"}
+                onClick={
+                  onClick === "close"
+                    ? onClose
+                    : onClick === "submit"
+                    ? undefined // El envío ya está manejado por el formulario
+                    : onClick
+                }
+                className={`px-4 py-2 rounded transition-colors ${
                   primary
-                    ? "bg-red-500 hover:bg-red-600 text-white"
+                    ? "bg-blue-500 hover:bg-blue-600 text-white"
                     : "bg-gray-300 hover:bg-gray-400"
-                } transition-colors`}
+                }`}
               >
                 {label}
               </button>

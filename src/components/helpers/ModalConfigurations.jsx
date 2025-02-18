@@ -55,3 +55,181 @@ export const changePasswordModalConfig = {
     );
   },
 };
+
+import React from "react";
+import { BsTrash } from "react-icons/bs";
+// Editar informacion personal
+import { provincesAndMunicipalities } from "../Perfil/data";
+
+export const editInfoModalConfig = {
+  title: "Editar información personal",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Guardar cambios", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[600px]",
+  },
+  formContent: ({ register, errors, watch, setValue }) => {
+    const province = watch("provincia");
+    const municipalities = province ? provincesAndMunicipalities[province] : [];
+    
+    // Función para manejar cambio de provincia
+    const handleProvinceChange = (e) => {
+      setValue("provincia", e.target.value);
+      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+    };
+    
+    return (
+      <>
+        {/* Nombre completo */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Nombre completo</label>
+          <input
+            type="text"
+            {...register("nombre", {
+              required: "El nombre es obligatorio",
+              pattern: {
+                value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+                message: "Solo se permiten letras y espacios"
+              }
+            })}
+            className={`w-full p-2 border rounded ${errors.nombre && "border-red-500"}`}
+            placeholder="Ingrese su nombre completo"
+          />
+          {errors.nombre && (
+            <p className="text-red-500 text-xs">{errors.nombre.message}</p>
+          )}
+        </div>
+
+        {/* Provincia */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Provincia</label>
+          <select
+            {...register("provincia", { required: "La provincia es obligatoria" })}
+            onChange={handleProvinceChange}
+            className={`w-full p-2 border rounded ${errors.provincia && "border-red-500"}`}
+          >
+            <option value="">Seleccione una provincia</option>
+            {Object.keys(provincesAndMunicipalities).map((province) => (
+              <option key={province} value={province}>{province}</option>
+            ))}
+          </select>
+          {errors.provincia && (
+            <p className="text-red-500 text-xs">{errors.provincia.message}</p>
+          )}
+        </div>
+
+        {/* Municipio */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Municipio</label>
+          <select
+            {...register("municipio", { required: "El municipio es obligatorio" })}
+            className={`w-full p-2 border rounded ${errors.municipio && "border-red-500"}`}
+          >
+            <option value="">Seleccione un municipio</option>
+            {municipalities.map((municipality) => (
+              <option key={municipality} value={municipality}>{municipality}</option>
+            ))}
+          </select>
+          {errors.municipio && (
+            <p className="text-red-500 text-xs">{errors.municipio.message}</p>
+          )}
+        </div>
+
+        {/* Teléfonos */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Teléfonos</label>
+          {watch("telefono").map((phone, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => {
+                  const newPhones = [...watch("telefono")];
+                  newPhones[index] = e.target.value;
+                  setValue("telefono", newPhones);
+                }}
+                className="w-full p-2 border rounded"
+                placeholder="Ingrese un número de teléfono"
+              />
+              {watch("telefono").length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newPhones = watch("telefono").filter((_, i) => i !== index);
+                    setValue("telefono", newPhones);
+                  }}
+                  className="ml-2 text-red-500"
+                >
+                  <BsTrash size={16} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setValue("telefono", [...watch("telefono"), ""])}
+            className="text-blue-500"
+          >
+            Agregar teléfono
+          </button>
+        </div>
+
+        {/* Correo electrónico */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Correo electrónico</label>
+          <input
+            type="email"
+            {...register("correo", {
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Formato de correo electrónico inválido"
+              }
+            })}
+            className={`w-full p-2 border rounded ${errors.correo && "border-red-500"}`}
+            placeholder="Ingrese su correo electrónico"
+          />
+          {errors.correo && (
+            <p className="text-red-500 text-xs">{errors.correo.message}</p>
+          )}
+        </div>
+      </>
+    );
+  },
+  validationSchema: {
+    nombre: {
+      required: "El nombre es obligatorio",
+      pattern: {
+        value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        message: "Solo se permiten letras y espacios"
+      }
+    },
+    provincia: {
+      required: "La provincia es obligatoria"
+    },
+    municipio: {
+      required: "El municipio es obligatorio"
+    },
+    telefono: {
+      validate: (value) =>
+        value.every(phone =>
+          /^\+53\d{6,8}$/.test(phone) || !phone
+        ) || "Los teléfonos deben comenzar con '+53' y tener entre 6 y 8 dígitos"
+    },
+    correo: {
+      pattern: {
+        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: "Formato de correo electrónico inválido"
+      }
+    }
+  },
+  initialValues: {
+    nombre: "",
+    provincia: "",
+    municipio: "",
+    telefono: [""],
+    correo: ""
+  }
+};
