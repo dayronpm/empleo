@@ -107,35 +107,29 @@ export const editInfoModalConfig = {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Provincia</label>
           <select
-            {...register("provincia", { required: "La provincia es obligatoria" })}
+            {...register("provincia", {})}
             onChange={handleProvinceChange}
-            className={`w-full p-2 border rounded ${errors.provincia && "border-red-500"}`}
+            className={`w-full p-2 border rounded`}
           >
             <option value="">Seleccione una provincia</option>
             {Object.keys(provincesAndMunicipalities).map((province) => (
               <option key={province} value={province}>{province}</option>
             ))}
           </select>
-          {errors.provincia && (
-            <p className="text-red-500 text-xs">{errors.provincia.message}</p>
-          )}
         </div>
 
         {/* Municipio */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Municipio</label>
           <select
-            {...register("municipio", { required: "El municipio es obligatorio" })}
-            className={`w-full p-2 border rounded ${errors.municipio && "border-red-500"}`}
+            {...register("municipio", {})}
+            className={`w-full p-2 border rounded`}
           >
             <option value="">Seleccione un municipio</option>
             {municipalities.map((municipality) => (
               <option key={municipality} value={municipality}>{municipality}</option>
             ))}
           </select>
-          {errors.municipio && (
-            <p className="text-red-500 text-xs">{errors.municipio.message}</p>
-          )}
         </div>
 
         {/* Teléfonos */}
@@ -207,10 +201,8 @@ export const editInfoModalConfig = {
       }
     },
     provincia: {
-      required: "La provincia es obligatoria"
     },
     municipio: {
-      required: "El municipio es obligatorio"
     },
     telefono: {
       validate: (value) =>
