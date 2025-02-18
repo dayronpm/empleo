@@ -4,8 +4,7 @@ import { BsShieldLock } from "react-icons/bs"; // Ícono de seguridad para modif
 import { BsTrash } from "react-icons/bs"; // Ícono de eliminar teléfono
 import { BsPlusCircle } from "react-icons/bs";
 import GenericModal from "../generics/GenericModal";
-import { changePasswordModalConfig } from "../helpers/ModalConfigurations";
-import EditInfoModal from "./EditInfoModal";
+import { changePasswordModalConfig, editInfoModalConfig } from "../helpers/ModalConfigurations";
 import usePersonalInfo from "./usePersonalInfo"; // Ícono de agregar teléfono
 import NotificationPopup from "../generics/NotificationPopup";
 
@@ -105,15 +104,17 @@ const PersonalInfo = () => {
         </button>
       </div>
 
-      {/* Modal para editar información personal */}
-      <EditInfoModal
+      {/* Modal genérico para editar información personal */}
+      <GenericModal
         isOpen={isEditModalOpen}
         onClose={closeEditModal}
-        info={info}
-        onInputChange={handleInputChange}
-        onSaveChanges={handleSaveChanges}
-        addPhone={addPhone}
-        removePhone={removePhone}
+        title={editInfoModalConfig.title}
+        formContent={editInfoModalConfig.formContent}
+        actions={editInfoModalConfig.actions}
+        initialValues={info}
+        validationSchema={editInfoModalConfig.validationSchema}
+        customStyles={editInfoModalConfig.customStyles}
+        onSubmit={(data) => handleSaveChanges(data)}
       />
 
       {/* Modal genérico para cambiar contraseña */}

@@ -60,8 +60,6 @@ const usePersonalInfo = (showNotification) => {
             throw new Error('Error al actualizar la información del usuario');
         }
         else{
-          // Simulación de guardado exitoso
-          alert("Información actualizada exitosamente.");
         }
     } catch (error) {
         console.error(error);
@@ -136,17 +134,14 @@ const updateUserPassword = async (newPassword) => {
 
   // Función para guardar los cambios de información personal
   const handleSaveChanges = (updatedInfo) => {
-    // Validación: Asegúrate de que el campo "nombre" esté completo
-    if (!updatedInfo.nombre) {
-      alert("El campo 'Nombre completo' es obligatorio.");
-      return; // Detener la ejecución si el campo está vacío
-    }
-
     // Actualizar el estado global con los datos confirmados
     setInfo(updatedInfo);
 
     // Llamar a la función para actualizar los datos en el servidor
     updateUserData(id, updatedInfo);
+
+    // Mostrar notificación de éxito
+    showNotification("Información actualizada exitosamente.", "success");
 
     // Cerrar el modal
     closeEditModal();
