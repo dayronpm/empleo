@@ -352,7 +352,6 @@ export const languagesList = [
     'Lituano',
     'Estonio',
     'Macedonio',
-    'Albanés',
     // Idiomas adicionales
     'Afrikáans',
     'Aimara',
@@ -435,7 +434,6 @@ export const languagesList = [
     'Sindhi',
     'Somalí',
     'Sundanés',
-    'Sánscrito',
     'Tamil',
     'Tayiko',
     'Telugu',
