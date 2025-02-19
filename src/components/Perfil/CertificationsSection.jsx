@@ -2,6 +2,10 @@ import React from "react";
 import Section from "./Section";
 
 const CertificationsSection = ({ certifications, setCertifications, addItem, editItem, deleteItem, isEditing }) => {
+  const currentYear = new Date().getFullYear(); // Año actual
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => currentYear - i); // Array de años desde 1900 hasta el actual
+
+
   return (
     <Section
       title="Certificaciones"
@@ -10,14 +14,14 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
         addItem(certifications, setCertifications, {
           name: "",
           institution: "",
-          year: "",
+          year: currentYear, // Valor predeterminado: año actual
         })
       }
       onEdit={(id, field, value) => editItem(certifications, setCertifications, id, field, value)}
       onDelete={(id) => deleteItem(certifications, setCertifications, id)}
       fields={[
-        { 
-          label: "Nombre de la certificación", 
+        {
+          label: "Nombre de la certificación",
           key: "name",
           customInput: (value, onChange) =>
             isEditing ? (
@@ -33,8 +37,8 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
               </div>
             ),
         },
-        { 
-          label: "Institución", 
+        {
+          label: "Institución",
           key: "institution",
           customInput: (value, onChange) =>
             isEditing ? (
@@ -50,41 +54,23 @@ const CertificationsSection = ({ certifications, setCertifications, addItem, edi
               </div>
             ),
         },
-        { 
-          label: "Año", 
-          key: "year", 
-          yearSelector: true,
+        {
+          label: "Año",
+          key: "year",
           customInput: (value, onChange) =>
             isEditing ? (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onChange(Math.max(1900, (value || new Date().getFullYear()) - 1))}
-                  className="px-3 py-1 border rounded hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  value={value || new Date().getFullYear()}
-                  onChange={(e) => {
-                    const year = parseInt(e.target.value);
-                    if (!isNaN(year) && year >= 1900 && year <= new Date().getFullYear()) {
-                      onChange(year);
-                    }
-                  }}
-                  className="w-20 p-2 border rounded text-center"
-                  min="1900"
-                  max={new Date().getFullYear()}
-                />
-                <button
-                  type="button"
-                  onClick={() => onChange(Math.min(new Date().getFullYear(), (value || new Date().getFullYear()) + 1))}
-                  className="px-3 py-1 border rounded hover:bg-gray-100"
-                >
-                  +
-                </button>
-              </div>
+              <select
+                value={value || currentYear}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+
             ) : (
               <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
                 <span className="font-medium text-gray-800">{value || "No especificado"}</span>
