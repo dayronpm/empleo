@@ -21,7 +21,6 @@ export const technicalSkillsList = [
 "Prototipado Rápido",
 "Validación de Ideas",
 "Financiamiento Colectivo (Crowdfunding)",
-"Propiedad Intelectual",
 "Patentes y Marcas",
 
 // Habilidades Financieras y Contables
