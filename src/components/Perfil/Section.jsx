@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import ConfirmationModal from "./ConfirmationModal";
 import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs";
+import GenericModal from "../generics/GenericModal";
+import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,11 +118,16 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
           Agregar
         </button>
       )}
-      <ConfirmationModal
+      {/* Modal de confirmación */}
+      <GenericModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        onConfirm={confirmDelete}
-        message="¿Estás seguro de que deseas eliminar este elemento?"
+        onSubmit={confirmDelete}
+        {...confirmationModalConfig(
+          itemToDelete
+            ? `¿Está seguro de que desea eliminar este elemento?`
+            : ""
+        )}
       />
     </div>
   );

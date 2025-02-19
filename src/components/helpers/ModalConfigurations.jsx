@@ -225,3 +225,25 @@ export const editInfoModalConfig = {
     correo: ""
   }
 };
+
+export const confirmationModalConfig = (message) => ({
+  title: "Confirmación",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Aceptar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors }) => {
+    return (
+      <>
+        {/* Mensaje del modal */}
+        <div className="mb-4">
+          <p> {message} </p>
+        </div>
+      </>
+    );
+  },
+});

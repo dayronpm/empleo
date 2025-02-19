@@ -6,7 +6,8 @@ import EducationSection from "./EducationSection";
 import SkillsSection from "./SkillsSection";
 import LanguagesSection from "./LanguagesSection";
 import CertificationsSection from "./CertificationsSection";
-import ConfirmationModal from "./ConfirmationModal";
+import { confirmationModalConfig } from "../helpers/ModalConfigurations";
+import GenericModal from "../generics/GenericModal";
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -292,19 +293,19 @@ const ProfessionalInfo = () => {
       )}
 
       {/* Modal de confirmación */}
-      <ConfirmationModal
+      <GenericModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        onConfirm={confirmDelete}
-        message="¿Estás seguro de que deseas eliminar este elemento?"
+        onSubmit={confirmDelete}
+        {...confirmationModalConfig(deleteAction ? "¿Está seguro de que desea realizar esta acción?" : "")}
       />
 
       {/* Modal de advertencia */}
-      <ConfirmationModal
+      <GenericModal
         isOpen={isWarningModalOpen}
         onClose={closeWarningModal}
-        onConfirm={closeWarningModal} // Solo cierra el modal, no realiza ninguna acción adicional
-        message={
+        onSubmit={closeWarningModal} // Solo cierra el modal, no realiza ninguna acción adicional
+        {...confirmationModalConfig(
           activeSection === "languages"
             ? "Por favor, selecciona un idioma válido para cada entrada."
             : activeSection === "skills"
@@ -312,7 +313,7 @@ const ProfessionalInfo = () => {
             : activeSection === "education"
             ? "Por favor, completa al menos un campo."
             : "Por favor, completa al menos un campo."
-        }
+        )}
       />
     </div>
   );
