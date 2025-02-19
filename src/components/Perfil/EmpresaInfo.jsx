@@ -4,10 +4,12 @@ import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
-import DeleteAccountModal from './DeleteAccountModal';
 import EditableField from './EditableField'; // Import the EditableField component
 import CourseModal from '../Cursos/CourseModal'; // Import CourseModal
 import CourseList from '../Cursos/CourseList'; // Import CourseList
+import GenericModal from '../generics/GenericModal';
+import { deleteAccountModalConfig } from '../helpers/ModalConfigurations';
+import NotificationPopup from '../generics/NotificationPopup';
 
 const EmpresaInfo = () => {
     const {
@@ -52,7 +54,11 @@ const EmpresaInfo = () => {
         selectedCourse, // Agregar el estado del curso seleccionado
         setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
         handleCourseSelect, // Agregar la función para seleccionar un curso
-        handleEditCourse,  // Import handleAddCourse function
+        handleEditCourse,
+        isNotificationOpen,
+        notificationMessage,
+        setIsNotificationOpen,
+        handleLogout
     } = useEmpresaInfoLogic();
 
     if (!empresa) {
@@ -119,10 +125,23 @@ const EmpresaInfo = () => {
             <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded"> 
                 Eliminar Cuenta
             </button>
-            <DeleteAccountModal 
-                isOpen={isDeleteModalOpen} 
-                onClose={() => setDeleteModalOpen(false)} 
-                onDelete={handleDeleteAccount} 
+
+            {/* Modal genérico para eliminar cuenta */}
+            <GenericModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onSubmit={(data) => handleDeleteAccount(data.password)}
+                {...deleteAccountModalConfig}
+            />
+
+            <NotificationPopup
+            isOpen={isNotificationOpen}
+            onClose={() => {
+                setIsNotificationOpen(false);
+                handleLogout(); // Llamar a handleLogout cuando el popup se cierre
+            }}
+            message={notificationMessage}
+            type="success"
             />
         </div>
     );

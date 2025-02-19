@@ -1,8 +1,9 @@
 // NotificationPopup.jsx
 import React from "react";
+import { useEffect } from "react";
 
 const NotificationPopup = ({ isOpen, onClose, message, type }) => {
-  if (!isOpen) return null;
+  
 
   // Definir colores según el tipo de mensaje
   const colors = {
@@ -12,6 +13,15 @@ const NotificationPopup = ({ isOpen, onClose, message, type }) => {
   };
 
   const colorClass = colors[type] || colors.info;
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => onClose(), 3000); // Cierra automáticamente después de 3 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50">

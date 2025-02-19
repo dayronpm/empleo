@@ -21,7 +21,6 @@ export const technicalSkillsList = [
 "Prototipado Rápido",
 "Validación de Ideas",
 "Financiamiento Colectivo (Crowdfunding)",
-"Propiedad Intelectual",
 "Patentes y Marcas",
 
 // Habilidades Financieras y Contables
@@ -352,7 +351,6 @@ export const languagesList = [
     'Lituano',
     'Estonio',
     'Macedonio',
-    'Albanés',
     // Idiomas adicionales
     'Afrikáans',
     'Aimara',
@@ -435,7 +433,6 @@ export const languagesList = [
     'Sindhi',
     'Somalí',
     'Sundanés',
-    'Sánscrito',
     'Tamil',
     'Tayiko',
     'Telugu',

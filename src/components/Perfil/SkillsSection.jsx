@@ -1,13 +1,17 @@
+// Nombre del archivo: SkillsSection.jsx
+// Ruta del archivo: C:/Información/Proyectos/empleo/Frontend/client/src/components/Perfil/SkillsSection.jsx
+
 import React, { useState } from "react";
 import { technicalSkillsList } from "./data"; // Lista predefinida de habilidades
 import Section from "./Section";
 
 const SkillsSection = ({ skills, setSkills, addItem, editItem, deleteItem, isEditing }) => {
+  // Estado temporal para manejar habilidades seleccionadas durante la edición
+  const [tempSkills, setTempSkills] = useState(skills);
 
-
-  // Filtrar las opciones disponibles en el dropdown
+  // Filtrar las opciones disponibles en el dropdown usando el estado temporal
   const getAvailableSkills = () => {
-    const selectedSkills = skills.map((skill) => skill.name); // Obtener habilidades ya seleccionadas
+    const selectedSkills = tempSkills.map((skill) => skill.name); // Obtener habilidades ya seleccionadas
     return technicalSkillsList.filter((skill) => !selectedSkills.includes(skill)); // Filtrar habilidades no seleccionadas
   };
 
@@ -15,7 +19,12 @@ const SkillsSection = ({ skills, setSkills, addItem, editItem, deleteItem, isEdi
     <Section
       title="Habilidades"
       items={skills}
-      onAdd={() => addItem(skills, setSkills, { name: "", level: "" })}
+      onAdd={() =>
+        addItem(skills, setSkills, {
+          name: "",
+          level: "",
+        })
+      }
       onEdit={(id, field, value) => editItem(skills, setSkills, id, field, value)}
       onDelete={(id) => deleteItem(skills, setSkills, id)}
       fields={[
@@ -24,27 +33,34 @@ const SkillsSection = ({ skills, setSkills, addItem, editItem, deleteItem, isEdi
           key: "name",
           customInput: (value, onChange) =>
             isEditing ? (
-              <div className="relative">
-                {/* Dropdown para seleccionar habilidad */}
-                <select
-                  value={value}
-                  onChange={(e) => onChange(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                >
-                  <option value="">Seleccione una habilidad</option>
-                  {getAvailableSkills().map((skill) => (
-                    <option key={skill} value={skill}>
-                      {skill}
-                    </option>
-                  ))}
-                </select>
+              <select
+                value={value}
+                onChange={(e) => {
+                  const selectedSkill = e.target.value;
 
-              </div>
+                  // Actualizar el estado temporal inmediatamente
+                  setTempSkills((prevTempSkills) => {
+                    const updatedTempSkills = prevTempSkills.map((skill) =>
+                      skill.id === id ? { ...skill, name: selectedSkill } : skill
+                    );
+                    return updatedTempSkills;
+                  });
+
+                  // Actualizar el estado principal
+                  onChange(selectedSkill);
+                }}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              >
+                <option value="">Seleccione una habilidad</option>
+                {getAvailableSkills().map((skill) => (
+                  <option key={skill} value={skill}>
+                    {skill}
+                  </option>
+                ))}
+              </select>
             ) : (
               // Campo visible para mostrar la habilidad seleccionada
-              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-                <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
-              </div>
+              <div>{value || "No especificado"}</div>
             ),
         },
         {
@@ -60,14 +76,14 @@ const SkillsSection = ({ skills, setSkills, addItem, editItem, deleteItem, isEdi
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               >
                 <option value="">Seleccione un nivel</option>
-                <option value="Básico">Básico</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Avanzado">Avanzado</option>
+                {["Básico", "Intermedio", "Avanzado"].map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
               </select>
             ) : (
-              <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-                <span className="font-medium text-gray-800">{value || "No especificado"}</span>
-              </div>
+              <div>{value || "No especificado"}</div>
             ),
         },
       ]}
