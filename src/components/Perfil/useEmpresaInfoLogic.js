@@ -118,6 +118,10 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
+    //Estado para las notificaciones
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState("");
+
     //Llamar a la función para cargar datos de la empresa
     useEffect(() => {
         fetchEmpresaData();
@@ -206,11 +210,12 @@ const useEmpresaInfoLogic = () => {
                 body: JSON.stringify({ id, password }), // Send the ID and password in the request body
             });
             if (response.ok) {
-                alert('Cuenta eliminada con éxito.');
-                handleLogout(); // Call the logout function
-            } else {
-                alert('Error al eliminar la cuenta.');
-            }
+                setNotificationMessage("Cuenta eliminada con éxito.");
+                setIsNotificationOpen(true);
+              } else {
+                setNotificationMessage("Error al eliminar la cuenta.");
+                setIsNotificationOpen(true);
+              }
         } catch (error) {
             console.error('Error:', error);
             alert('Error al eliminar la cuenta.');
@@ -358,7 +363,11 @@ const useEmpresaInfoLogic = () => {
         setSelectedJobForDeletion,
         handleDeleteJob,
         handleConfirmDeleteJob,
-        handleDeleteCourse 
+        handleDeleteCourse,
+        isNotificationOpen,
+        notificationMessage,
+        setIsNotificationOpen,
+        handleLogout 
     };
 };
 

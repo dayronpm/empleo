@@ -247,3 +247,39 @@ export const confirmationModalConfig = (message) => ({
     );
   },
 });
+
+export const deleteAccountModalConfig = {
+  title: "Eliminar Cuenta",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Eliminar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors }) => {
+    return (
+      <>
+        <p>Por favor, ingresa tu contraseña para confirmar:</p>
+        <input
+          type="password"
+          placeholder="Contraseña"
+          {...register("password", {
+            required: "La contraseña es obligatoria",
+          })}
+          className={`border p-2 w-full mb-4 ${errors.password ? "border-red-500" : ""}`}
+        />
+        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+      </>
+    );
+  },
+  validationSchema: {
+    password: {
+      required: "La contraseña es obligatoria",
+    },
+  },
+  initialValues: {
+    password: "",
+  },
+};
