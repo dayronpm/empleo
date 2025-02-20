@@ -283,3 +283,320 @@ export const deleteAccountModalConfig = {
     password: "",
   },
 };
+
+export const deleteJobModalConfig = (job) => ({
+  title: "Confirmar eliminación",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Eliminar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors, watch }) => {
+    const confirmationWord = watch("confirmationWord");
+
+    return (
+      <>
+        <p className="mb-4">
+          Por favor, ingrese la primera palabra del título "{job.titulo}" para confirmar:
+        </p>
+
+        {/* Campo de entrada para la palabra de confirmación */}
+        <input
+          type="text"
+          placeholder="Primera palabra del título"
+          {...register("confirmationWord", {
+            required: "Este campo es obligatorio",
+            validate: (value) =>
+              value.toLowerCase() === job.titulo.split(" ")[0].toLowerCase() ||
+              "La palabra no coincide con el título del trabajo",
+          })}
+          className={`w-full p-2 border rounded ${errors.confirmationWord && "border-red-500"}`}
+        />
+        {errors.confirmationWord && (
+          <p className="text-red-500 text-sm mt-1">{errors.confirmationWord.message}</p>
+        )}
+      </>
+    );
+  },
+  validationSchema: {
+    confirmationWord: {
+      required: "Este campo es obligatorio",
+    },
+  },
+  initialValues: {
+    confirmationWord: "",
+  },
+});
+
+export const addEditJobModalConfig = (job = null) => ({
+  title: job ? "Editar Oferta de Trabajo" : "Agregar Nueva Oferta de Trabajo",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: job ? "Guardar Cambios" : "Agregar Oferta", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[600px]",
+  },
+  formContent: ({ register, errors, watch, setValue }) => {
+    const province = watch("provincia");
+    const municipalities = province ? provincesAndMunicipalities[province] : [];
+
+    // Función para manejar cambio de provincia
+    const handleProvinceChange = (e) => {
+      setValue("provincia", e.target.value);
+      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+    };
+
+    return (
+      <>
+        {/* Título */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Título</label>
+          <input
+            type="text"
+            placeholder="Ingrese el título del trabajo"
+            {...register("titulo", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.titulo && "border-red-500"}`}
+          />
+          {errors.titulo && (
+            <p className="text-red-500 text-sm mt-1">{errors.titulo.message}</p>
+          )}
+        </div>
+
+        {/* Provincia */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Provincia</label>
+          <select
+            {...register("provincia", {
+              required: "Este campo es obligatorio",
+            })}
+            onChange={handleProvinceChange}
+            className={`w-full p-2 border rounded ${errors.provincia && "border-red-500"}`}
+          >
+            <option value="">Seleccione una provincia</option>
+            {Object.keys(provincesAndMunicipalities).map((province) => (
+              <option key={province} value={province}>
+                {province}
+              </option>
+            ))}
+          </select>
+          {errors.provincia && (
+            <p className="text-red-500 text-sm mt-1">{errors.provincia.message}</p>
+          )}
+        </div>
+
+        {/* Municipio */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Municipio</label>
+          <select
+            {...register("municipio", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.municipio && "border-red-500"}`}
+          >
+            <option value="">Seleccione un municipio</option>
+            {municipalities.map((municipality) => (
+              <option key={municipality} value={municipality}>
+                {municipality}
+              </option>
+            ))}
+          </select>
+          {errors.municipio && (
+            <p className="text-red-500 text-sm mt-1">{errors.municipio.message}</p>
+          )}
+        </div>
+
+        {/* Descripción */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea
+            placeholder="Ingrese la descripción del trabajo"
+            {...register("descripcion", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.descripcion && "border-red-500"}`}
+          />
+          {errors.descripcion && (
+            <p className="text-red-500 text-sm mt-1">{errors.descripcion.message}</p>
+          )}
+        </div>
+
+        {/* Requerimientos */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Requerimientos</label>
+          <textarea
+            placeholder="Ingrese los requerimientos del trabajo"
+            {...register("requerimientos", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.requerimientos && "border-red-500"}`}
+          />
+          {errors.requerimientos && (
+            <p className="text-red-500 text-sm mt-1">{errors.requerimientos.message}</p>
+          )}
+        </div>
+
+        {/* Beneficios */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Beneficios</label>
+          <textarea
+            placeholder="Ingrese los beneficios del trabajo"
+            {...register("beneficios", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.beneficios && "border-red-500"}`}
+          />
+          {errors.beneficios && (
+            <p className="text-red-500 text-sm mt-1">{errors.beneficios.message}</p>
+          )}
+        </div>
+
+        {/* Proceso de Aplicación */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Proceso de Aplicación</label>
+          <textarea
+            placeholder="Ingrese el proceso de aplicación del trabajo"
+            {...register("proceso_aplicacion", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.proceso_aplicacion && "border-red-500"}`}
+          />
+          {errors.proceso_aplicacion && (
+            <p className="text-red-500 text-sm mt-1">{errors.proceso_aplicacion.message}</p>
+          )}
+        </div>
+
+        {/* Salario */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Salario</label>
+          <input
+            type="number"
+            placeholder="Ingrese el salario"
+            {...register("salario", {
+              required: "Este campo es obligatorio",
+              min: { value: 0, message: "El salario debe ser mayor o igual a 0" },
+            })}
+            className={`w-full p-2 border rounded ${errors.salario && "border-red-500"}`}
+          />
+          {errors.salario && (
+            <p className="text-red-500 text-sm mt-1">{errors.salario.message}</p>
+          )}
+        </div>
+
+        {/* Categoría */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Categoría</label>
+          <select
+            {...register("categoria", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.categoria && "border-red-500"}`}
+          >
+            <option value="">Seleccione una categoría</option>
+            <option value="Medio tiempo">Medio tiempo</option>
+            <option value="Tiempo completo">Tiempo completo</option>
+            <option value="Freelance">Freelance</option>
+          </select>
+          {errors.categoria && (
+            <p className="text-red-500 text-sm mt-1">{errors.categoria.message}</p>
+          )}
+        </div>
+
+        {/* Nivel de Experiencia */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Nivel de Experiencia</label>
+          <select
+            {...register("nivel_experiencia", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.nivel_experiencia && "border-red-500"}`}
+          >
+            <option value="">Seleccione un nivel de experiencia</option>
+            <option value="Junior">Junior</option>
+            <option value="Medio">Medio</option>
+            <option value="Senior">Senior</option>
+          </select>
+          {errors.nivel_experiencia && (
+            <p className="text-red-500 text-sm mt-1">{errors.nivel_experiencia.message}</p>
+          )}
+        </div>
+
+        {/* Tipo */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Tipo</label>
+          <select
+            {...register("tipo", {
+              required: "Este campo es obligatorio",
+            })}
+            className={`w-full p-2 border rounded ${errors.tipo && "border-red-500"}`}
+          >
+            <option value="">Seleccione un tipo</option>
+            <option value="Estatal">Estatal</option>
+            <option value="No estatal">No estatal</option>
+          </select>
+          {errors.tipo && (
+            <p className="text-red-500 text-sm mt-1">{errors.tipo.message}</p>
+          )}
+        </div>
+      </>
+    );
+  },
+  validationSchema: {
+    titulo: {
+      required: "El título es obligatorio",
+    },
+    provincia: {
+      required: "La provincia es obligatoria",
+    },
+    municipio: {
+      required: "El municipio es obligatorio",
+    },
+    descripcion: {
+      required: "La descripción es obligatoria",
+    },
+    requerimientos: {
+      required: "Los requerimientos son obligatorios",
+    },
+    beneficios: {
+      required: "Los beneficios son obligatorios",
+    },
+    proceso_aplicacion: {
+      required: "El proceso de aplicación es obligatorio",
+    },
+    salario: {
+      required: "El salario es obligatorio",
+      min: {
+        value: 0,
+        message: "El salario debe ser mayor o igual a 0",
+      },
+    },
+    categoria: {
+      required: "La categoría es obligatoria",
+    },
+    nivel_experiencia: {
+      required: "El nivel de experiencia es obligatorio",
+    },
+    tipo: {
+      required: "El tipo es obligatorio",
+    },
+  },
+  initialValues: {
+    titulo: job?.titulo || "",
+    provincia: job?.provincia || "",
+    municipio: job?.municipio || "",
+    descripcion: job?.descripcion || "",
+    requerimientos: job?.requerimientos || "",
+    beneficios: job?.beneficios || "",
+    salario: job?.salario || "",
+    proceso_aplicacion: job?.aplicacion || "",
+    categoria: job?.categoria || "",
+    nivel_experiencia: job?.experiencia || "",
+    tipo: job?.tipo || "",
+  },
+});

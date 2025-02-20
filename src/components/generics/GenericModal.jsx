@@ -45,15 +45,17 @@ const GenericModal = ({
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center z-50 ${
-        customStyles?.overlay || "bg-black bg-opacity-70"
-      }`}
+    className={`fixed inset-0 flex items-center justify-center z-50 ${customStyles.overlay}`}
+    style={{ display: isOpen ? "flex" : "none" }}
+  >
+    {/* Contenedor del modal */}
+    <div
+      className={`bg-white rounded-lg shadow-lg p-6 relative overflow-hidden ${customStyles.content}`}
+      style={{
+        maxHeight: "90vh", // Altura máxima del modal (90% de la altura de la ventana)
+        overflowY: "auto", // Habilitar scroll vertical si el contenido es demasiado grande
+      }}
     >
-      <div
-        className={`bg-white rounded-lg shadow-lg p-6 relative ${
-          customStyles?.content || "w-[600px]"
-        }`}
-      >
         {/* Botón de cierre */}
         <button
           onClick={onClose}

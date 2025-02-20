@@ -34,7 +34,7 @@ const Cursos = () => {
     };
 
     fetchCursos(); // Llamamos a la función al montar el componente
-  }, [API_URL]); // Dependencia: API_URL
+  },[]);
 
   // Filtrar cursos según los filtros aplicados
   const cursosFiltrados = cursosData.filter((curso) =>

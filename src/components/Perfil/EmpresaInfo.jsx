@@ -1,14 +1,13 @@
 import React from 'react';
 import { useState } from 'react';
 import useEmpresaInfoLogic from './useEmpresaInfoLogic';
-import JobOfferModal from '../Ofertas/JobOfferModal';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
 import EditableField from './EditableField'; // Import the EditableField component
 import CourseModal from '../Cursos/CourseModal'; // Import CourseModal
 import CourseList from '../Cursos/CourseList'; // Import CourseList
 import GenericModal from '../generics/GenericModal';
-import { deleteAccountModalConfig } from '../helpers/ModalConfigurations';
+import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig } from '../helpers/ModalConfigurations';
 import NotificationPopup from '../generics/NotificationPopup';
 
 const EmpresaInfo = () => {
@@ -50,7 +49,6 @@ const EmpresaInfo = () => {
         courseData,
         courses,
         selectedJob,
-        handleJobSelect,
         selectedCourse, // Agregar el estado del curso seleccionado
         setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
         handleCourseSelect, // Agregar la función para seleccionar un curso
@@ -58,30 +56,116 @@ const EmpresaInfo = () => {
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
-        handleLogout
+        handleLogout,
+        deleteJob,
+        setSelectedJob
     } = useEmpresaInfoLogic();
 
+    const handleJobSelect = (job) => {
+        setSelectedJob(job); // Guarda la oferta seleccionada
+        setIsAddJobModalOpen(true); // Abre el modal para editar/agregar trabajo
+    };
+
+    // Estado para controlar si el modal de confirmación de eliminación está abierto
+    const [isDeleteJobModalOpen, setIsDeleteJobModalOpen] = useState(false);
+    const [selectedJobForDeletion, setSelectedJobForDeletion] = useState(null);
+
+    // Estado para controlar si el modal de agregar/editar trabajo está abierto
+    const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
+
+    // Función para manejar la eliminación de un trabajo
+    const handleDeleteJob = (job) => {
+        setSelectedJobForDeletion(job);
+        setIsDeleteJobModalOpen(true);
+    };
+
+    // Función para confirmar la eliminación de un trabajo
+    const handleConfirmDeleteJob = () => {
+        if (selectedJobForDeletion) {
+            deleteJob(selectedJobForDeletion.id); // Llama a la función de eliminación
+            setIsDeleteJobModalOpen(false);
+            setSelectedJobForDeletion(null);
+        }
+    };
+
+    // Función para manejar la creación o edición de trabajos
+    const handleAddJob = async (data) => {
+        try {
+            console.log(data);
+            const response = await fetch("http://localhost:3001/addoferta", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...data,
+                    id: localStorage.getItem("id"), // ID de la empresa
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al agregar la oferta de trabajo");
+            }
+
+            window.location.reload(); // Recargar la página después de agregar
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Función para manejar la edición de un trabajo
+const handleEditJob = async (data) => {
+    try {
+        const response = await fetch("http://localhost:3001/editoferta", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                id: selectedJob.id, // Incluye el ID del trabajo seleccionado
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al editar la oferta de trabajo");
+        }
+
+        window.location.reload(); // Recargar la página después de editar
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+    // Si no hay datos de la empresa, mostrar un mensaje de carga
     if (!empresa) {
         return <p>Cargando información de la empresa...</p>;
     }
 
     return (
         <div className="empresa-info bg-white p-6 border border-gray-300 rounded-lg mt-4 shadow-lg hover:shadow-xl transition-shadow duration-200">
+            {/* Campos editables */}
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                <EditableField 
+                <EditableField
                     label="Nombre"
                     value={editedName}
                     isEditing={isEditingName}
                     onEditToggle={() => setEditingName(!isEditingName)}
-                    onSave={() => { setEditingName(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
+                    onSave={() => {
+                        setEditingName(false);
+                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
+                    }}
                     onChange={(e) => setEditedName(e.target.value)}
                 />
-                <EditableField 
+                <EditableField
                     label="Dirección"
                     value={editedMunicipality}
                     isEditing={isEditingAddress}
                     onEditToggle={() => setEditingAddress(!isEditingAddress)}
-                    onSave={() => { setEditingAddress(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
+                    onSave={() => {
+                        setEditingAddress(false);
+                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
+                    }}
                     onChange={(e) => setEditedMunicipality(e.target.value)}
                     provinces={Object.keys(provincesAndMunicipalities)}
                     municipalities={provincesAndMunicipalities[editedProvince] || []}
@@ -91,38 +175,79 @@ const EmpresaInfo = () => {
                         setEditedMunicipality('');
                     }}
                 />
-                <EditableField 
+                <EditableField
                     label="Tipo"
                     value={editedType}
                     isEditing={isEditingType}
                     onEditToggle={() => setEditingType(!isEditingType)}
-                    onSave={() => { setEditingType(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
+                    onSave={() => {
+                        setEditingType(false);
+                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
+                    }}
                     onChange={(e) => setEditedType(e.target.value)}
                     options={["Estatal", "No estatal"]}
                 />
             </div>
-            <EditableField 
+            <EditableField
                 label="Descripción"
                 value={editedDescription}
                 isEditing={isEditingDescription}
                 onEditToggle={() => setEditingDescription(!isEditingDescription)}
-                onSave={() => { setEditingDescription(false); handleSubmit(localStorage.getItem('id'), 'http://localhost:3001'); }}
+                onSave={() => {
+                    setEditingDescription(false);
+                    handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
+                }}
                 onChange={(e) => setEditedDescription(e.target.value)}
             />
+
+            {/* Sección de Ofertas de Trabajo */}
             <h3 className="text-xl font-semibold mt-4">Ofertas de Trabajo</h3>
-            <button onClick={handleOpenModal} className="mt-4 mb-4 bg-blue-500 text-white p-2 rounded">Agregar Oferta de Trabajo</button>
-            <JobOfferModal 
-                isOpen={isModalOpen} 
-                onClose={handleCloseModal} 
-                selectedJob={selectedJob} // Pasa la oferta seleccionada al modal
+
+            {/* Botón para abrir el modal de agregar trabajo */}
+            <button onClick={() => setIsAddJobModalOpen(true)} className="bg-blue-500 text-white p-2 rounded">
+                Agregar Oferta de Trabajo
+            </button>
+
+            <GenericModal
+                isOpen={isAddJobModalOpen}
+                onClose={() => setIsAddJobModalOpen(false)}
+                onSubmit={selectedJob ? handleEditJob : handleAddJob} // Usa handleEditJob si hay un trabajo seleccionado
+                {...addEditJobModalConfig(selectedJob)} // Configuración dinámica para agregar/editar
             />
-            <JobList jobs={jobOffers} onJobSelect={handleJobSelect} /> {/* Pasa la función de selección */}
+
+            {/* Lista de trabajos */}
+            <JobList
+                jobs={jobOffers}
+                onJobSelect={handleJobSelect}
+                onDeleteJob={handleDeleteJob} // Pasar la función de eliminación
+                showDeleteButton={true}
+            />
+
+            {/* Modal genérico para confirmar la eliminación de un trabajo */}
+            <GenericModal
+                isOpen={isDeleteJobModalOpen}
+                onClose={() => setIsDeleteJobModalOpen(false)}
+                onSubmit={handleConfirmDeleteJob}
+                {...deleteJobModalConfig(selectedJobForDeletion)} // Configuración dinámica para confirmar eliminación
+            />
+
+            {/* Sección de Cursos */}
             <h3 className="text-xl font-semibold mt-4">Cursos</h3>
-            <button onClick={handleOpenCourseModal} className="mt-4 mb-4 bg-green-500 text-white p-2 rounded">Agregar Curso</button>
-            <CourseModal isOpen={isCourseModalOpen} onClose={handleCloseCourseModal} course={selectedCourse}/>
-            <CourseList courses={courses} onCourseSelect={handleCourseSelect} // Pasar la función para seleccionar un curso
-/>
-            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded"> 
+            <button onClick={handleOpenCourseModal} className="mt-4 mb-4 bg-green-500 text-white p-2 rounded">
+                Agregar Curso
+            </button>
+            <CourseModal
+                isOpen={isCourseModalOpen}
+                onClose={handleCloseCourseModal}
+                course={selectedCourse}
+            />
+            <CourseList
+                courses={courses}
+                onCourseSelect={handleCourseSelect} // Pasar la función para seleccionar un curso
+            />
+
+            {/* Botón para eliminar cuenta */}
+            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded">
                 Eliminar Cuenta
             </button>
 
@@ -134,14 +259,15 @@ const EmpresaInfo = () => {
                 {...deleteAccountModalConfig}
             />
 
+            {/* Popup de notificación */}
             <NotificationPopup
-            isOpen={isNotificationOpen}
-            onClose={() => {
-                setIsNotificationOpen(false);
-                handleLogout(); // Llamar a handleLogout cuando el popup se cierre
-            }}
-            message={notificationMessage}
-            type="success"
+                isOpen={isNotificationOpen}
+                onClose={() => {
+                    setIsNotificationOpen(false);
+                    handleLogout(); // Llamar a handleLogout cuando el popup se cierre
+                }}
+                message={notificationMessage}
+                type="success"
             />
         </div>
     );

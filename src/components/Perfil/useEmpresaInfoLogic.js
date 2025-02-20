@@ -222,14 +222,6 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
-        
-
-        // Función para manejar la selección de un trabajo
-        const handleJobSelect = (job) => {
-            setSelectedJob(job); // Guarda la oferta seleccionada
-            setModalOpen(true); // Abre el modal
-        };
-
         const handleCourseSelect = (course) => {
             setSelectedCourse(course); // Guarda el curso seleccionado
             setCourseModalOpen(true); // Abre el modal
@@ -350,7 +342,6 @@ const useEmpresaInfoLogic = () => {
         handleCloseCourseModal,
         courses,
         selectedJob,
-        handleJobSelect,
         selectedCourse, // Agregar el estado del curso seleccionado
         setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
         handleCourseSelect, // Agregar la función para seleccionar un curso
@@ -367,7 +358,8 @@ const useEmpresaInfoLogic = () => {
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
-        handleLogout 
+        handleLogout,
+        setSelectedJob 
     };
 };
 
