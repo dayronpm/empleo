@@ -305,6 +305,63 @@ const useEmpresaInfoLogic = () => {
         }
     };
 
+    const handleJobSelect = (job) => {
+        setSelectedJob(job); // Guarda la oferta seleccionada
+        setIsAddJobModalOpen(true); // Abre el modal para editar/agregar trabajo
+    };
+
+    // Estado para controlar si el modal de agregar/editar trabajo está abierto
+    const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
+
+    // Función para manejar la creación o edición de trabajos
+    const handleAddJob = async (data) => {
+        try {
+            console.log(data);
+            const response = await fetch("http://localhost:3001/addoferta", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...data,
+                    id: localStorage.getItem("id"), // ID de la empresa
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error al agregar la oferta de trabajo");
+            }
+
+            window.location.reload(); // Recargar la página después de agregar
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Función para manejar la edición de un trabajo
+const handleEditJob = async (data) => {
+    try {
+        const response = await fetch("http://localhost:3001/editoferta", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                id: selectedJob.id, // Incluye el ID del trabajo seleccionado
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error al editar la oferta de trabajo");
+        }
+
+        window.location.reload(); // Recargar la página después de editar
+    } catch (error) {
+        console.error(error);
+    }
+};
+
     return {
         empresa,
         jobOffers,
@@ -359,7 +416,18 @@ const useEmpresaInfoLogic = () => {
         notificationMessage,
         setIsNotificationOpen,
         handleLogout,
-        setSelectedJob 
+        setSelectedJob,
+        isDeleteJobModalOpen,
+        setIsDeleteJobModalOpen,
+        handleJobSelect,
+        selectedJobForDeletion,
+        setSelectedJobForDeletion,
+        isAddJobModalOpen,
+        setIsAddJobModalOpen,
+        handleDeleteJob,
+        handleConfirmDeleteJob,
+        handleAddJob,
+        handleEditJob 
     };
 };
 

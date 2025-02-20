@@ -14,8 +14,6 @@ const EmpresaInfo = () => {
     const {
         empresa,
         jobOffers,
-        isModalOpen,
-        setModalOpen,
         isEditingName,
         setEditingName,
         isEditingAddress,
@@ -26,8 +24,6 @@ const EmpresaInfo = () => {
         setEditingDescription,
         editedName,
         setEditedName,
-        editedAddress,
-        setEditedAddress,
         editedProvince,
         setEditedProvince,
         editedMunicipality,
@@ -36,8 +32,6 @@ const EmpresaInfo = () => {
         setEditedType,
         editedDescription,
         setEditedDescription,
-        handleOpenModal,
-        handleCloseModal,
         handleSubmit,
         handleDeleteAccount,
         isDeleteModalOpen,
@@ -45,97 +39,29 @@ const EmpresaInfo = () => {
         isCourseModalOpen, // Import course modal state
         handleOpenCourseModal, // Import course modal open function
         handleCloseCourseModal, // Import course modal close function
-        handleAddCourse,
-        courseData,
         courses,
         selectedJob,
         selectedCourse, // Agregar el estado del curso seleccionado
-        setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
         handleCourseSelect, // Agregar la función para seleccionar un curso
-        handleEditCourse,
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
         handleLogout,
-        deleteJob,
-        setSelectedJob
+        isDeleteJobModalOpen,
+        setIsDeleteJobModalOpen,
+        handleJobSelect,
+        selectedJobForDeletion,
+        isAddJobModalOpen,
+        setIsAddJobModalOpen,
+        handleDeleteJob,
+        handleConfirmDeleteJob,
+        handleAddJob,
+        handleEditJob
     } = useEmpresaInfoLogic();
 
-    const handleJobSelect = (job) => {
-        setSelectedJob(job); // Guarda la oferta seleccionada
-        setIsAddJobModalOpen(true); // Abre el modal para editar/agregar trabajo
-    };
 
-    // Estado para controlar si el modal de confirmación de eliminación está abierto
-    const [isDeleteJobModalOpen, setIsDeleteJobModalOpen] = useState(false);
-    const [selectedJobForDeletion, setSelectedJobForDeletion] = useState(null);
 
-    // Estado para controlar si el modal de agregar/editar trabajo está abierto
-    const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
-
-    // Función para manejar la eliminación de un trabajo
-    const handleDeleteJob = (job) => {
-        setSelectedJobForDeletion(job);
-        setIsDeleteJobModalOpen(true);
-    };
-
-    // Función para confirmar la eliminación de un trabajo
-    const handleConfirmDeleteJob = () => {
-        if (selectedJobForDeletion) {
-            deleteJob(selectedJobForDeletion.id); // Llama a la función de eliminación
-            setIsDeleteJobModalOpen(false);
-            setSelectedJobForDeletion(null);
-        }
-    };
-
-    // Función para manejar la creación o edición de trabajos
-    const handleAddJob = async (data) => {
-        try {
-            console.log(data);
-            const response = await fetch("http://localhost:3001/addoferta", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    ...data,
-                    id: localStorage.getItem("id"), // ID de la empresa
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Error al agregar la oferta de trabajo");
-            }
-
-            window.location.reload(); // Recargar la página después de agregar
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    // Función para manejar la edición de un trabajo
-const handleEditJob = async (data) => {
-    try {
-        const response = await fetch("http://localhost:3001/editoferta", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                ...data,
-                id: selectedJob.id, // Incluye el ID del trabajo seleccionado
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al editar la oferta de trabajo");
-        }
-
-        window.location.reload(); // Recargar la página después de editar
-    } catch (error) {
-        console.error(error);
-    }
-};
+    
 
     // Si no hay datos de la empresa, mostrar un mensaje de carga
     if (!empresa) {
