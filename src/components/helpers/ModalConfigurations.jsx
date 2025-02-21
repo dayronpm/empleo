@@ -727,3 +727,50 @@ export const courseModalConfig = (course = null) => ({
     descripcionCompleta: course?.descripcionCompleta || "",
   },
 });
+
+export const deleteCourseModalConfig = (course) => ({
+  title: "Confirmar eliminación",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Eliminar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors, watch }) => {
+    const confirmationWord = watch("confirmationWord");
+
+    return (
+      <>
+        <p className="mb-4">
+          Por favor, ingrese la primera palabra del título "{course.titulo}" para confirmar:
+        </p>
+
+        {/* Campo de entrada para la palabra de confirmación */}
+        <input
+          type="text"
+          placeholder="Primera palabra del título"
+          {...register("confirmationWord", {
+            required: "Este campo es obligatorio",
+            validate: (value) =>
+              value.toLowerCase() === course.titulo.split(" ")[0].toLowerCase() ||
+              "La palabra no coincide con el título del curso",
+          })}
+          className={`w-full p-2 border rounded ${errors.confirmationWord && "border-red-500"}`}
+        />
+        {errors.confirmationWord && (
+          <span className="text-red-500 text-sm">{errors.confirmationWord.message}</span>
+        )}
+      </>
+    );
+  },
+  validationSchema: {
+    confirmationWord: {
+      required: "Este campo es obligatorio",
+    },
+  },
+  initialValues: {
+    confirmationWord: "",
+  },
+});

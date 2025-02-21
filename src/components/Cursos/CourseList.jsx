@@ -25,15 +25,15 @@ const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton 
 
                         {/* Mostrar el botón Eliminar solo si showDeleteButton es true */}
                         {showDeleteButton && (
-                            <button 
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Evitar que el clic se propague al elemento padre
-                                    onDeleteCourse(course); // Llamar a la función de eliminación
-                                }} 
-                                className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                            >
-                                Eliminar
-                            </button>
+                        <button
+                            onClick={(e) => {
+                            e.stopPropagation(); // Evita que el clic se propague al elemento padre
+                            onDeleteCourse(course); // Llama a la función de eliminación
+                            }}
+                            className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                            Eliminar
+                        </button>
                         )}
                     </li>
                 ))}

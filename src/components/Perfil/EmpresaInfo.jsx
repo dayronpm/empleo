@@ -6,7 +6,7 @@ import { provincesAndMunicipalities } from './data';
 import EditableField from './EditableField'; // Import the EditableField component
 import CourseList from '../Cursos/CourseList'; // Import CourseList
 import GenericModal from '../generics/GenericModal';
-import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig } from '../helpers/ModalConfigurations';
+import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig, deleteCourseModalConfig } from '../helpers/ModalConfigurations';
 import NotificationPopup from '../generics/NotificationPopup';
 
 const EmpresaInfo = () => {
@@ -59,7 +59,11 @@ const EmpresaInfo = () => {
         handleDeleteCourse,
         handleEditCourse,
         handleAddCourse,
-        setSelectedCourse
+        setSelectedCourse,
+        isDeleteCourseModalOpen,
+        setIsDeleteCourseModalOpen,
+        selectedCourseForDeletion,
+        handleConfirmDeleteCourse
     } = useEmpresaInfoLogic();
 
     // Si no hay datos de la empresa, mostrar un mensaje de carga
@@ -171,13 +175,21 @@ const EmpresaInfo = () => {
             Agregar Curso
             </button>
 
+            {/* Modal genérico para confirmar la eliminación de un curso */}
+            <GenericModal
+            isOpen={isDeleteCourseModalOpen}
+            onClose={() => setIsDeleteCourseModalOpen(false)}
+            {...deleteCourseModalConfig(selectedCourseForDeletion)}
+            onSubmit={handleConfirmDeleteCourse}
+            />
+
             {/* Lista de cursos */}
             <CourseList
-                courses={courses}
-                onCourseSelect={handleCourseSelect}
-                onDeleteCourse={handleDeleteCourse}
-                showDeleteButton={true}
-                showMoreInfo={false}
+            courses={courses}
+            onCourseSelect={handleCourseSelect}
+            onDeleteCourse={handleDeleteCourse} // Pasar la función de eliminación
+            showDeleteButton={true}
+            showMoreInfo={false}
             />
             </div>
 

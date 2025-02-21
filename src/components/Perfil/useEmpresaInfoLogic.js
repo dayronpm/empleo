@@ -68,7 +68,10 @@ const useEmpresaInfoLogic = () => {
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false); 
 
     // Estado para controlar la apertura/cierre del modal relacionado con los cursos.
-    const [isCourseModalOpen, setCourseModalOpen] = useState(false); 
+    const [isCourseModalOpen, setCourseModalOpen] = useState(false);
+    
+    const [isDeleteCourseModalOpen, setIsDeleteCourseModalOpen] = useState(false); // Estado para controlar el modal de eliminación
+    const [selectedCourseForDeletion, setSelectedCourseForDeletion] = useState(null); // Curso seleccionado para eliminar
 
     //Cargar datos de la empresa, incluidos trabajos y cursos
     const fetchEmpresaData = async () => {
@@ -307,10 +310,9 @@ const useEmpresaInfoLogic = () => {
     };
 
     const handleDeleteCourse = (course) => {
-        if (window.confirm(`¿Estás seguro de que deseas eliminar el curso "${course.titulo}"?`)) {
-            deleteCourse(course.id); // Llamar al método deleteCourse del custom hook
-        }
-    };
+        setSelectedCourseForDeletion(course); // Guarda el curso seleccionado
+        setIsDeleteCourseModalOpen(true); // Abre el modal
+      };
 
     const handleJobSelect = (job) => {
         setSelectedJob(job); // Guarda la oferta seleccionada
@@ -391,6 +393,14 @@ const handleAddCourse = async (data) => {
     }
 };
 
+const handleConfirmDeleteCourse = () => {
+    if (selectedCourseForDeletion) {
+      deleteCourse(selectedCourseForDeletion.id); // Llama al método de eliminación
+      setIsDeleteCourseModalOpen(false); // Cierra el modal
+      setSelectedCourseForDeletion(null); // Limpia el curso seleccionado
+    }
+  };
+
     return {
         empresa,
         jobOffers,
@@ -457,7 +467,13 @@ const handleAddCourse = async (data) => {
         handleConfirmDeleteJob,
         handleAddJob,
         handleEditJob,
-        handleAddCourse 
+        handleAddCourse,
+        isDeleteCourseModalOpen,
+        setIsDeleteCourseModalOpen,
+        selectedCourseForDeletion,
+        setSelectedCourseForDeletion,
+        handleConfirmDeleteCourse,
+        handleDeleteCourse 
     };
 };
 
