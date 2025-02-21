@@ -4,10 +4,9 @@ import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobList from '../Ofertas/JobList';
 import { provincesAndMunicipalities } from './data';
 import EditableField from './EditableField'; // Import the EditableField component
-import CourseModal from '../Cursos/CourseModal'; // Import CourseModal
 import CourseList from '../Cursos/CourseList'; // Import CourseList
 import GenericModal from '../generics/GenericModal';
-import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig } from '../helpers/ModalConfigurations';
+import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig } from '../helpers/ModalConfigurations';
 import NotificationPopup from '../generics/NotificationPopup';
 
 const EmpresaInfo = () => {
@@ -56,12 +55,12 @@ const EmpresaInfo = () => {
         handleDeleteJob,
         handleConfirmDeleteJob,
         handleAddJob,
-        handleEditJob
+        handleEditJob,
+        handleDeleteCourse,
+        handleEditCourse,
+        handleAddCourse,
+        setSelectedCourse
     } = useEmpresaInfoLogic();
-
-
-
-    
 
     // Si no hay datos de la empresa, mostrar un mensaje de carga
     if (!empresa) {
@@ -158,18 +157,48 @@ const EmpresaInfo = () => {
             />
 
             {/* Sección de Cursos */}
-            <h3 className="text-xl font-semibold mt-4">Cursos</h3>
-            <button onClick={handleOpenCourseModal} className="mt-4 mb-4 bg-green-500 text-white p-2 rounded">
-                Agregar Curso
+            <div className="mt-6">
+            <h2 className="text-xl font-bold mb-4">Cursos</h2>
+
+            {/* Botón para abrir el modal de agregar curso */}
+            <button
+            onClick={() => {
+                setSelectedCourse(null); // Asegurarse de que no haya un curso seleccionado
+                handleOpenCourseModal();
+            }}
+            className="bg-green-500 text-white p-2 rounded mb-4"
+            >
+            Agregar Curso
             </button>
-            <CourseModal
-                isOpen={isCourseModalOpen}
-                onClose={handleCloseCourseModal}
-                course={selectedCourse}
-            />
+
+            {/* Lista de cursos */}
             <CourseList
                 courses={courses}
-                onCourseSelect={handleCourseSelect} // Pasar la función para seleccionar un curso
+                onCourseSelect={handleCourseSelect}
+                onDeleteCourse={handleDeleteCourse}
+                showDeleteButton={true}
+                showMoreInfo={false}
+            />
+            </div>
+
+            {/* MODIFICACIÓN: Reemplazamos CourseModal con GenericModal */}
+            {/* Usamos la nueva configuración courseModalConfig */}
+            <GenericModal
+            isOpen={isCourseModalOpen}
+            onClose={handleCloseCourseModal}
+            {...courseModalConfig(selectedCourse)}
+            onSubmit={async (data) => {
+                if (selectedCourse) {
+                // Si hay un curso seleccionado, editarlo
+                await handleEditCourse(selectedCourse.id, data);
+                } else {
+                // Si no hay un curso seleccionado, agregar uno nuevo
+                await handleAddCourse(data);
+                }
+
+                // Cerrar el modal después de guardar
+                handleCloseCourseModal();
+            }}
             />
 
             {/* Botón para eliminar cuenta */}

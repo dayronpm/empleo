@@ -600,3 +600,130 @@ export const addEditJobModalConfig = (job = null) => ({
     tipo: job?.tipo || "",
   },
 });
+
+export const courseModalConfig = (course = null) => ({
+  title: course ? "Editar Curso" : "Agregar Nuevo Curso",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: course ? "Guardar Cambios" : "Agregar Curso", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[600px]",
+  },
+  formContent: ({ register, errors, watch, setValue }) => {
+    return (
+      <>
+        {/* Título */}
+        <div>
+          <label className="block font-medium">Título</label>
+          <input
+            {...register("titulo", { required: "El título es obligatorio" })}
+            className={`w-full p-2 border rounded ${errors.titulo && "border-red-500"}`}
+          />
+          {errors.titulo && <span className="text-red-500 text-sm">{errors.titulo.message}</span>}
+        </div>
+
+        {/* Descripción */}
+        <div className="mt-4">
+          <label className="block font-medium">Descripción</label>
+          <textarea
+            {...register("descripcion", { required: "La descripción es obligatoria" })}
+            className={`w-full p-2 border rounded ${errors.descripcion && "border-red-500"}`}
+          />
+          {errors.descripcion && <span className="text-red-500 text-sm">{errors.descripcion.message}</span>}
+        </div>
+
+        {/* Nivel */}
+        <div className="mt-4">
+          <label className="block font-medium">Nivel</label>
+          <select
+            {...register("nivel", { required: "El nivel es obligatorio" })}
+            className={`w-full p-2 border rounded ${errors.nivel && "border-red-500"}`}
+          >
+            <option value="">Selecciona un nivel</option>
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+          </select>
+          {errors.nivel && <span className="text-red-500 text-sm">{errors.nivel.message}</span>}
+        </div>
+
+        {/* Modalidad */}
+        <div className="mt-4">
+          <label className="block font-medium">Modalidad</label>
+          <select
+            {...register("modalidad", { required: "La modalidad es obligatoria" })}
+            className={`w-full p-2 border rounded ${errors.modalidad && "border-red-500"}`}
+          >
+            <option value="">Selecciona una modalidad</option>
+            <option value="Online">Online</option>
+            <option value="Presencial">Presencial</option>
+          </select>
+          {errors.modalidad && <span className="text-red-500 text-sm">{errors.modalidad.message}</span>}
+        </div>
+
+        {/* Precio */}
+        <div className="mt-4">
+          <label className="block font-medium">Precio</label>
+          <input
+            type="number"
+            {...register("precio", { 
+              required: "El precio es obligatorio",
+              min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+            })}
+            className={`w-full p-2 border rounded ${errors.precio && "border-red-500"}`}
+          />
+          {errors.precio && <span className="text-red-500 text-sm">{errors.precio.message}</span>}
+        </div>
+
+        {/* Dirección */}
+        <div className="mt-4">
+          <label className="block font-medium">Dirección</label>
+          <input
+            {...register("direccion")}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        {/* Requisitos */}
+        <div className="mt-4">
+          <label className="block font-medium">Requisitos</label>
+          <textarea
+            {...register("requisitos")}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        {/* Descripción Completa */}
+        <div className="mt-4">
+          <label className="block font-medium">Descripción Completa</label>
+          <textarea
+            {...register("descripcionCompleta")}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+      </>
+    );
+  },
+  validationSchema: {
+    titulo: { required: "El título es obligatorio" },
+    descripcion: { required: "La descripción es obligatoria" },
+    nivel: { required: "El nivel es obligatorio" },
+    modalidad: { required: "La modalidad es obligatoria" },
+    precio: { 
+      required: "El precio es obligatorio",
+      min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+    },
+  },
+  initialValues: {
+    titulo: course?.titulo || "",
+    descripcion: course?.descripcion || "",
+    nivel: course?.nivel || "",
+    modalidad: course?.modalidad || "",
+    precio: course?.precio || "",
+    direccion: course?.direccion || "",
+    requisitos: course?.requisitos || "",
+    descripcionCompleta: course?.descripcionCompleta || "",
+  },
+});

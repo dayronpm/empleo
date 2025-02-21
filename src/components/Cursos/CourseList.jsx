@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton = false, showMoreInfo = true }) => {
+const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton = false, showMoreInfo = false }) => {
     return (
         <div>
             <ul>

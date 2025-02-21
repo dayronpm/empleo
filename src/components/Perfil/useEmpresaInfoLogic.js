@@ -140,6 +140,7 @@ const useEmpresaInfoLogic = () => {
     // Funcion para cerrar el cmodal de curso
     const handleCloseCourseModal = () => {
         setCourseModalOpen(false);
+        setSelectedCourse(null); // Limpiar el curso seleccionado al cerrar el modal
     };
 
     //Sincronizar los campos editables del formulario con los datos actuales de la empresa cada vez que algo cambia
@@ -234,8 +235,14 @@ const useEmpresaInfoLogic = () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: courseId, ...updatedData }),
                 });
+        
                 if (!response.ok) throw new Error('Error al editar el curso');
-                reloadEmpresaInfo(); // Refresca la lista de cursos
+        
+                // Recargar los datos de la empresa para reflejar los cambios
+                reloadEmpresaInfo();
+        
+                // Cerrar el modal después de editar
+                handleCloseCourseModal();
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -362,6 +369,28 @@ const handleEditJob = async (data) => {
     }
 };
 
+// Nueva función para manejar la creación de un curso
+const handleAddCourse = async (data) => {
+    try {
+        const response = await fetch(`${API_URL}/addcourse`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ...data,
+                id_master: id, // ID de la empresa
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al agregar el curso');
+        }
+
+        window.location.reload(); // Recargar la página después de agregar
+    } catch (error) {
+        console.error(error);
+    }
+};
+
     return {
         empresa,
         jobOffers,
@@ -427,7 +456,8 @@ const handleEditJob = async (data) => {
         handleDeleteJob,
         handleConfirmDeleteJob,
         handleAddJob,
-        handleEditJob 
+        handleEditJob,
+        handleAddCourse 
     };
 };
 
