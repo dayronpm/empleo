@@ -4,7 +4,6 @@ import Header from "./Header";
 import PersonalInfo from "./PersonalInfo";
 import ProfessionalInfo from "./ProfessionalInfo";
 import ExportButton from "./ExportButton";
-import HistoryModal from "./HistoryModal";
 
 function CurriculumII() {
   const [showHistory, setShowHistory] = useState(false);
@@ -34,15 +33,6 @@ function CurriculumII() {
           </button>
           <ExportButton />
         </div>
-        {/* Historial de cambios */}
-        <button
-          onClick={() => setShowHistory(true)}
-          className="mt-4 text-blue-500 hover:underline"
-        >
-          Historial de cambios
-        </button>
-        {/* Modal de historial */}
-        {showHistory && <HistoryModal onClose={() => setShowHistory(false)} />}
       </div>
       {/* Botón Cerrar */}
       <button

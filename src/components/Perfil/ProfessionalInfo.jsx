@@ -1,247 +1,320 @@
 import React, { useState } from "react";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import SummarySection from "./SummarySection";
+import ExperienceSection from "./ExperienceSection";
+import EducationSection from "./EducationSection";
+import SkillsSection from "./SkillsSection";
+import LanguagesSection from "./LanguagesSection";
+import CertificationsSection from "./CertificationsSection";
+import { confirmationModalConfig } from "../helpers/ModalConfigurations";
+import GenericModal from "../generics/GenericModal";
 
 const ProfessionalInfo = () => {
-  // Estados para manejar la información profesional
+  const [activeSection, setActiveSection] = useState("summary");
+  const [isEditing, setIsEditing] = useState(false);
+  const [summary, setSummary] = useState("");
   const [experiences, setExperiences] = useState([]);
   const [educations, setEducations] = useState([]);
   const [skills, setSkills] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [certifications, setCertifications] = useState([]);
+  const [originalState, setOriginalState] = useState({
+    summary: "",
+    experiences: [],
+    educations: [],
+    skills: [],
+    languages: [],
+    certifications: [],
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteAction, setDeleteAction] = useState(null);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false); // Estado para el modal de advertencia
 
-  // Función para agregar nueva experiencia laboral
-  const addExperience = () => {
-    setExperiences([
-      ...experiences,
-      { id: Date.now(), company: "", position: "", period: "", description: "" },
-    ]);
+  const addItem = (state, setState, newItem) => {
+    setState([...state, { id: Date.now(), ...newItem }]);
   };
 
-  // Función para editar experiencia laboral
-  const editExperience = (id, field, value) => {
-    setExperiences(
-      experiences.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
-      )
+  const editItem = (state, setState, id, field, value) => {
+    setState(state.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  };
+
+  const deleteItem = (state, setState, id) => {
+    setState(state.filter((item) => item.id !== id));
+  };
+
+  const startEditing = () => {
+    setOriginalState({
+      summary,
+      experiences,
+      educations,
+      skills,
+      languages,
+      certifications,
+    });
+    setIsEditing(true);
+  };
+
+  const validateLanguages = () => {
+    return languages.every((lang) => lang.language.trim() !== "");
+  };
+
+  const validateSkills = () => {
+    return skills.every((skill) => skill.name.trim() !== "");
+  };
+
+  const validateEducation = () => {
+    return educations.some(
+      (edu) =>
+        edu.institution.trim() !== "" ||
+        edu.degree.trim() !== "" ||
+        edu.details.trim() !== ""
     );
   };
 
-  // Función para eliminar experiencia laboral
-  const deleteExperience = (id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta experiencia?")) {
-      setExperiences(experiences.filter((exp) => exp.id !== id));
+  const validateExperience = () => {
+    return experiences.some(
+      (exp) =>
+        exp.company.trim() !== "" ||
+        exp.position.trim() !== "" ||
+        exp.description.trim() !== ""
+    );
+  };
+
+  const saveChanges = () => {
+    if (activeSection === "languages" && !validateLanguages()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para idiomas
+      return;
+    }
+    if (activeSection === "skills" && !validateSkills()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para habilidades
+      return;
+    }
+    if (activeSection === "education" && !validateEducation()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para educación
+      return;
+    }
+    if (activeSection === "experience" && !validateExperience()) {
+      setIsWarningModalOpen(true); // Abre el modal de advertencia para experiencia laboral
+      return;
+    }
+    setIsEditing(false);
+  };
+
+  const cancelChanges = () => {
+    setSummary(originalState.summary);
+    setExperiences(originalState.experiences);
+    setEducations(originalState.educations);
+    setSkills(originalState.skills);
+    setLanguages(originalState.languages);
+    setCertifications(originalState.certifications);
+    setIsEditing(false);
+  };
+
+  const hasChanges = () => {
+    switch (activeSection) {
+      case "summary":
+        return summary.trim() !== "";
+      case "experience":
+        return experiences.length > 0;
+      case "education":
+        return educations.length > 0;
+      case "skills":
+        return skills.length > 0;
+      case "languages":
+        return languages.length > 0;
+      case "certifications":
+        return certifications.length > 0;
+      default:
+        return false;
     }
   };
 
-  // Similar para educación, habilidades, idiomas y certificaciones...
+  const openModal = (action) => {
+    setDeleteAction(() => action);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setDeleteAction(null);
+    setIsModalOpen(false);
+  };
+
+  const confirmDelete = () => {
+    if (deleteAction) {
+      deleteAction();
+    }
+    closeModal();
+  };
+
+  const closeWarningModal = () => {
+    setIsWarningModalOpen(false); // Cierra el modal de advertencia
+  };
 
   return (
-    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
-      <h2 className="text-xl font-bold mb-4">Información profesional</h2>
-
-      {/* Experiencia laboral */}
-      <div className="space-y-4">
-        <h3 className="font-semibold">Experiencia laboral</h3>
-        {experiences.length === 0 && (
-          <p className="text-gray-500">No hay experiencias laborales registradas.</p>
-        )}
-        {experiences.map((exp) => (
-          <div key={exp.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Empresa"
-              value={exp.company}
-              onChange={(e) => editExperience(exp.id, "company", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Puesto"
-              value={exp.position}
-              onChange={(e) => editExperience(exp.id, "position", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Período"
-              value={exp.period}
-              onChange={(e) => editExperience(exp.id, "period", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <textarea
-              placeholder="Descripción"
-              value={exp.description}
-              onChange={(e) => editExperience(exp.id, "description", e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={() => deleteExperience(exp.id)}
-                className="text-red-500 hover:underline"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        ))}
-        <button
-          onClick={addExperience}
-          className="text-blue-500 hover:underline"
+    <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
+      {/* Título y Dropdown alineados horizontalmente */}
+      <div className="flex items-center gap-4 mb-4">
+        <h1 className="text-xl font-bold">Información profesional</h1>
+        <select
+          value={activeSection}
+          onChange={(e) => setActiveSection(e.target.value)}
+          className="p-2 border rounded bg-white"
         >
-          + Agregar experiencia
-        </button>
+          <option value="summary">Resumen Profesional</option>
+          <option value="experience">Experiencia Laboral</option>
+          <option value="education">Educación</option>
+          <option value="skills">Habilidades</option>
+          <option value="languages">Idiomas</option>
+          <option value="certifications">Certificaciones</option>
+        </select>
       </div>
 
-      {/* Educación */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Educación</h3>
-        {educations.length === 0 && (
-          <p className="text-gray-500">No hay estudios registrados.</p>
-        )}
-        {educations.map((edu) => (
-          <div key={edu.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Institución"
-              value={edu.institution}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Título"
-              value={edu.title}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Período"
-              value={edu.period}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar estudio</button>
-      </div>
+      {/* Contenido dinámico según la sección activa */}
+      {activeSection === "summary" && (
+        <SummarySection summary={summary} setSummary={setSummary} isEditing={isEditing} />
+      )}
+      {activeSection === "experience" && (
+        <ExperienceSection
+          experiences={experiences}
+          setExperiences={setExperiences}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "education" && (
+        <EducationSection
+          educations={educations}
+          setEducations={setEducations}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "skills" && (
+        <SkillsSection
+          skills={skills}
+          setSkills={setSkills}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "languages" && (
+        <LanguagesSection
+          languages={languages}
+          setLanguages={setLanguages}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
+      {activeSection === "certifications" && (
+        <CertificationsSection
+          certifications={certifications}
+          setCertifications={setCertifications}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
 
-      {/* Habilidades */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Habilidades</h3>
-        {skills.length === 0 && (
-          <p className="text-gray-500">No hay habilidades registradas.</p>
-        )}
-        {skills.map((skill) => (
-          <div key={skill.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Nombre de la habilidad"
-              value={skill.name}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <select
-              value={skill.level}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
+      {/* Botones de edición */}
+      {!isEditing && (
+        <div className="flex gap-4 mt-4">
+          <button
+            onClick={startEditing}
+            className="flex items-center gap-1 text-blue-500 hover:underline"
+          >
+            <BsPencilSquare size={16} />
+            Editar
+          </button>
+          {activeSection === "summary" && summary.trim() !== "" && (
+            <button
+              onClick={() => openModal(() => setSummary(""))}
+              className="flex items-center gap-1 text-red-500 hover:underline"
             >
-              <option value="">Selecciona un nivel</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-            </select>
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar habilidad</button>
-      </div>
-
-      {/* Idiomas */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Idiomas</h3>
-        {languages.length === 0 && (
-          <p className="text-gray-500">No hay idiomas registrados.</p>
-        )}
-        {languages.map((lang) => (
-          <div key={lang.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Idioma"
-              value={lang.language}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <select
-              value={lang.spokenLevel}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
+              <BsTrash size={16} />
+              Eliminar
+            </button>
+          )}
+        </div>
+      )}
+      {isEditing && activeSection === "summary" && (
+        <div className="flex justify-start space-x-2 mt-4">
+          {/* Botón Cancelar Edición visible solo si el campo está vacío */}
+          {summary.trim() === "" && (
+            <button
+              onClick={cancelChanges}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
             >
-              <option value="">Nivel hablado</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-              <option value="Nativo">Nativo</option>
-            </select>
-            <select
-              value={lang.writtenLevel}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            >
-              <option value="">Nivel escrito</option>
-              <option value="Básico">Básico</option>
-              <option value="Intermedio">Intermedio</option>
-              <option value="Avanzado">Avanzado</option>
-              <option value="Nativo">Nativo</option>
-            </select>
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar idioma</button>
-      </div>
+              Cancelar
+            </button>
+          )}
+          {/* Botones Aceptar y Cancelar visibles solo si hay texto en el resumen */}
+          {summary.trim() !== "" && (
+            <>
+              <button
+                onClick={saveChanges}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
+              >
+                Aceptar
+              </button>
+              <button
+                onClick={cancelChanges}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      {isEditing && activeSection !== "summary" && (
+        <div className="flex justify-start space-x-2 mt-4">
+          <button
+            onClick={saveChanges}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 flex items-center gap-1"
+          >
+            Aceptar
+          </button>
+          <button
+            onClick={cancelChanges}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 flex items-center gap-1"
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
 
-      {/* Certificaciones */}
-      <div className="space-y-4 mt-6">
-        <h3 className="font-semibold">Certificaciones</h3>
-        {certifications.length === 0 && (
-          <p className="text-gray-500">No hay certificaciones registradas.</p>
+      {/* Modal de confirmación */}
+      <GenericModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSubmit={confirmDelete}
+        {...confirmationModalConfig(deleteAction ? "¿Está seguro de que desea realizar esta acción?" : "")}
+      />
+
+      {/* Modal de advertencia */}
+      <GenericModal
+        isOpen={isWarningModalOpen}
+        onClose={closeWarningModal}
+        onSubmit={closeWarningModal} // Solo cierra el modal, no realiza ninguna acción adicional
+        {...confirmationModalConfig(
+          activeSection === "languages"
+            ? "Por favor, selecciona un idioma válido para cada entrada."
+            : activeSection === "skills"
+            ? "Por favor, selecciona una habilidad válida para cada entrada."
+            : activeSection === "education"
+            ? "Por favor, completa al menos un campo."
+            : "Por favor, completa al menos un campo."
         )}
-        {certifications.map((cert) => (
-          <div key={cert.id} className="border p-4 rounded-lg">
-            <input
-              type="text"
-              placeholder="Nombre de la certificación"
-              value={cert.name}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Institución"
-              value={cert.institution}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <input
-              type="text"
-              placeholder="Año"
-              value={cert.year}
-              onChange={(e) => {}}
-              className="w-full p-2 mb-2 border rounded"
-            />
-            <div className="flex gap-2">
-              <button className="text-red-500 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        ))}
-        <button className="text-blue-500 hover:underline">+ Agregar certificación</button>
-      </div>
+      />
     </div>
   );
 };

@@ -1,26 +1,105 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const usePersonalInfo = () => {
+const API_URL = 'http://localhost:3001'; // Change this if your server is at a different URL
+
+const usePersonalInfo = (showNotification) => {
   // Estado inicial de la información personal
   const [info, setInfo] = useState({
-    fullName: "Juan Pérez",
-    username: "juanperez",
-    province: "La Habana",
-    municipality: "Plaza",
-    phones: ["+53 55555555"],
-    email: "juanperez@example.com",
+
+    telefono : [""],
+
   });
+
+  const telefono = [""];
+  // Obtiene el ID del usuario almacenado en localStorage.
+  const id = localStorage.getItem('id');
+
+  // Estado para manejar los campos de cambio de contraseña
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  //Cargar datos del usuario
+  const fetchUserData = async () => {
+      try {
+          const response = await fetch(`${API_URL}/usuario`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id }), // Send user ID in the body
+          });
+          if (!response.ok) {
+              throw new Error('Error al cargar la información del usuario');
+          }
+          const data = await response.json();
+
+          if (!data.telefono) {
+            data.telefono = [];
+          }
+          else{
+            data.telefono = JSON.parse(data.telefono);
+          }
+          setInfo(data);
+      } catch (error) {
+          console.error(error);
+      }
+  };
+
+  //Actualizar datos del usuario
+  const updateUserData = async (id, info) => {
+    try {
+        const response = await fetch(`${API_URL}/updateusuario`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id, info }), // Send user ID in the body
+        });
+        if (!response.ok) {
+            throw new Error('Error al actualizar la información del usuario');
+        }
+        else{
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+  //Llamar a la función para cargar datos del usuario
+  useEffect(() => {
+      fetchUserData();
+  }, []);
+
+//Actualizar contraseña del usuario
+const updateUserPassword = async (newPassword) => {
+  try {
+    const response = await fetch(`${API_URL}/updatePassword`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, newPassword }),
+    });
+    if (!response.ok) {
+      throw new Error('Error al actualizar la contraseña');
+    }
+
+    // Mostrar notificación de éxito
+    showNotification("Contraseña actualizada exitosamente.", "success");
+  } catch (error) {
+    console.error(error);
+
+    // Mostrar notificación de error
+    showNotification("Error al actualizar la contraseña.", "error");
+  }
+};
 
   // Estado para manejar el modal de edición de información
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Estado para manejar el modal de edición de contraseña
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-
-  // Estado para manejar los campos de cambio de contraseña
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   // Función para abrir el modal de edición de información
   const openEditModal = () => {
@@ -39,60 +118,51 @@ const usePersonalInfo = () => {
 
   // Función para agregar un nuevo teléfono
   const addPhone = () => {
-    setInfo((prevInfo) => ({ ...prevInfo, phones: [...prevInfo.phones, ""] }));
+    setInfo((prevInfo) => ({ ...prevInfo, telefono: [...prevInfo.telefono, ""] }));
   };
 
   // Función para eliminar un teléfono
   const removePhone = (index) => {
     setInfo((prevInfo) => {
-      if (prevInfo.phones.length > 1) {
-        const updatedPhones = prevInfo.phones.filter((_, i) => i !== index);
-        return { ...prevInfo, phones: updatedPhones };
+      if (prevInfo.telefono.length > 1) {
+        const updatedPhones = prevInfo.telefono.filter((_, i) => i !== index);
+        return { ...prevInfo, telefono: updatedPhones };
       }
       return prevInfo;
     });
   };
 
   // Función para guardar los cambios de información personal
-  const handleSaveChanges = () => {
-    // Validación: Asegúrate de que todos los campos estén completos
-    if (!info.fullName || !info.username || !info.province || !info.municipality || !info.email) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
+  const handleSaveChanges = (updatedInfo) => {
+    // Actualizar el estado global con los datos confirmados
+    setInfo(updatedInfo);
 
-    // Simulación de guardado exitoso
-    alert("Información actualizada exitosamente.");
+    // Llamar a la función para actualizar los datos en el servidor
+    updateUserData(id, updatedInfo);
+
+    // Mostrar notificación de éxito
+    showNotification("Información actualizada exitosamente.", "success");
+
+    // Cerrar el modal
     closeEditModal();
   };
 
   // Función para guardar la nueva contraseña
-  const handleSavePassword = () => {
-    // Validación: Verificar que todos los campos estén completos
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      alert("Todos los campos son obligatorios.");
+  const handleSavePassword = (data) => {
+    const storedPassword = localStorage.getItem('password'); // Contraseña almacenada (simulada)
+    if (data.currentPassword !== storedPassword) {
+      showNotification("La contraseña actual es incorrecta.", "error");
       return;
     }
-
-    // Validación: Verificar que las contraseñas coincidan
-    if (newPassword !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+  
+    if (data.newPassword !== data.confirmPassword) {
+      showNotification("Las contraseñas no coinciden.", "error");
       return;
     }
-
-    // Simulación de validación de la contraseña actual
-    const storedPassword = "oldpassword123"; // Contraseña almacenada (simulada)
-    if (currentPassword !== storedPassword) {
-      alert("La contraseña actual es incorrecta.");
-      return;
-    }
-
-    // Simulación de guardado exitoso
-    alert("Contraseña actualizada exitosamente.");
-    setIsPasswordModalOpen(false); // Cierra el modal
-    setCurrentPassword(""); // Limpia los campos
-    setNewPassword("");
-    setConfirmPassword("");
+  
+    updateUserPassword(data.newPassword);
+    localStorage.setItem('password', data.newPassword);
+    setIsPasswordModalOpen(false);
   };
 
   return {
