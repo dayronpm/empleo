@@ -6,11 +6,13 @@ import EducationSection from "./EducationSection";
 import SkillsSection from "./SkillsSection";
 import LanguagesSection from "./LanguagesSection";
 import CertificationsSection from "./CertificationsSection";
+import ProjectsSection from "./ProjectsSection";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 import GenericModal from "../generics/GenericModal";
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
+  const [projects, setProjects] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [summary, setSummary] = useState("");
   const [experiences, setExperiences] = useState([]);
@@ -28,7 +30,7 @@ const ProfessionalInfo = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteAction, setDeleteAction] = useState(null);
-  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false); // Estado para el modal de advertencia
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
@@ -80,21 +82,33 @@ const ProfessionalInfo = () => {
     );
   };
 
+  const validateProjects = () => {
+    return projects.every((project) => 
+      project.name.trim() !== "" &&
+      project.startDate &&
+      project.description.trim() !== ""
+    );
+  };
+
   const saveChanges = () => {
     if (activeSection === "languages" && !validateLanguages()) {
-      setIsWarningModalOpen(true); // Abre el modal de advertencia para idiomas
+      setIsWarningModalOpen(true);
       return;
     }
     if (activeSection === "skills" && !validateSkills()) {
-      setIsWarningModalOpen(true); // Abre el modal de advertencia para habilidades
+      setIsWarningModalOpen(true);
       return;
     }
     if (activeSection === "education" && !validateEducation()) {
-      setIsWarningModalOpen(true); // Abre el modal de advertencia para educación
+      setIsWarningModalOpen(true);
       return;
     }
     if (activeSection === "experience" && !validateExperience()) {
-      setIsWarningModalOpen(true); // Abre el modal de advertencia para experiencia laboral
+      setIsWarningModalOpen(true);
+      return;
+    }
+    if (activeSection === "projects" && !validateProjects()) {
+      setIsWarningModalOpen(true);
       return;
     }
     setIsEditing(false);
@@ -124,6 +138,8 @@ const ProfessionalInfo = () => {
         return languages.length > 0;
       case "certifications":
         return certifications.length > 0;
+      case "projects":
+        return projects.length > 0;
       default:
         return false;
     }
@@ -147,12 +163,11 @@ const ProfessionalInfo = () => {
   };
 
   const closeWarningModal = () => {
-    setIsWarningModalOpen(false); // Cierra el modal de advertencia
+    setIsWarningModalOpen(false);
   };
 
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
-      {/* Título y Dropdown alineados horizontalmente */}
       <div className="flex items-center gap-4 mb-4">
         <h1 className="text-xl font-bold">Información profesional</h1>
         <select
@@ -166,10 +181,10 @@ const ProfessionalInfo = () => {
           <option value="skills">Habilidades</option>
           <option value="languages">Idiomas</option>
           <option value="certifications">Certificaciones</option>
+          <option value="projects">Proyectos</option>
         </select>
       </div>
 
-      {/* Contenido dinámico según la sección activa */}
       {activeSection === "summary" && (
         <SummarySection summary={summary} setSummary={setSummary} isEditing={isEditing} />
       )}
@@ -223,8 +238,17 @@ const ProfessionalInfo = () => {
           isEditing={isEditing}
         />
       )}
+      {activeSection === "projects" && (
+        <ProjectsSection
+          projects={projects}
+          setProjects={setProjects}
+          addItem={addItem}
+          editItem={editItem}
+          deleteItem={deleteItem}
+          isEditing={isEditing}
+        />
+      )}
 
-      {/* Botones de edición */}
       {!isEditing && (
         <div className="flex gap-4 mt-4">
           <button
@@ -247,7 +271,6 @@ const ProfessionalInfo = () => {
       )}
       {isEditing && activeSection === "summary" && (
         <div className="flex justify-start space-x-2 mt-4">
-          {/* Botón Cancelar Edición visible solo si el campo está vacío */}
           {summary.trim() === "" && (
             <button
               onClick={cancelChanges}
@@ -256,7 +279,6 @@ const ProfessionalInfo = () => {
               Cancelar
             </button>
           )}
-          {/* Botones Aceptar y Cancelar visibles solo si hay texto en el resumen */}
           {summary.trim() !== "" && (
             <>
               <button
@@ -292,7 +314,6 @@ const ProfessionalInfo = () => {
         </div>
       )}
 
-      {/* Modal de confirmación */}
       <GenericModal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -300,11 +321,10 @@ const ProfessionalInfo = () => {
         {...confirmationModalConfig(deleteAction ? "¿Está seguro de que desea realizar esta acción?" : "")}
       />
 
-      {/* Modal de advertencia */}
       <GenericModal
         isOpen={isWarningModalOpen}
         onClose={closeWarningModal}
-        onSubmit={closeWarningModal} // Solo cierra el modal, no realiza ninguna acción adicional
+        onSubmit={closeWarningModal}
         {...confirmationModalConfig(
           activeSection === "languages"
             ? "Por favor, selecciona un idioma válido para cada entrada."
@@ -312,6 +332,10 @@ const ProfessionalInfo = () => {
             ? "Por favor, selecciona una habilidad válida para cada entrada."
             : activeSection === "education"
             ? "Por favor, completa al menos un campo."
+            : activeSection === "experience"
+            ? "Por favor, completa al menos un campo."
+            : activeSection === "projects"
+            ? "Por favor, completa todos los campos."
             : "Por favor, completa al menos un campo."
         )}
       />
