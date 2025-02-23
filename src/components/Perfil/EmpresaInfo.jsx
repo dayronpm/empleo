@@ -63,7 +63,8 @@ const EmpresaInfo = () => {
         isDeleteCourseModalOpen,
         setIsDeleteCourseModalOpen,
         selectedCourseForDeletion,
-        handleConfirmDeleteCourse
+        handleConfirmDeleteCourse,
+        setSelectedJob
     } = useEmpresaInfoLogic();
 
     // Si no hay datos de la empresa, mostrar un mensaje de carga
@@ -139,7 +140,10 @@ const EmpresaInfo = () => {
 
             <GenericModal
                 isOpen={isAddJobModalOpen}
-                onClose={() => setIsAddJobModalOpen(false)}
+                onClose={() => {
+                    setIsAddJobModalOpen(false);
+                    setSelectedJob(null); // Limpiar el trabajo seleccionado al cerrar el modal
+                }}
                 onSubmit={selectedJob ? handleEditJob : handleAddJob} // Usa handleEditJob si hay un trabajo seleccionado
                 {...addEditJobModalConfig(selectedJob)} // Configuración dinámica para agregar/editar
             />

@@ -229,8 +229,8 @@ export const editInfoModalConfig = {
 export const confirmationModalConfig = (message) => ({
   title: "Confirmación",
   actions: [
-    { label: "Cancelar", onClick: "close" },
     { label: "Aceptar", onClick: "submit", primary: true },
+    { label: "Cancelar", onClick: "close" },
   ],
   customStyles: {
     overlay: "bg-black bg-opacity-70",
