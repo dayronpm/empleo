@@ -206,7 +206,7 @@ const useEmpresaInfoLogic = () => {
     const handleDeleteAccount = async (password) => {
         const id = localStorage.getItem('id'); // Get the user ID from local storage
         try {
-            const response = await fetch(`${API_URL}/borrarempresa`, {
+            const response = await fetch(`${API_URL}/borrarusuario`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
