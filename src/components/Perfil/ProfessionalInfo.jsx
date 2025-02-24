@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import SummarySection from "./SummarySection";
-import ExperienceSection from "./ExperienceSection";
-import EducationSection from "./EducationSection";
-import SkillsSection from "./SkillsSection";
-import LanguagesSection from "./LanguagesSection";
-import CertificationsSection from "./CertificationsSection";
-import ProjectsSection from "./ProjectsSection";
+import Section from "./Section";
+import { getSectionConfigs } from "./SectionConfigurations";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 import GenericModal from "../generics/GenericModal";
 
@@ -166,6 +162,28 @@ const ProfessionalInfo = () => {
     setIsWarningModalOpen(false);
   };
 
+  const sectionConfigs = getSectionConfigs(isEditing);
+
+  // Objeto para mapear los nombres de las secciones a sus variables de estado
+  const sectionStateMap = {
+    experience: experiences,
+    education: educations,
+    skills: skills,
+    languages: languages,
+    certifications: certifications,
+    projects: projects
+  };
+
+  // Objeto para mapear los nombres de las secciones a sus funciones setState
+  const sectionSetStateMap = {
+    experience: setExperiences,
+    education: setEducations,
+    skills: setSkills,
+    languages: setLanguages,
+    certifications: setCertifications,
+    projects: setProjects
+  };
+
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
       <div className="flex items-center gap-4 mb-4">
@@ -188,63 +206,28 @@ const ProfessionalInfo = () => {
       {activeSection === "summary" && (
         <SummarySection summary={summary} setSummary={setSummary} isEditing={isEditing} />
       )}
-      {activeSection === "experience" && (
-        <ExperienceSection
-          experiences={experiences}
-          setExperiences={setExperiences}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
-          isEditing={isEditing}
-        />
-      )}
-      {activeSection === "education" && (
-        <EducationSection
-          educations={educations}
-          setEducations={setEducations}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
-          isEditing={isEditing}
-        />
-      )}
-      {activeSection === "skills" && (
-        <SkillsSection
-          skills={skills}
-          setSkills={setSkills}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
-          isEditing={isEditing}
-        />
-      )}
-      {activeSection === "languages" && (
-        <LanguagesSection
-          languages={languages}
-          setLanguages={setLanguages}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
-          isEditing={isEditing}
-        />
-      )}
-      {activeSection === "certifications" && (
-        <CertificationsSection
-          certifications={certifications}
-          setCertifications={setCertifications}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
-          isEditing={isEditing}
-        />
-      )}
-      {activeSection === "projects" && (
-        <ProjectsSection
-          projects={projects}
-          setProjects={setProjects}
-          addItem={addItem}
-          editItem={editItem}
-          deleteItem={deleteItem}
+      
+      {activeSection !== "summary" && sectionConfigs[activeSection] && (
+        <Section
+          {...sectionConfigs[activeSection]}
+          items={sectionStateMap[activeSection]}
+          onAdd={() => addItem(
+            sectionStateMap[activeSection],
+            sectionSetStateMap[activeSection],
+            sectionConfigs[activeSection].defaultItem
+          )}
+          onEdit={(id, field, value) => editItem(
+            sectionStateMap[activeSection],
+            sectionSetStateMap[activeSection],
+            id,
+            field,
+            value
+          )}
+          onDelete={(id) => deleteItem(
+            sectionStateMap[activeSection],
+            sectionSetStateMap[activeSection],
+            id
+          )}
           isEditing={isEditing}
         />
       )}

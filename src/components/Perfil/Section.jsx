@@ -45,7 +45,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) =
                 </label>
                 {/* Campo de Entrada */}
                 {customInput ? (
-                  customInput(item[key], (value) => onEdit(item.id, key, value))
+                  customInput(item[key], (value) => onEdit(item.id, key, value), items)
                 ) : options ? (
                   <select
                     id={`${key}-${item.id}`}
