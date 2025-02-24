@@ -1,5 +1,5 @@
 import React from 'react';
-import { languagesList, technicalSkillsList } from './data';
+import { languagesList, technicalSkillsList } from '../Perfil/data';
 
 // Función auxiliar para crear un input personalizado básico
 const createBasicCustomInput = (isEditing) => (value, onChange) => 

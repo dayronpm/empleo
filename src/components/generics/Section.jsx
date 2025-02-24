@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs";
-import GenericModal from "../generics/GenericModal";
+import GenericModal from "./GenericModal";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 
 const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing }) => {

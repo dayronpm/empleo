@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import SummarySection from "./SummarySection";
-import Section from "./Section";
-import { getSectionConfigs } from "./SectionConfigurations";
+import Section from "../generics/Section";
+import { getSectionConfigs } from "../helpers/SectionConfigurations";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 import GenericModal from "../generics/GenericModal";
 
