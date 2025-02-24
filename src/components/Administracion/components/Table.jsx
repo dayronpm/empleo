@@ -1,10 +1,10 @@
 // src/components/Table.jsx
 import React, { useState } from 'react';
-import TableHeader from './TableHeader';
-import TableRow from './TableRow';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
-import InfoModal from './InfoModal';
-import TableActions from './TableActions';
+import TableHeader from './table/TableHeader';
+import TableRow from './table/TableRow';
+import DeleteConfirmationModal from './table/DeleteConfirmationModal';
+import InfoModal from './table/InfoModal';
+import TableActions from './table/TableActions';
 
 const Table = ({ headers, data, actions }) => {
   const [selectedRow, setSelectedRow] = useState(null); // Estado para almacenar la fila seleccionada
