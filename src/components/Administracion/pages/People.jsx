@@ -4,6 +4,7 @@ import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Dropdown from '../components/Dropdown';
 import { notifySuccess, notifyError } from '../components/ToastNotification'; // Importación corregida
+import { FaPlus } from 'react-icons/fa'; // Ícono de agregar
 
 const People = () => {
   const [people, setPeople] = useState([
@@ -17,39 +18,31 @@ const People = () => {
     { id: 8, nombreCompleto: 'Sofía Ramírez', provincia: 'Palma', municipio: 'Palma', rolLaboral: 'Contadora' },
     { id: 9, nombreCompleto: 'David Sánchez', provincia: 'Las Palmas', municipio: 'Las Palmas', rolLaboral: 'Técnico' },
     { id: 10, nombreCompleto: 'Laura González', provincia: 'Bilbao', municipio: 'Bilbao', rolLaboral: 'Abogada' },
-    { id: 11, nombreCompleto: 'Miguel Álvarez', provincia: 'Alicante', municipio: 'Elche', rolLaboral: 'Arquitecto' },
-    { id: 12, nombreCompleto: 'Isabel Díaz', provincia: 'Córdoba', municipio: 'Córdoba', rolLaboral: 'Profesora' },
-    { id: 13, nombreCompleto: 'Daniel Castro', provincia: 'Granada', municipio: 'Granada', rolLaboral: 'Diseñador' },
-    { id: 14, nombreCompleto: 'Carmen Vargas', provincia: 'Vigo', municipio: 'Vigo', rolLaboral: 'Administrativa' },
-    { id: 15, nombreCompleto: 'Pablo Ortega', provincia: 'Gijón', municipio: 'Gijón', rolLaboral: 'Desarrollador' },
-    { id: 16, nombreCompleto: 'Rosa Márquez', provincia: 'Santa Cruz', municipio: 'Santa Cruz', rolLaboral: 'Enfermera' },
-    { id: 17, nombreCompleto: 'Antonio Navarro', provincia: 'Pamplona', municipio: 'Pamplona', rolLaboral: 'Médico' },
-    { id: 18, nombreCompleto: 'Lucía Jiménez', provincia: 'Donostia', municipio: 'Donostia', rolLaboral: 'Periodista' },
-    { id: 19, nombreCompleto: 'Francisco Herrera', provincia: 'Valladolid', municipio: 'Valladolid', rolLaboral: 'Electricista' },
-    { id: 20, nombreCompleto: 'Natalia Peña', provincia: 'Oviedo', municipio: 'Oviedo', rolLaboral: 'Psicóloga' },
-    { id: 21, nombreCompleto: 'Raúl Medina', provincia: 'Logroño', municipio: 'Logroño', rolLaboral: 'Chef' },
-    { id: 22, nombreCompleto: 'Patricia Silva', provincia: 'Badajoz', municipio: 'Badajoz', rolLaboral: 'Veterinaria' },
-    { id: 23, nombreCompleto: 'Manuel Castro', provincia: 'Salamanca', municipio: 'Salamanca', rolLaboral: 'Carpintero' },
-    { id: 24, nombreCompleto: 'Clara Ríos', provincia: 'Huelva', municipio: 'Huelva', rolLaboral: 'Farmacéutica' },
-    { id: 25, nombreCompleto: 'Alejandro Rubio', provincia: 'León', municipio: 'León', rolLaboral: 'Mecánico' },
-    { id: 26, nombreCompleto: 'Adriana Vega', provincia: 'Cádiz', municipio: 'Cádiz', rolLaboral: 'Traductora' },
-    { id: 27, nombreCompleto: 'José Morales', provincia: 'Jaén', municipio: 'Jaén', rolLaboral: 'Camarero' },
-    { id: 28, nombreCompleto: 'Sara Guzmán', provincia: 'Lugo', municipio: 'Lugo', rolLaboral: 'Fotógrafa' },
-    { id: 29, nombreCompleto: 'Mario Blanco', provincia: 'Tarragona', municipio: 'Tarragona', rolLaboral: 'Pintor' },
-    { id: 30, nombreCompleto: 'Paula Núñez', provincia: 'Ciudad Real', municipio: 'Ciudad Real', rolLaboral: 'Secretaria' },
+    // ... más personas ...
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Estado para el modal de agregar
   const [selectedPerson, setSelectedPerson] = useState(null);
 
+  // Función para manejar la edición de una persona
   const handleEdit = (person) => {
     setSelectedPerson(person);
     setIsModalOpen(true);
   };
 
+  // Función para manejar la eliminación de una persona
   const handleDelete = (id) => {
     setPeople(people.filter((person) => person.id !== id));
     notifySuccess('Usuario eliminado correctamente'); // Usa la función de notificación
+  };
+
+  // Función para agregar una nueva persona
+  const handleAddPerson = (newPerson) => {
+    const newId = people.length > 0 ? Math.max(...people.map((p) => p.id)) + 1 : 1; // Genera un nuevo ID
+    setPeople([...people, { id: newId, ...newPerson }]);
+    setIsAddModalOpen(false); // Cierra el modal
+    notifySuccess('Persona agregada correctamente');
   };
 
   const headers = ['Nombre Completo', 'Provincia', 'Municipio', 'Rol Laboral'];
@@ -67,11 +60,108 @@ const People = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Personas</h2>
+      <div className="flex justify-between items-center mb-4">
+        {/* Título */}
+        <h2 className="text-2xl font-bold">Personas</h2>
+
+        {/* Botón de Agregar Persona */}
+        <button
+          title="Agregar Persona"
+          className="flex items-center text-green-500 hover:text-green-700 transition-colors"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <FaPlus size={16} className="mr-1" /> Agregar
+        </button>
+      </div>
+
+      {/* Tabla */}
       <Table headers={headers} data={people} actions={actions} />
+
+      {/* Modal de Edición */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <h3>Editar Información de {selectedPerson?.nombreCompleto}</h3>
         <Dropdown options={['Información Personal', 'Información Laboral']} onSelect={(option) => console.log(option)} />
+      </Modal>
+
+      {/* Modal de Agregar Persona */}
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}>
+        <h3 className="text-xl font-bold mb-4">Agregar Nueva Persona</h3>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const newPerson = {
+              nombreCompleto: formData.get('nombreCompleto'),
+              provincia: formData.get('provincia'),
+              municipio: formData.get('municipio'),
+              rolLaboral: formData.get('rolLaboral'),
+            };
+            handleAddPerson(newPerson);
+          }}
+        >
+          <div className="space-y-4">
+            {/* Campo Nombre Completo */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nombre Completo</label>
+              <input
+                type="text"
+                name="nombreCompleto"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+              />
+            </div>
+
+            {/* Campo Provincia */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Provincia</label>
+              <input
+                type="text"
+                name="provincia"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+              />
+            </div>
+
+            {/* Campo Municipio */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Municipio</label>
+              <input
+                type="text"
+                name="municipio"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+              />
+            </div>
+
+            {/* Campo Rol Laboral */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Rol Laboral</label>
+              <input
+                type="text"
+                name="rolLaboral"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                required
+              />
+            </div>
+
+            {/* Botones del Formulario */}
+            <div className="flex justify-end space-x-2">
+              <button
+                type="button"
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                onClick={() => setIsAddModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </form>
       </Modal>
     </div>
   );

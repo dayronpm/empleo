@@ -1,5 +1,6 @@
 // src/components/Table.jsx
 import React, { useState } from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa'; // Importamos íconos de react-icons
 
 const Table = ({ headers, data, actions }) => {
   const [selectedRow, setSelectedRow] = useState(null); // Estado para almacenar la fila seleccionada
@@ -55,8 +56,29 @@ const Table = ({ headers, data, actions }) => {
                     {value}
                   </td>
                 ))}
-                <td className="py-2 px-4">
-                  {actions(row)}
+                <td className="py-2 px-4 flex gap-2">
+                  {/* Icono de Editar con Tooltip */}
+                  <button
+                    title="Editar"
+                    className="text-blue-500 hover:text-blue-700 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Evitar que se abra el modal al hacer clic en el botón
+                      actions.onEdit(row);
+                    }}
+                  >
+                    <FaEdit size={18} />
+                  </button>
+                  {/* Icono de Eliminar con Tooltip */}
+                  <button
+                    title="Eliminar"
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Evitar que se abra el modal al hacer clic en el botón
+                      actions.onDelete(row.id);
+                    }}
+                  >
+                    <FaTrash size={18} />
+                  </button>
                 </td>
               </tr>
             );
