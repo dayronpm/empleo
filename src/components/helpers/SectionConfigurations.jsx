@@ -190,8 +190,8 @@ export const getSectionConfigs = (isEditing) => ({
               ))}
             </select>
           ) : (
-            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-              <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
+            <div className="text-gray-800">
+              <span className="font-medium">{value}</span>
             </div>
           );
         }
@@ -212,12 +212,19 @@ export const getSectionConfigs = (isEditing) => ({
               ))}
             </select>
           ) : (
-            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-              <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+            <div className="text-gray-600">
+              <span>Nivel {value}</span>
             </div>
           )
       }
-    ]
+    ],
+    readOnlyRender: (item) => (
+      <div className="flex items-center gap-2 py-2">
+        <span className="font-medium text-gray-800">{item.language}</span>
+        <span className="text-gray-500">•</span>
+        <span className="text-gray-600">Nivel {item.spokenLevel}</span>
+      </div>
+    )
   },
 
   skills: {
@@ -246,8 +253,8 @@ export const getSectionConfigs = (isEditing) => ({
               ))}
             </select>
           ) : (
-            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-              <span className="font-semibold text-gray-900">{value || "No especificado"}</span>
+            <div className="text-gray-800">
+              <span className="font-medium">{value}</span>
             </div>
           );
         }
@@ -268,13 +275,20 @@ export const getSectionConfigs = (isEditing) => ({
               ))}
             </select>
           ) : (
-            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-              <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+            <div className="text-gray-600">
+              <span>{value}</span>
             </div>
           )
       }
-    ]
-  },
+    ],
+    readOnlyRender: (item) => (
+      <div className="flex items-center gap-2 py-2">
+        <span className="font-medium text-gray-800">{item.name}</span>
+        <span className="text-gray-500">•</span>
+        <span className="text-gray-600">{item.level}</span>
+      </div>
+    )
+},
 
   projects: {
     title: "Proyectos",

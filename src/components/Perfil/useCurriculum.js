@@ -103,6 +103,71 @@ const useCurriculum = () => {
    const [searchTermSoft, setSearchTermSoft] = useState('');
    const [searchTermLanguage, setSearchTermLanguage] = useState('');
 
+   const saveLanguages = async (languages) => {
+        try {
+            console.log('Guardando idiomas:', languages);
+            const userId = localStorage.getItem('id');
+            
+            // Asegurarse de que los datos estén en el formato correcto
+            const formattedData = {
+                id: userId,
+                campo: 'idiomas',
+                datos: languages // languages ya viene formateado correctamente
+            };
+
+            console.log('Enviando datos:', formattedData); // Para debugging
+
+            const response = await fetch('http://localhost:3001/update-curriculum', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al guardar los idiomas');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error al guardar los idiomas:', error);
+            throw error;
+        }
+    };
+
+    const saveSkills = async (skills) => {
+        try {
+            console.log('Guardando habilidades:', skills);
+            const userId = localStorage.getItem('id');
+            
+            const formattedData = {
+                id: userId,
+                campo: 'habilidades',
+                datos: skills
+            };
+    
+            console.log('Enviando datos:', formattedData);
+    
+            const response = await fetch('http://localhost:3001/update-curriculum', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedData)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Error al guardar las habilidades');
+            }
+    
+            return await response.json();
+        } catch (error) {
+            console.error('Error al guardar las habilidades:', error);
+            throw error;
+        }
+    };
+
    return {
        formData,
        handleChange,
@@ -120,7 +185,9 @@ const useCurriculum = () => {
        searchTermSoft,
        setSearchTermSoft,
        searchTermLanguage,
-       setSearchTermLanguage
+       setSearchTermLanguage,
+       saveLanguages,
+       saveSkills,
    };
 };
 

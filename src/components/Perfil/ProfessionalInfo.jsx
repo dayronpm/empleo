@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import SummarySection from "./SummarySection";
 import Section from "../generics/Section";
 import { getSectionConfigs } from "../helpers/SectionConfigurations";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 import GenericModal from "../generics/GenericModal";
+import { toast } from 'react-toastify';
+import useCurriculum from "./useCurriculum";
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -27,6 +29,7 @@ const ProfessionalInfo = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteAction, setDeleteAction] = useState(null);
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+  const { saveLanguages, saveSkills } = useCurriculum();
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
@@ -86,7 +89,7 @@ const ProfessionalInfo = () => {
     );
   };
 
-  const saveChanges = () => {
+  const saveChanges = async () => {
     if (activeSection === "languages" && !validateLanguages()) {
       setIsWarningModalOpen(true);
       return;
@@ -107,7 +110,37 @@ const ProfessionalInfo = () => {
       setIsWarningModalOpen(true);
       return;
     }
-    setIsEditing(false);
+    
+    try {
+      if (activeSection === "languages") {
+        console.log('Estado actual de languages:', languages);
+        
+        const formattedLanguages = languages.map(lang => ({
+          language: lang.language,
+          level: lang.spokenLevel
+        }));
+        
+        console.log('Idiomas formateados:', formattedLanguages);
+        
+        await saveLanguages(formattedLanguages);
+        toast.success('Idiomas guardados correctamente');
+      }
+      else if (activeSection === "skills") {
+        console.log('Estado actual de skills:', skills);
+        const formattedSkills = skills.map(skill => ({
+          name: skill.name,
+          level: skill.level
+        }));
+        console.log('Habilidades formateadas:', formattedSkills);
+        await saveSkills(formattedSkills);
+        toast.success('Habilidades guardadas correctamente');
+      }
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error al guardar:', error);
+      toast.error('Error al guardar los cambios');
+    }
   };
 
   const cancelChanges = () => {
@@ -183,6 +216,74 @@ const ProfessionalInfo = () => {
     certifications: setCertifications,
     projects: setProjects
   };
+
+  // Función para cargar los datos del usuario
+  const loadUserData = async () => {
+    try {
+      const userId = localStorage.getItem('id');
+      const response = await fetch('http://localhost:3001/usuario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: userId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar los datos del usuario');
+      }
+
+      const userData = await response.json();
+      
+      // Cargar idiomas
+      if (userData.idiomas) {
+        try {
+          const parsedLanguages = JSON.parse(userData.idiomas);
+          const formattedLanguages = parsedLanguages.map(lang => ({
+            id: Date.now() + Math.random(),
+            language: lang.language,
+            spokenLevel: lang.level
+          }));
+          
+          setLanguages(formattedLanguages);
+          setOriginalState(prev => ({
+            ...prev,
+            languages: formattedLanguages
+          }));
+        } catch (e) {
+          console.error('Error al parsear los idiomas:', e);
+        }
+      }
+
+      // Cargar habilidades
+      if (userData.habilidades) {
+        try {
+          const parsedSkills = JSON.parse(userData.habilidades);
+          const formattedSkills = parsedSkills.map(skill => ({
+            id: Date.now() + Math.random(),
+            name: skill.name,
+            level: skill.level
+          }));
+          
+          setSkills(formattedSkills);
+          setOriginalState(prev => ({
+            ...prev,
+            skills: formattedSkills
+          }));
+        } catch (e) {
+          console.error('Error al parsear las habilidades:', e);
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar los datos:', error);
+      toast.error('Error al cargar los datos del usuario');
+    }
+  };
+
+  // Cargar datos cuando el componente se monta
+  useEffect(() => {
+    loadUserData();
+  }, []);
 
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
