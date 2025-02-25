@@ -18,7 +18,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
         <ul>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('dashboard');
                 toggleSidebar(); // Cierra el menú después de seleccionar
@@ -30,7 +30,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
           </li>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-gray-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('people');
                 toggleSidebar();
@@ -42,7 +42,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
           </li>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('companies');
                 toggleSidebar();
@@ -54,7 +54,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
           </li>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('jobs');
                 toggleSidebar();
@@ -66,7 +66,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
           </li>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('courses');
                 toggleSidebar();
@@ -78,7 +78,7 @@ const Sidebar = ({ setActivePage, isOpen, toggleSidebar }) => {
           </li>
           <li>
             <button
-              className="flex items-center w-full px-4 py-2 hover:bg-blue-700"
+              className="flex items-center w-full px-4 py-2 hover:bg-gray-700 transition-colors duration-150"
               onClick={() => {
                 setActivePage('admins');
                 toggleSidebar();
