@@ -90,7 +90,11 @@ const Ofertas = () => {
             </div>
 
             {/* Listado de Ofertas */}
-            <JobList jobs={currentJobs} onJobSelect={setSelectedJob} />
+            <JobList 
+                jobs={currentJobs} 
+                onJobSelect={setSelectedJob} 
+                activeFilters={filters}
+            />
 
             {/* Paginación */}
             <Pagination 
