@@ -80,12 +80,24 @@ export const getSectionConfigs = (isEditing) => ({
               ))}
             </select>
           ) : (
-            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
-              <span className="font-medium text-gray-800">{value || "No especificado"}</span>
+            <div className="text-gray-800">
+              <span className="font-medium">{value}</span>
             </div>
           )
       }
-    ]
+    ],
+    emptyMessage: "No hay información registrada",
+    readOnlyRender: (item) => (
+      <div className="space-y-2">
+        <div className="text-gray-800">
+          <span className="font-medium">{item.name}</span>
+          <span className="text-gray-600"> en </span>
+          <span className="font-medium">{item.institution}</span>
+          <span className="text-gray-600"> en </span>
+          <span className="font-medium">{item.year}</span>
+        </div>
+      </div>
+    )
   },
 
   education: {
@@ -116,14 +128,60 @@ export const getSectionConfigs = (isEditing) => ({
       {
         label: "Fecha de Fin",
         key: "endDate",
-        customInput: createDateInput(isEditing)
+        customInput: (value, onChange) =>
+          isEditing ? (
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={value ? value.toISOString().split("T")[0] : ""}
+                onChange={(e) => onChange(e.target.value ? new Date(e.target.value) : null)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              />
+              {value && (
+                <button
+                  onClick={() => onChange(null)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Marcar como Actualidad"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+              <span className="font-medium text-gray-800">
+                {value ? value.toLocaleDateString() : "Actualidad"}
+              </span>
+            </div>
+          )
       },
       {
         label: "Detalles adicionales",
         key: "details",
         customInput: createCustomTextarea(isEditing)
       }
-    ]
+    ],
+    emptyMessage: "No hay información registrada",
+    readOnlyRender: (item) => (
+      <div className="space-y-2">
+        <div className="text-gray-800">
+          <span className="font-medium">{item.degree}</span>
+          <span className="text-gray-600"> en </span>
+          <span className="font-medium">{item.institution}</span>
+          <span className="text-gray-600"> desde </span>
+          <span className="font-medium">{item.startDate.toLocaleDateString()}</span>
+          <span className="text-gray-600"> hasta </span>
+          <span className="font-medium">
+            {item.endDate ? item.endDate.toLocaleDateString() : "Actualidad"}
+          </span>
+        </div>
+        {item.details && (
+          <div className="text-gray-700 pl-4 border-l-2 border-gray-200">
+            {item.details}
+          </div>
+        )}
+      </div>
+    )
   },
 
   experience: {
@@ -154,14 +212,58 @@ export const getSectionConfigs = (isEditing) => ({
       {
         label: "Fecha de Fin",
         key: "endDate",
-        customInput: createDateInput(isEditing)
+        customInput: (value, onChange) =>
+          isEditing ? (
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={value ? value.toISOString().split("T")[0] : ""}
+                onChange={(e) => onChange(e.target.value ? new Date(e.target.value) : null)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              />
+              {value && (
+                <button
+                  onClick={() => onChange(null)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Marcar como Actualidad"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+              <span className="font-medium text-gray-800">
+                {value ? value.toLocaleDateString() : "Actualidad"}
+              </span>
+            </div>
+          )
       },
       {
         label: "Descripción de tus responsabilidades y logros",
         key: "description",
         customInput: createCustomTextarea(isEditing)
       }
-    ]
+    ],
+    emptyMessage: "No hay información registrada",
+    readOnlyRender: (item) => (
+      <div className="space-y-2">
+        <div className="text-gray-800">
+          <span className="font-medium">{item.position}</span>
+          <span className="text-gray-600"> en </span>
+          <span className="font-medium">{item.company}</span>
+          <span className="text-gray-600"> desde </span>
+          <span className="font-medium">{item.startDate.toLocaleDateString()}</span>
+          <span className="text-gray-600"> hasta </span>
+          <span className="font-medium">
+            {item.endDate ? item.endDate.toLocaleDateString() : "Actualidad"}
+          </span>
+        </div>
+        <div className="text-gray-700 pl-4 border-l-2 border-gray-200">
+          {item.description}
+        </div>
+      </div>
+    )
   },
 
   languages: {
@@ -312,13 +414,57 @@ export const getSectionConfigs = (isEditing) => ({
       {
         label: "Fecha de fin",
         key: "endDate",
-        customInput: createDateInput(isEditing)
+        customInput: (value, onChange) =>
+          isEditing ? (
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={value ? value.toISOString().split("T")[0] : ""}
+                onChange={(e) => onChange(e.target.value ? new Date(e.target.value) : null)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              />
+              {value && (
+                <button
+                  onClick={() => onChange(null)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Marcar como Actualidad"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col bg-[#f9fafb] p-4 rounded-lg shadow-sm">
+              <span className="font-medium text-gray-800">
+                {value ? value.toLocaleDateString() : "Actualidad"}
+              </span>
+            </div>
+          )
       },
       {
         label: "Descripción",
         key: "description",
         customInput: createCustomTextarea(isEditing)
       }
-    ]
+    ],
+    emptyMessage: "No hay información registrada",
+    readOnlyRender: (item) => (
+      <div className="space-y-2">
+        <div className="text-gray-800">
+          <span className="font-medium">{item.name}</span>
+          <span className="text-gray-600"> desde </span>
+          <span className="font-medium">{item.startDate.toLocaleDateString()}</span>
+          <span className="text-gray-600"> hasta </span>
+          <span className="font-medium">
+            {item.endDate ? item.endDate.toLocaleDateString() : "Actualidad"}
+          </span>
+        </div>
+        {item.description && (
+          <div className="text-gray-700 pl-4 border-l-2 border-gray-200">
+            {item.description}
+          </div>
+        )}
+      </div>
+    )
   }
 }); 
