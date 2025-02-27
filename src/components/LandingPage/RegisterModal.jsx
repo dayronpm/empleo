@@ -14,53 +14,66 @@ const RegisterModal = ({ isOpen, onClose, openLogin, handleLoginSuccess }) => {
     const [usernameError, setUsernameError] = useState('');
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name || !username || !password || !confirmPassword) {
-        setError('Todos los campos son obligatorios');
-        return;
-    }
-    if (password !== confirmPassword) {
-        setError('Las contraseñas no coinciden');
-        return;
-    }
-    try {
-        const response = await fetch(`${API_URL}/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password, userType, name }),
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            if (data.error === "Nombre de usuario ya en uso") {
-                setUsernameError(data.error); // Actualizar el estado de error específico
-                setError(''); // Limpiar el error general
-            } else {
-                setError(data.error); // Manejar otros errores generales
-            }
+        e.preventDefault();
+        if (!name || !username || !password || !confirmPassword) {
+            setError('Todos los campos son obligatorios');
             return;
         }
-        // Clear the form and close the modal on successful registration
-        setName('');
-        setUsername('');
-        setPassword('');
-        setConfirmPassword('');
-        setError('');
-        setUsernameError(''); // Limpiar el error específico
-        onClose(); // Close the modal
+        if (password !== confirmPassword) {
+            setError('Las contraseñas no coinciden');
+            return;
+        }
+        try {
+            console.log('Enviando datos al servidor:', { username, password, userType, name });
+            
+            const response = await fetch(`${API_URL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password, userType, name }),
+            });
+            
+            console.log('Respuesta del servidor:', response.status);
+            
+            const data = await response.json();
+            console.log('Datos de respuesta:', data);
+            
+            if (!response.ok) {
+                if (data.error === "Nombre de usuario ya en uso") {
+                    setUsernameError(data.error);
+                    setError('');
+                } else {
+                    setError(data.error);
+                }
+                return;
+            }
 
-        // Login user automáticamente tras el registro
-        const loginData = await loginUser(username, password);
-        localStorage.setItem('token', loginData.token);
-        localStorage.setItem('username', username);
-        localStorage.setItem('tipo', loginData.tipo);
-        localStorage.setItem('id', loginData.id);
-        handleLoginSuccess(username);
-    } catch (error) {
-        setError('Error al registrar el usuario. Inténtalo de nuevo.');
-    }
-};
+            // Si llegamos aquí, el registro fue exitoso
+            setName('');
+            setUsername('');
+            setPassword('');
+            setConfirmPassword('');
+            setError('');
+            setUsernameError('');
+
+            // Login automático tras el registro
+            try {
+                const loginData = await loginUser(username, password);
+                localStorage.setItem('token', loginData.token);
+                localStorage.setItem('username', username);
+                localStorage.setItem('tipo', loginData.tipo);
+                localStorage.setItem('id', loginData.id);
+                handleLoginSuccess(username);
+                onClose();
+            } catch (loginError) {
+                console.error('Error en login:', loginError);
+                setError('Error al iniciar sesión automáticamente. Por favor, inicie sesión manualmente.');
+            }
+        } catch (error) {
+            setError(`Error de conexión. Por favor, inténtelo de nuevo.`);
+        }
+    };
 
     // Efecto para manejar el cierre del modal con la tecla Escape
     useEffect(() => {

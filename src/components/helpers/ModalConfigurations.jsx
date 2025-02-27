@@ -774,3 +774,29 @@ export const deleteCourseModalConfig = (course) => ({
     confirmationWord: "",
   },
 });
+
+export const unsavedChangesModalConfig = {
+  title: "Cambios sin guardar",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Continuar sin guardar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors }) => {
+    return (
+      <>
+        <div className="mb-4">
+          <p className="text-gray-700">
+            Hay cambios sin guardar en esta sección. Si continúas, perderás los cambios realizados.
+          </p>
+          <p className="text-gray-700 mt-2">
+            ¿Deseas continuar sin guardar los cambios?
+          </p>
+        </div>
+      </>
+    );
+  },
+};

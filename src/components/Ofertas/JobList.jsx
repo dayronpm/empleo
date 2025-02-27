@@ -1,4 +1,4 @@
-const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) => {
+const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false, activeFilters = {} }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -34,14 +34,22 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) =
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex flex-col">
-                            <p className="text-gray-700 font-semibold"><strong>Provincia:</strong> {job.provincia}</p>
-                            <p className="text-black"><strong>Municipio:</strong> {job.municipio}</p>
+                            {!activeFilters.provincia && (
+                                <p className="text-gray-700 font-semibold"><strong>Provincia:</strong> {job.provincia}</p>
+                            )}
+                            {!activeFilters.municipio && (
+                                <p className="text-black"><strong>Municipio:</strong> {job.municipio}</p>
+                            )}
                             <p className="text-gray-600 font-semibold"><strong>Salario:</strong> {job.salario}</p>
                         </div>
                         <div className="flex flex-col">
                             <p className="text-black text-sm"><strong>Fecha:</strong> {formatDate(job.fecha)}</p>
-                            <p className="text-gray-600"><strong>Nivel de Experiencia:</strong> {job.experiencia}</p>
-                            <p className="text-gray-600"><strong>Categoría:</strong> {job.categoria}</p>
+                            {!activeFilters.experiencia && (
+                                <p className="text-gray-600"><strong>Nivel de Experiencia:</strong> {job.experiencia}</p>
+                            )}
+                            {!activeFilters.categoria && (
+                                <p className="text-gray-600"><strong>Categoría:</strong> {job.categoria}</p>
+                            )}
                         </div>
                     </div>
                     <p className="text-gray-600 line-clamp-2"><strong>Descripción:</strong> {job.descripcion}</p>

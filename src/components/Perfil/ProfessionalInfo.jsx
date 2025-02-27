@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import SummarySection from "./SummarySection";
 import Section from "../generics/Section";
 import { getSectionConfigs } from "../helpers/SectionConfigurations";
-import { confirmationModalConfig } from "../helpers/ModalConfigurations";
+import { confirmationModalConfig, unsavedChangesModalConfig } from "../helpers/ModalConfigurations";
 import GenericModal from "../generics/GenericModal";
+import { toast } from 'react-toastify';
+import useCurriculum from "./useCurriculum";
+import NotificationPopup from "../generics/NotificationPopup";
 
 const ProfessionalInfo = () => {
   const [activeSection, setActiveSection] = useState("summary");
@@ -27,12 +30,49 @@ const ProfessionalInfo = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteAction, setDeleteAction] = useState(null);
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+  const [pendingSection, setPendingSection] = useState(null);
+  const [showUnsavedChangesModal, setShowUnsavedChangesModal] = useState(false);
+  const { saveLanguages, saveSkills, saveSummary, saveExperience, saveEducation, saveCertifications, saveProjects } = useCurriculum();
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    message: "",
+    type: "info"
+  });
 
   const addItem = (state, setState, newItem) => {
     setState([...state, { id: Date.now(), ...newItem }]);
   };
 
   const editItem = (state, setState, id, field, value) => {
+    if ((activeSection === "experience" || activeSection === "education") && 
+        (field === "startDate" || field === "endDate")) {
+      const item = state.find(item => item.id === id);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Resetear la hora para comparar solo fechas
+      
+      // Validar que ninguna fecha sea posterior a la actual
+      if (value && new Date(value) > today) {
+        showNotification('La fecha no puede ser posterior a la fecha actual', 'error');
+        return;
+      }
+
+      if (field === "endDate" && value) {
+        const startDate = item.startDate;
+        if (startDate && new Date(value) < new Date(startDate)) {
+          showNotification('La fecha de fin no puede ser anterior a la fecha de inicio', 'error');
+          return;
+        }
+      }
+      
+      if (field === "startDate" && value) {
+        const endDate = item.endDate;
+        if (endDate && new Date(endDate) < new Date(value)) {
+          showNotification('La fecha de inicio no puede ser posterior a la fecha de fin', 'error');
+          return;
+        }
+      }
+    }
+
     setState(state.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
   };
 
@@ -61,32 +101,86 @@ const ProfessionalInfo = () => {
   };
 
   const validateEducation = () => {
-    return educations.some(
+    if (educations.length === 0) {
+      return true;
+    }
+
+    return educations.every(
       (edu) =>
-        edu.institution.trim() !== "" ||
-        edu.degree.trim() !== "" ||
-        edu.details.trim() !== ""
+        edu.institution.trim() !== "" &&
+        edu.degree.trim() !== "" &&
+        edu.startDate // Solo estos campos son obligatorios
     );
   };
 
   const validateExperience = () => {
-    return experiences.some(
+    if (experiences.length === 0) {
+      return true;
+    }
+
+    return experiences.every(
       (exp) =>
-        exp.company.trim() !== "" ||
-        exp.position.trim() !== "" ||
-        exp.description.trim() !== ""
+        exp.company.trim() !== "" &&
+        exp.position.trim() !== "" &&
+        exp.startDate // Solo estos campos son obligatorios
     );
+  };
+
+  const validateExperienceDates = () => {
+    return experiences.every((exp) => {
+      if (exp.endDate) {
+        return new Date(exp.endDate) >= new Date(exp.startDate);
+      }
+      return true;
+    });
+  };
+
+  const validateEducationDates = () => {
+    return educations.every((edu) => {
+      if (edu.endDate) {
+        return new Date(edu.endDate) >= new Date(edu.startDate);
+      }
+      return true;
+    });
   };
 
   const validateProjects = () => {
+    if (projects.length === 0) {
+      return true;
+    }
+
     return projects.every((project) => 
       project.name.trim() !== "" &&
-      project.startDate &&
-      project.description.trim() !== ""
+      project.startDate // Solo estos campos son obligatorios
     );
   };
 
-  const saveChanges = () => {
+  const validateCertifications = () => {
+    if (certifications.length === 0) {
+      return true;
+    }
+
+    return certifications.every(
+      (cert) =>
+        cert.name.trim() !== "" &&
+        cert.institution.trim() !== "" &&
+        cert.year
+    );
+  };
+
+  const showNotification = (message, type = "info") => {
+    setNotification({
+      isOpen: true,
+      message,
+      type
+    });
+  };
+
+  const closeNotification = () => {
+    setNotification(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const saveChanges = async () => {
     if (activeSection === "languages" && !validateLanguages()) {
       setIsWarningModalOpen(true);
       return;
@@ -99,15 +193,117 @@ const ProfessionalInfo = () => {
       setIsWarningModalOpen(true);
       return;
     }
-    if (activeSection === "experience" && !validateExperience()) {
-      setIsWarningModalOpen(true);
-      return;
+    if (activeSection === "experience") {
+      if (!validateExperience()) {
+        setIsWarningModalOpen(true);
+        return;
+      }
+      if (!validateExperienceDates()) {
+        showNotification('Hay fechas inválidas en la experiencia laboral', 'error');
+        return;
+      }
     }
     if (activeSection === "projects" && !validateProjects()) {
       setIsWarningModalOpen(true);
       return;
     }
-    setIsEditing(false);
+    
+    if (activeSection === "education") {
+      if (!validateEducationDates()) {
+        showNotification('Hay fechas inválidas en la educación', 'error');
+        return;
+      }
+    }
+    
+    if (activeSection === "certifications" && !validateCertifications()) {
+      setIsWarningModalOpen(true);
+      return;
+    }
+    
+    try {
+      if (activeSection === "languages") {
+        console.log('Estado actual de languages:', languages);
+        
+        const formattedLanguages = languages.map(lang => ({
+          language: lang.language,
+          level: lang.spokenLevel
+        }));
+        
+        console.log('Idiomas formateados:', formattedLanguages);
+        
+        await saveLanguages(formattedLanguages);
+        toast.success('Idiomas guardados correctamente');
+      }
+      else if (activeSection === "skills") {
+        console.log('Estado actual de skills:', skills);
+        const formattedSkills = skills.map(skill => ({
+          name: skill.name,
+          level: skill.level
+        }));
+        console.log('Habilidades formateadas:', formattedSkills);
+        await saveSkills(formattedSkills);
+        toast.success('Habilidades guardadas correctamente');
+      }
+      else if (activeSection === "summary") {
+        console.log('Guardando resumen:', summary);
+        await saveSummary(summary.trim());
+        toast.success('Resumen guardado correctamente');
+      }
+      else if (activeSection === "experience") {
+        console.log('Estado actual de experiencia:', experiences);
+        const formattedExperience = experiences.map(exp => ({
+          company: exp.company.trim(),
+          position: exp.position.trim(),
+          startDate: exp.startDate,
+          endDate: exp.endDate,
+          description: exp.description.trim()
+        }));
+        console.log('Experiencia formateada:', formattedExperience);
+        await saveExperience(formattedExperience);
+        showNotification('Experiencia guardada correctamente', 'success');
+      }
+      else if (activeSection === "education") {
+        console.log('Estado actual de educación:', educations);
+        const formattedEducation = educations.map(edu => ({
+          institution: edu.institution.trim(),
+          degree: edu.degree.trim(),
+          startDate: edu.startDate,
+          endDate: edu.endDate,
+          details: edu.details ? edu.details.trim() : ""
+        }));
+        console.log('Educación formateada:', formattedEducation);
+        await saveEducation(formattedEducation);
+        showNotification('Educación guardada correctamente', 'success');
+      }
+      else if (activeSection === "certifications") {
+        console.log('Estado actual de certificaciones:', certifications);
+        const formattedCertifications = certifications.map(cert => ({
+          name: cert.name.trim(),
+          institution: cert.institution.trim(),
+          year: cert.year
+        }));
+        console.log('Certificaciones formateadas:', formattedCertifications);
+        await saveCertifications(formattedCertifications);
+        showNotification('Certificaciones guardadas correctamente', 'success');
+      }
+      else if (activeSection === "projects") {
+        console.log('Estado actual de proyectos:', projects);
+        const formattedProjects = projects.map(proj => ({
+          name: proj.name.trim(),
+          startDate: proj.startDate,
+          endDate: proj.endDate,
+          description: proj.description ? proj.description.trim() : ""
+        }));
+        console.log('Proyectos formateados:', formattedProjects);
+        await saveProjects(formattedProjects);
+        showNotification('Proyectos guardados correctamente', 'success');
+      }
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error al guardar:', error);
+      showNotification('Error al guardar los cambios', 'error');
+    }
   };
 
   const cancelChanges = () => {
@@ -184,13 +380,253 @@ const ProfessionalInfo = () => {
     projects: setProjects
   };
 
+  // Función para verificar si hay cambios sin guardar
+  const hasUnsavedChanges = () => {
+    const currentItems = sectionStateMap[activeSection];
+    const originalItems = originalState[activeSection];
+    
+    if (activeSection === "summary") {
+      return summary !== originalState.summary;
+    }
+    
+    // Comparar los arrays de items actuales con los originales
+    return JSON.stringify(currentItems) !== JSON.stringify(originalItems);
+  };
+
+  // Función para manejar el cambio de sección
+  const handleSectionChange = (newSection) => {
+    if (isEditing && hasUnsavedChanges()) {
+      setPendingSection(newSection);
+      setShowUnsavedChangesModal(true);
+    } else {
+      setActiveSection(newSection);
+    }
+  };
+
+  // Función para confirmar el cambio de sección sin guardar
+  const confirmSectionChange = () => {
+    setIsEditing(false);
+    setActiveSection(pendingSection);
+    setPendingSection(null);
+    setShowUnsavedChangesModal(false);
+    
+    // Revertir los cambios al estado original
+    if (activeSection === "summary") {
+      setSummary(originalState.summary);
+    } else {
+      sectionSetStateMap[activeSection](originalState[activeSection]);
+    }
+  };
+
+  // Función para cargar los datos del usuario
+  const loadUserData = async () => {
+    try {
+      const userId = localStorage.getItem('id');
+      const response = await fetch('http://localhost:3001/usuario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: userId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar los datos del usuario');
+      }
+
+      const userData = await response.json();
+      
+      // Cargar resumen
+      if (userData.resumen) {
+        try {
+          const parsedResumen = JSON.parse(userData.resumen);
+          // Si el resumen es un array vacío o no tiene contenido, establecerlo como string vacío
+          const resumeContent = Array.isArray(parsedResumen) ? 
+            (parsedResumen.length === 0 ? "" : parsedResumen[0]) : // Si es array, tomar el primer elemento o string vacío
+            String(parsedResumen); // Si no es array, convertir a string
+          
+          setSummary(resumeContent || ""); // Asegurar que siempre sea string
+          setOriginalState(prev => ({
+            ...prev,
+            summary: resumeContent || ""
+          }));
+        } catch (e) {
+          console.error('Error al parsear el resumen:', e);
+          // Si hay error al parsear, establecer como string vacío
+          setSummary("");
+          setOriginalState(prev => ({
+            ...prev,
+            summary: ""
+          }));
+        }
+      }
+
+      // Cargar idiomas
+      if (userData.idiomas) {
+        try {
+          const parsedLanguages = JSON.parse(userData.idiomas);
+          const formattedLanguages = parsedLanguages.map(lang => ({
+            id: Date.now() + Math.random(),
+            language: lang.language,
+            spokenLevel: lang.level
+          }));
+          
+          setLanguages(formattedLanguages);
+          setOriginalState(prev => ({
+            ...prev,
+            languages: formattedLanguages
+          }));
+        } catch (e) {
+          console.error('Error al parsear los idiomas:', e);
+        }
+      }
+
+      // Cargar habilidades
+      if (userData.habilidades) {
+        try {
+          const parsedSkills = JSON.parse(userData.habilidades);
+          const formattedSkills = parsedSkills.map(skill => ({
+            id: Date.now() + Math.random(),
+            name: skill.name,
+            level: skill.level
+          }));
+          
+          setSkills(formattedSkills);
+          setOriginalState(prev => ({
+            ...prev,
+            skills: formattedSkills
+          }));
+        } catch (e) {
+          console.error('Error al parsear las habilidades:', e);
+        }
+      }
+
+      // Cargar experiencia
+      if (userData.experiencia) {
+        try {
+          const parsedExperience = JSON.parse(userData.experiencia);
+          const formattedExperience = parsedExperience.map(exp => ({
+            id: Date.now() + Math.random(),
+            company: exp.company,
+            position: exp.position,
+            startDate: new Date(exp.startDate),
+            endDate: exp.endDate ? new Date(exp.endDate) : null,
+            description: exp.description
+          }));
+          
+          setExperiences(formattedExperience);
+          setOriginalState(prev => ({
+            ...prev,
+            experiences: formattedExperience
+          }));
+        } catch (e) {
+          console.error('Error al parsear la experiencia:', e);
+          toast.error('Error al cargar la experiencia laboral');
+        }
+      }
+
+      // Cargar educación
+      if (userData.educacion) {
+        try {
+          const parsedEducation = JSON.parse(userData.educacion);
+          const formattedEducation = parsedEducation.map(edu => ({
+            id: Date.now() + Math.random(),
+            institution: edu.institution,
+            degree: edu.degree,
+            startDate: new Date(edu.startDate),
+            endDate: edu.endDate ? new Date(edu.endDate) : null,
+            details: edu.details || ""
+          }));
+          
+          setEducations(formattedEducation);
+          setOriginalState(prev => ({
+            ...prev,
+            educations: formattedEducation
+          }));
+        } catch (e) {
+          console.error('Error al parsear la educación:', e);
+          showNotification('Error al cargar la educación', 'error');
+        }
+      }
+
+      // Cargar certificaciones
+      if (userData.certificaciones) {
+        try {
+          const parsedCertifications = JSON.parse(userData.certificaciones);
+          const formattedCertifications = parsedCertifications.map(cert => ({
+            id: Date.now() + Math.random(),
+            name: cert.name,
+            institution: cert.institution,
+            year: cert.year
+          }));
+          
+          setCertifications(formattedCertifications);
+          setOriginalState(prev => ({
+            ...prev,
+            certifications: formattedCertifications
+          }));
+        } catch (e) {
+          console.error('Error al parsear las certificaciones:', e);
+          showNotification('Error al cargar las certificaciones', 'error');
+        }
+      }
+
+      // Cargar proyectos
+      if (userData.proyectos) {
+        try {
+          const parsedProjects = JSON.parse(userData.proyectos);
+          const formattedProjects = parsedProjects.map(proj => ({
+            id: Date.now() + Math.random(),
+            name: proj.name,
+            startDate: new Date(proj.startDate),
+            endDate: proj.endDate ? new Date(proj.endDate) : null,
+            description: proj.description || ""
+          }));
+          
+          setProjects(formattedProjects);
+          setOriginalState(prev => ({
+            ...prev,
+            projects: formattedProjects
+          }));
+        } catch (e) {
+          console.error('Error al parsear los proyectos:', e);
+          showNotification('Error al cargar los proyectos', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar los datos:', error);
+      toast.error('Error al cargar los datos del usuario');
+    }
+  };
+
+  const deleteSummary = async () => {
+    try {
+      await saveSummary([]); // Enviar array vacío a la base de datos
+      setSummary(""); // Actualizar estado local
+      setOriginalState(prev => ({
+        ...prev,
+        summary: ""
+      }));
+      toast.success('Resumen eliminado correctamente');
+      closeModal();
+    } catch (error) {
+      console.error('Error al eliminar el resumen:', error);
+      toast.error('Error al eliminar el resumen');
+    }
+  };
+
+  // Cargar datos cuando el componente se monta
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
   return (
     <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6 relative">
       <div className="flex items-center gap-4 mb-4">
         <h1 className="text-xl font-bold">Información profesional</h1>
         <select
           value={activeSection}
-          onChange={(e) => setActiveSection(e.target.value)}
+          onChange={(e) => handleSectionChange(e.target.value)}
           className="p-2 border rounded bg-white"
         >
           <option value="summary">Resumen Profesional</option>
@@ -243,7 +679,7 @@ const ProfessionalInfo = () => {
           </button>
           {activeSection === "summary" && summary.trim() !== "" && (
             <button
-              onClick={() => openModal(() => setSummary(""))}
+              onClick={() => openModal(deleteSummary)}
               className="flex items-center gap-1 text-red-500 hover:underline"
             >
               <BsTrash size={16} />
@@ -314,13 +750,31 @@ const ProfessionalInfo = () => {
             : activeSection === "skills"
             ? "Por favor, selecciona una habilidad válida para cada entrada."
             : activeSection === "education"
-            ? "Por favor, completa al menos un campo."
+            ? "Por favor complete los campos faltantes"
             : activeSection === "experience"
-            ? "Por favor, completa al menos un campo."
+            ? "Por favor complete los campos faltantes"
             : activeSection === "projects"
             ? "Por favor, completa todos los campos."
             : "Por favor, completa al menos un campo."
         )}
+      />
+
+      {/* Modal de cambios sin guardar */}
+      <GenericModal
+        isOpen={showUnsavedChangesModal}
+        onClose={() => {
+          setShowUnsavedChangesModal(false);
+          setPendingSection(null);
+        }}
+        onSubmit={confirmSectionChange}
+        {...unsavedChangesModalConfig}
+      />
+
+      <NotificationPopup
+        isOpen={notification.isOpen}
+        onClose={closeNotification}
+        message={notification.message}
+        type={notification.type}
       />
     </div>
   );
