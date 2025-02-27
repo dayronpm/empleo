@@ -4,14 +4,12 @@ import TableHeader from './table/TableHeader';
 import TableRow from './table/TableRow';
 import DeleteConfirmationModal from './table/DeleteConfirmationModal';
 import InfoModal from './table/InfoModal';
-import TableActions from './table/TableActions';
 
-const Table = ({ headers, data, actions }) => {
+const Table = ({ headers, data, actions, isMultiDeleteMode }) => {
   const [selectedRow, setSelectedRow] = useState(null); // Estado para almacenar la fila seleccionada
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal principal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para controlar la visibilidad del modal de confirmación
   const [selectedRows, setSelectedRows] = useState([]); // Estado para almacenar las filas seleccionadas
-  const [isMultiDeleteMode, setIsMultiDeleteMode] = useState(false); // Estado para activar el modo de eliminación múltiple
 
   // Función para abrir el modal principal y mostrar los datos de la fila seleccionada
   const handleRowClick = (row) => {
@@ -49,19 +47,11 @@ const Table = ({ headers, data, actions }) => {
   const confirmDeleteSelected = () => {
     actions.onDeleteMultiple(selectedRows); // Eliminar las filas seleccionadas
     setSelectedRows([]); // Limpiar la selección
-    setIsMultiDeleteMode(false); // Desactivar el modo de eliminación múltiple
     setIsDeleteModalOpen(false); // Cerrar el modal de confirmación
   };
 
   return (
     <div className="overflow-x-auto">
-      {/* Encabezado con Botones Agregar y Eliminar */}
-      <TableActions
-        isMultiDeleteMode={isMultiDeleteMode}
-        setIsMultiDeleteMode={setIsMultiDeleteMode}
-        onAdd={actions.onAdd}
-      />
-
       {/* Tabla */}
       <table className="min-w-full bg-white border border-gray-300">
         {/* Encabezado de la Tabla */}
