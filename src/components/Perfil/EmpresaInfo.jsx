@@ -142,10 +142,10 @@ const EmpresaInfo = () => {
                 isOpen={isAddJobModalOpen}
                 onClose={() => {
                     setIsAddJobModalOpen(false);
-                    setSelectedJob(null); // Limpiar el trabajo seleccionado al cerrar el modal
+                    setSelectedJob(null);
                 }}
-                onSubmit={selectedJob ? handleEditJob : handleAddJob} // Usa handleEditJob si hay un trabajo seleccionado
-                {...addEditJobModalConfig(selectedJob)} // Configuración dinámica para agregar/editar
+                onSubmit={selectedJob ? handleEditJob : handleAddJob}
+                {...addEditJobModalConfig(selectedJob)}
             />
 
             {/* Lista de trabajos */}

@@ -3,7 +3,14 @@ import React from 'react';
 import { FaEdit } from 'react-icons/fa';
 
 const TableRow = ({ row, rowIndex, isMultiDeleteMode, isSelected, onClick, onCheckboxChange, onEdit }) => {
-  const { id, ...rowData } = row;
+  // Verificar si el row tiene la estructura de datos visibles/ocultos
+  const hasVisibleData = row.hasOwnProperty('visibleData');
+  
+  // Si tiene la estructura específica, usar solo los datos visibles
+  // Si no, mostrar todos los datos como antes
+  const displayData = hasVisibleData 
+    ? Object.values(row.visibleData)
+    : Object.values(row).filter(value => value !== row.id);
 
   return (
     <tr
@@ -18,15 +25,15 @@ const TableRow = ({ row, rowIndex, isMultiDeleteMode, isSelected, onClick, onChe
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={() => onCheckboxChange(id)}
+            onChange={() => onCheckboxChange(row.id)}
             className="rounded border-gray-300 text-red-500 focus:ring-red-500"
           />
         </td>
       )}
       {/* Número de Fila */}
       <td className="py-2 px-4">{rowIndex + 1}</td>
-      {Object.values(rowData).map((value, colIndex) => (
-        <td key={colIndex} className="py-2 px-4">
+      {displayData.map((value, index) => (
+        <td key={index} className="py-2 px-4">
           {value}
         </td>
       ))}

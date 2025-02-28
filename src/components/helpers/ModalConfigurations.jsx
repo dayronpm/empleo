@@ -1,3 +1,5 @@
+import CompanySearchField from '../Administracion/components/CompanySearchField';
+
 export const changePasswordModalConfig = {
   title: "Cambiar contraseña",
   actions: [
@@ -331,7 +333,7 @@ export const deleteJobModalConfig = (job) => ({
   },
 });
 
-export const addEditJobModalConfig = (job = null) => ({
+export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
   title: job ? "Editar Oferta de Trabajo" : "Agregar Nueva Oferta de Trabajo",
   actions: [
     { label: "Cancelar", onClick: "close" },
@@ -345,14 +347,22 @@ export const addEditJobModalConfig = (job = null) => ({
     const province = watch("provincia");
     const municipalities = province ? provincesAndMunicipalities[province] : [];
 
-    // Función para manejar cambio de provincia
     const handleProvinceChange = (e) => {
       setValue("provincia", e.target.value);
-      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+      setValue("municipio", "");
     };
 
     return (
       <>
+        {/* Campo de búsqueda de empresa - solo aparece al agregar nueva oferta desde administración */}
+        {!job && isAdmin && (
+          <CompanySearchField
+            register={register}
+            setValue={setValue}
+            errors={errors}
+          />
+        )}
+
         {/* Título */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Título</label>
@@ -462,13 +472,13 @@ export const addEditJobModalConfig = (job = null) => ({
           <label className="block text-sm font-medium text-gray-700">Proceso de Aplicación</label>
           <textarea
             placeholder="Ingrese el proceso de aplicación del trabajo"
-            {...register("proceso_aplicacion", {
+            {...register("aplicacion", {
               required: "Este campo es obligatorio",
             })}
-            className={`w-full p-2 border rounded ${errors.proceso_aplicacion && "border-red-500"}`}
+            className={`w-full p-2 border rounded ${errors.aplicacion && "border-red-500"}`}
           />
-          {errors.proceso_aplicacion && (
-            <p className="text-red-500 text-sm mt-1">{errors.proceso_aplicacion.message}</p>
+          {errors.aplicacion && (
+            <p className="text-red-500 text-sm mt-1">{errors.aplicacion.message}</p>
           )}
         </div>
 
@@ -512,18 +522,18 @@ export const addEditJobModalConfig = (job = null) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Nivel de Experiencia</label>
           <select
-            {...register("nivel_experiencia", {
+            {...register("experiencia", {
               required: "Este campo es obligatorio",
             })}
-            className={`w-full p-2 border rounded ${errors.nivel_experiencia && "border-red-500"}`}
+            className={`w-full p-2 border rounded ${errors.experiencia && "border-red-500"}`}
           >
             <option value="">Seleccione un nivel de experiencia</option>
             <option value="Junior">Junior</option>
             <option value="Medio">Medio</option>
             <option value="Senior">Senior</option>
           </select>
-          {errors.nivel_experiencia && (
-            <p className="text-red-500 text-sm mt-1">{errors.nivel_experiencia.message}</p>
+          {errors.experiencia && (
+            <p className="text-red-500 text-sm mt-1">{errors.experiencia.message}</p>
           )}
         </div>
 
@@ -548,6 +558,9 @@ export const addEditJobModalConfig = (job = null) => ({
     );
   },
   validationSchema: {
+    id_empresa: isAdmin ? {
+      required: "Debe seleccionar una empresa",
+    } : {},
     titulo: {
       required: "El título es obligatorio",
     },
@@ -566,7 +579,7 @@ export const addEditJobModalConfig = (job = null) => ({
     beneficios: {
       required: "Los beneficios son obligatorios",
     },
-    proceso_aplicacion: {
+    aplicacion: {
       required: "El proceso de aplicación es obligatorio",
     },
     salario: {
@@ -579,7 +592,7 @@ export const addEditJobModalConfig = (job = null) => ({
     categoria: {
       required: "La categoría es obligatoria",
     },
-    nivel_experiencia: {
+    experiencia: {
       required: "El nivel de experiencia es obligatorio",
     },
     tipo: {
@@ -587,6 +600,7 @@ export const addEditJobModalConfig = (job = null) => ({
     },
   },
   initialValues: {
+    id_empresa: job?.id_empresa || "",
     titulo: job?.titulo || "",
     provincia: job?.provincia || "",
     municipio: job?.municipio || "",
@@ -594,9 +608,9 @@ export const addEditJobModalConfig = (job = null) => ({
     requerimientos: job?.requerimientos || "",
     beneficios: job?.beneficios || "",
     salario: job?.salario || "",
-    proceso_aplicacion: job?.aplicacion || "",
+    aplicacion: job?.aplicacion || "",
     categoria: job?.categoria || "",
-    nivel_experiencia: job?.experiencia || "",
+    experiencia: job?.experiencia || "",
     tipo: job?.tipo || "",
   },
 });

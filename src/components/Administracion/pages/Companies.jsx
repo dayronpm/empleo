@@ -36,7 +36,7 @@ const Companies = () => {
     }
   };
 
-  const headers = ['Nombre Completo', 'Usuario', 'Contraseña', 'Cursos', 'Ofertas de Empleo'];
+  const headers = ['Nombre', 'Usuario', 'Contraseña', 'Cursos', 'Ofertas'];
 
   const handleAddCompany = async (companyData) => {
     try {
@@ -260,11 +260,17 @@ const Companies = () => {
         headers={headers}
         data={companies.map(company => ({
           id: company.id,
-          nombre_completo: company.nombre_completo,
-          username: company.username,
-          password: '********',
-          total_cursos: company.total_cursos || 0,
-          total_ofertas: company.total_ofertas || 0
+          visibleData: {
+            nombre_completo: company.nombre_completo,
+            username: company.username,
+            password: '********',
+            total_cursos: company.total_cursos || 0,
+            total_ofertas: company.total_ofertas || 0
+          },
+          tipo: company.tipo,
+          descripcion: company.descripcion,
+          provincia: company.provincia,
+          municipio: company.municipio
         }))}
         actions={actions}
         isMultiDeleteMode={isMultiDeleteMode}
