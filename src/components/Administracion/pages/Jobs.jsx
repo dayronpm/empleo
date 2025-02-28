@@ -5,6 +5,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa';
 import GenericModal from '../../generics/GenericModal';
 import { addEditJobModalConfig } from '../../helpers/ModalConfigurations';
 import InfoModal from '../components/table/InfoModal';
+import SearchBar from './SearchBar';
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -15,11 +16,30 @@ const Jobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedJobForInfo, setSelectedJobForInfo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredJobs, setFilteredJobs] = useState([]);
 
   // Cargar ofertas al montar el componente
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  // Añadir efecto para filtrar trabajos
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredJobs(jobs);
+      return;
+    }
+
+    const filtered = jobs.filter(job => 
+      job.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.empresa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.provincia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.municipio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredJobs(filtered);
+  }, [searchTerm, jobs]);
 
   const fetchJobs = async () => {
     try {
@@ -56,6 +76,7 @@ const Jobs = () => {
       );
 
       setJobs(jobsWithCompanyNames);
+      setFilteredJobs(jobsWithCompanyNames);
       setIsLoading(false);
     } catch (error) {
       console.error('Error al cargar ofertas:', error);
@@ -179,10 +200,15 @@ const Jobs = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="h-full p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Ofertas de Empleo</h2>
         <div className="flex space-x-4">
+        <SearchBar
+          data={jobs}
+          setSearchResults={setFilteredJobs}
+        />
+
           <button
             className="flex items-center text-green-500 hover:text-green-700"
             onClick={actions.onAdd}
@@ -202,7 +228,7 @@ const Jobs = () => {
 
       <Table
         headers={headers}
-        data={jobs.map(job => ({
+        data={filteredJobs.map(job => ({
           id: job.id,
           visibleData: {
             titulo: job.titulo,
