@@ -2,7 +2,7 @@ import React from 'react';
 import Table from '../components/Table';
 
 const JobTable = ({ jobs, isMultiDeleteMode, onEdit }) => {
-  const headers = ['Título', 'Empresa', 'Ubicación', 'Fecha de Publicación'];
+  const headers = ['Categoria', 'Provincia', 'Municipio', 'Salario'];
 
   const actions = {
     onEdit: onEdit, // Pasar la función de edición
