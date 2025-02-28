@@ -3,26 +3,17 @@ import React, { useState } from 'react';
 import TableHeader from './table/TableHeader';
 import TableRow from './table/TableRow';
 import DeleteConfirmationModal from './table/DeleteConfirmationModal';
-import InfoModal from './table/InfoModal';
 
 const Table = ({ headers, data, actions, isMultiDeleteMode }) => {
   const [selectedRow, setSelectedRow] = useState(null); // Estado para almacenar la fila seleccionada
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar la visibilidad del modal principal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para controlar la visibilidad del modal de confirmación
   const [selectedRows, setSelectedRows] = useState([]); // Estado para almacenar las filas seleccionadas
 
   // Función para abrir el modal principal y mostrar los datos de la fila seleccionada
   const handleRowClick = (row) => {
-    if (!isMultiDeleteMode) {
-      setSelectedRow(row);
-      setIsModalOpen(true);
+    if (!isMultiDeleteMode && actions.onInfo) {
+      actions.onInfo(row);
     }
-  };
-
-  // Función para cerrar el modal principal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedRow(null);
   };
 
   // Función para manejar la selección/deselección de una fila
@@ -79,15 +70,6 @@ const Table = ({ headers, data, actions, isMultiDeleteMode }) => {
           ))}
         </tbody>
       </table>
-
-      {/* Modal de Información */}
-      {isModalOpen && selectedRow && (
-        <InfoModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          selectedRow={selectedRow}
-        />
-      )}
 
       {/* Modal de Confirmación de Eliminación */}
       {isDeleteModalOpen && (
