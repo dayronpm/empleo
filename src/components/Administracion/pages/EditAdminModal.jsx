@@ -129,4 +129,4 @@ const EditAdminModal = ({ isOpen, onClose, onAdd }) => {
   );
 };
 
-export default EditAdminModall;
+export default EditAdminModal;
