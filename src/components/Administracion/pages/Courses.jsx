@@ -26,8 +26,35 @@ const Courses = () => {
     try {
       const response = await fetch('http://localhost:3001/getallcourses');
       const coursesData = await response.json();
-      setCourses(coursesData);
-      setFilteredCourses(coursesData);
+      
+      // Obtener información de empresas para cada curso
+      const coursesWithCompanyNames = await Promise.all(
+        coursesData.map(async (course) => {
+          try {
+            const companyResponse = await fetch('http://localhost:3001/empresa', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id: course.id_master })
+            });
+            const companyData = await companyResponse.json();
+            return {
+              ...course,
+              empresa: companyData.nombre || 'Empresa no encontrada'
+            };
+          } catch (error) {
+            console.error('Error al obtener empresa:', error);
+            return {
+              ...course,
+              empresa: 'Error al cargar'
+            };
+          }
+        })
+      );
+      
+      setCourses(coursesWithCompanyNames);
+      setFilteredCourses(coursesWithCompanyNames);
       setIsLoading(false);
     } catch (error) {
       console.error('Error al cargar cursos:', error);
