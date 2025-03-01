@@ -615,7 +615,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
   },
 });
 
-export const courseModalConfig = (course = null) => ({
+export const courseModalConfig = (course = null, isAdmin = false) => ({
   title: course ? "Editar Curso" : "Agregar Nuevo Curso",
   actions: [
     { label: "Cancelar", onClick: "close" },
@@ -628,6 +628,15 @@ export const courseModalConfig = (course = null) => ({
   formContent: ({ register, errors, watch, setValue }) => {
     return (
       <>
+        {/* Campo de búsqueda de empresa - solo aparece al agregar nuevo curso desde administración */}
+        {!course && isAdmin && (
+          <CompanySearchField
+            register={register}
+            setValue={setValue}
+            errors={errors}
+          />
+        )}
+
         {/* Título */}
         <div>
           <label className="block font-medium">Título</label>
@@ -721,6 +730,9 @@ export const courseModalConfig = (course = null) => ({
     );
   },
   validationSchema: {
+    id_empresa: isAdmin ? {
+      required: "Debe seleccionar una empresa",
+    } : {},
     titulo: { required: "El título es obligatorio" },
     descripcion: { required: "La descripción es obligatoria" },
     nivel: { required: "El nivel es obligatorio" },
@@ -731,6 +743,7 @@ export const courseModalConfig = (course = null) => ({
     },
   },
   initialValues: {
+    id_empresa: course?.id_empresa || "",
     titulo: course?.titulo || "",
     descripcion: course?.descripcion || "",
     nivel: course?.nivel || "",

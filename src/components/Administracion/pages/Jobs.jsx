@@ -200,7 +200,7 @@ const Jobs = () => {
   }
 
   return (
-    <div className="h-full p-4">
+    <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Ofertas de Empleo</h2>
         <div className="flex space-x-4">
