@@ -1,122 +1,178 @@
 // src/pages/People.jsx
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Dropdown from '../components/Dropdown';
-import { notifySuccess, notifyError } from '../components/ToastNotification'; // Importación corregida
+import { notifySuccess, notifyError } from '../components/ToastNotification';
+import { FaPlus, FaTrash } from 'react-icons/fa';
+import SearchBar from './SearchBar';
 
 const People = () => {
-  const [people, setPeople] = useState([
-    { id: 1, nombreCompleto: 'Juan Pérez', provincia: 'Madrid', municipio: 'Alcobendas', rolLaboral: 'Desarrollador' },
-    { id: 2, nombreCompleto: 'María López', provincia: 'Barcelona', municipio: 'Sabadell', rolLaboral: 'Diseñadora' },
-    { id: 3, nombreCompleto: 'Carlos Gómez', provincia: 'Valencia', municipio: 'Torrent', rolLaboral: 'Analista' },
-    { id: 4, nombreCompleto: 'Ana Martínez', provincia: 'Sevilla', municipio: 'Dos Hermanas', rolLaboral: 'Gerente' },
-    { id: 5, nombreCompleto: 'Luis Fernández', provincia: 'Zaragoza', municipio: 'Zaragoza', rolLaboral: 'Consultor' },
-    { id: 6, nombreCompleto: 'Elena Ruiz', provincia: 'Málaga', municipio: 'Málaga', rolLaboral: 'Marketing' },
-    { id: 7, nombreCompleto: 'Javier Torres', provincia: 'Murcia', municipio: 'Murcia', rolLaboral: 'Ingeniero' },
-    { id: 8, nombreCompleto: 'Sofía Ramírez', provincia: 'Palma', municipio: 'Palma', rolLaboral: 'Contadora' },
-    { id: 9, nombreCompleto: 'David Sánchez', provincia: 'Las Palmas', municipio: 'Las Palmas', rolLaboral: 'Técnico' },
-    { id: 10, nombreCompleto: 'Laura González', provincia: 'Bilbao', municipio: 'Bilbao', rolLaboral: 'Abogada' },
-    // ... más personas ...
-  ]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [people, setPeople] = useState([]);
+  const [filteredPeople, setFilteredPeople] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMultiDeleteMode, setIsMultiDeleteMode] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Estado para controlar el modal de agregar
-  const [isMultiDeleteMode, setIsMultiDeleteMode] = useState(false); // Estado para activar el modo de eliminación múltiple
 
-  // Función para manejar la edición de una persona
-  const handleEdit = (person) => {
-    setSelectedPerson(person);
-    setIsModalOpen(true);
+  useEffect(() => {
+    fetchPeople();
+  }, []);
+
+  const fetchPeople = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/getallpersona');
+      const peopleData = await response.json();
+      
+      const formattedPeople = peopleData.map(person => ({
+        id: person.id,
+        nombreCompleto: person.nombre,
+        username: person.username,
+        password: person.password,
+        provincia: person.provincia || '',
+        municipio: person.municipio || '',
+        telefono: person.telefono ? JSON.parse(person.telefono) : [],
+        correo: person.correo || '',
+      }));
+
+      setPeople(formattedPeople);
+      setFilteredPeople(formattedPeople);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error al cargar personas:', error);
+      notifyError('Error al cargar las personas');
+      setIsLoading(false);
+    }
   };
 
-  // Función para manejar la eliminación de una persona
-  const handleDelete = (id) => {
-    setPeople(people.filter((person) => person.id !== id));
-    notifySuccess('Usuario eliminado correctamente'); // Usa la función de notificación
+  const handleAddPerson = async (formData) => {
+    try {
+      const response = await fetch('http://localhost:3001/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.get('nombreUsuario'),
+          password: formData.get('contraseña'),
+          userType: 'persona',
+          name: formData.get('nombreCompleto')
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        notifySuccess('Persona agregada exitosamente');
+        fetchPeople();
+        setIsAddModalOpen(false);
+      } else {
+        notifyError(data.error || 'Error al agregar la persona');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      notifyError('Error al agregar la persona');
+    }
   };
 
-  // Función para manejar la eliminación múltiple de personas
-  const handleDeleteMultiple = (ids) => {
-    setPeople(people.filter((person) => !ids.includes(person.id)));
-    notifySuccess(`${ids.length} usuarios eliminados correctamente`);
+  // Agregar función para eliminar personas
+  const handleDeletePeople = async (ids) => {
+    try {
+      const deletePromises = ids.map(id => {
+        const person = people.find(p => p.id === id);
+        if (!person) throw new Error('Persona no encontrada');
+
+        return fetch('http://localhost:3001/borrarusuario', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            id,
+            username: person.username,
+            password: person.password
+          })
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Error al eliminar la persona');
+          }
+          return response;
+        });
+      });
+
+      await Promise.all(deletePromises);
+      notifySuccess('Personas eliminadas exitosamente');
+      fetchPeople();
+      setIsMultiDeleteMode(false);
+    } catch (error) {
+      console.error('Error:', error);
+      notifyError('Error al eliminar las personas');
+    }
   };
 
-  // Función para agregar una nueva persona
-  const handleAddPerson = (newPerson) => {
-    const newId = people.length > 0 ? Math.max(...people.map((p) => p.id)) + 1 : 1; // Genera un nuevo ID
-    setPeople([...people, { id: newId, ...newPerson }]);
-    notifySuccess('Persona agregada correctamente');
+  const headers = ['Nombre Completo', 'Usuario', 'Provincia', 'Municipio'];
+
+  const actions = {
+    onEdit: (person) => {
+      setSelectedPerson(person);
+      setIsEditModalOpen(true);
+    },
+    onDeleteMultiple: handleDeletePeople,
+    onAdd: () => setIsAddModalOpen(true),
   };
 
-  const headers = ['Nombre Completo', 'Provincia', 'Municipio', 'Rol Laboral'];
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="p-4">
-      {/* Título */}
-      <h2 className="text-2xl font-bold mb-4">Personas</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Personas</h2>
+        <div className="flex space-x-4">
+          <SearchBar
+            data={people}
+            setSearchResults={setFilteredPeople}
+          />
 
-      {/* Encabezado con Botones Agregar y Eliminar */}
-      <div className="flex justify-end mb-4 space-x-4">
-        {/* Botón Agregar Persona */}
-        <button
-          title="Agregar Persona"
-          className="flex items-center text-green-500 hover:text-green-700 transition-colors"
-          onClick={() => setIsAddModalOpen(true)} // Abrir el modal de agregar
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fillRule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Agregar
-        </button>
-
-        {/* Botón Eliminar Múltiples Personas */}
-        <button
-          title="Eliminar Múltiples Personas"
-          className={`flex items-center ${
-            isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
-          } transition-colors`}
-          onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fillRule="evenodd"
-              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Eliminar
-        </button>
+          <button
+            className="flex items-center text-green-500 hover:text-green-700"
+            onClick={actions.onAdd}
+          >
+            <FaPlus className="mr-2" /> Agregar
+          </button>
+          <button
+            className={`flex items-center ${
+              isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+            }`}
+            onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
+          >
+            <FaTrash className="mr-2" /> Eliminar
+          </button>
+        </div>
       </div>
 
-      {/* Tabla */}
       <Table
         headers={headers}
-        data={people}
-        actions={{
-          onEdit: handleEdit,
-          onDelete: handleDelete,
-          onDeleteMultiple: handleDeleteMultiple,
-          onAdd: () => setIsAddModalOpen(true), // Abre el modal para agregar una nueva persona
-        }}
+        data={filteredPeople.map(person => ({
+          id: person.id,
+          visibleData: {
+            nombreCompleto: person.nombreCompleto,
+            username: person.username,
+            provincia: person.provincia,
+            municipio: person.municipio,
+          },
+          ...person
+        }))}
+        actions={actions}
         isMultiDeleteMode={isMultiDeleteMode}
       />
-
-      {/* Modal de Edición */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h3>Editar Información de {selectedPerson?.nombreCompleto}</h3>
-        <Dropdown options={['Información Personal', 'Información Laboral']} onSelect={(option) => console.log(option)} />
-      </Modal>
 
       {/* Modal de Agregar Persona */}
       {isAddModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            {/* Icono de Cerrar en la Esquina Superior Derecha */}
             <button
               className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition-colors"
               onClick={() => setIsAddModalOpen(false)}
@@ -132,7 +188,6 @@ const People = () => {
               </svg>
             </button>
 
-            {/* Contenido del Modal */}
             <h3 className="text-xl font-bold mb-4">Agregar Persona</h3>
             <form
               onSubmit={(e) => {
@@ -146,17 +201,10 @@ const People = () => {
                   return;
                 }
 
-                const newData = {
-                  nombreCompleto: formData.get('nombreCompleto'),
-                  nombreUsuario: formData.get('nombreUsuario'),
-                  contraseña,
-                };
-                handleAddPerson(newData); // Agregar la nueva persona
-                setIsAddModalOpen(false); // Cerrar el modal
+                handleAddPerson(formData);
               }}
             >
               <div className="space-y-4">
-                {/* Campo Nombre Completo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Nombre Completo</label>
                   <input
@@ -168,7 +216,6 @@ const People = () => {
                   />
                 </div>
 
-                {/* Campo Nombre de Usuario */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Nombre de Usuario</label>
                   <input
@@ -180,7 +227,6 @@ const People = () => {
                   />
                 </div>
 
-                {/* Campo Contraseña */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Contraseña</label>
                   <input
@@ -191,7 +237,6 @@ const People = () => {
                   />
                 </div>
 
-                {/* Campo Confirmar Contraseña */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
                   <input
@@ -202,7 +247,6 @@ const People = () => {
                   />
                 </div>
 
-                {/* Botones del Formulario */}
                 <div className="flex justify-end space-x-2">
                   <button
                     type="button"
@@ -223,6 +267,8 @@ const People = () => {
           </div>
         </div>
       )}
+
+      {/* Los otros modales los agregaremos después */}
     </div>
   );
 };
