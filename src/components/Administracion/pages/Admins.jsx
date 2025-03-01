@@ -76,6 +76,20 @@ const Admins = ({ adminAuth }) => {
 
   const handleEditAdmin = async (formData) => {
     try {
+      const newTipo = formData.get('tipo');
+      
+      // Si se está cambiando de principal a secundario, verificar que no sea el último
+      if (selectedAdmin.tipo === 'principal' && newTipo === 'secundario') {
+        const remainingPrincipalAdmins = admins.filter(
+          admin => admin.tipo === 'principal' && admin.id !== selectedAdmin.id
+        ).length;
+
+        if (remainingPrincipalAdmins === 0) {
+          notifyError('No se puede cambiar el tipo del último administrador principal');
+          return;
+        }
+      }
+
       const response = await fetch(`http://localhost:3001/admin/update/${selectedAdmin.id}`, {
         method: 'PUT',
         headers: {
@@ -85,7 +99,7 @@ const Admins = ({ adminAuth }) => {
         body: JSON.stringify({
           username: formData.get('username'),
           password: formData.get('password'),
-          tipo: formData.get('tipo')
+          tipo: newTipo
         }),
       });
 
@@ -106,6 +120,18 @@ const Admins = ({ adminAuth }) => {
 
   const handleDeleteAdmin = async (id) => {
     try {
+      // Primero verificamos si es el último admin principal
+      const adminToDelete = admins.find(admin => admin.id === id);
+      const remainingPrincipalAdmins = admins.filter(
+        admin => admin.tipo === 'principal' && admin.id !== id
+      ).length;
+
+      if (adminToDelete.tipo === 'principal' && remainingPrincipalAdmins === 0) {
+        notifyError('No se puede eliminar el último administrador principal');
+        return;
+      }
+
+      // Si no es el último admin principal, procedemos con la eliminación
       const response = await fetch(`http://localhost:3001/admin/delete/${id}`, {
         method: 'DELETE',
         headers: {
