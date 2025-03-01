@@ -199,7 +199,10 @@ const Companies = () => {
     onAdd: () => setIsAddModalOpen(true),
     onInfo: (company) => {
       setSelectedCompanyForInfo({
-        ...company,
+        nombre_completo: company.visibleData.nombre_completo,
+        username: company.visibleData.username,
+        total_cursos: company.visibleData.total_cursos,
+        total_ofertas: company.visibleData.total_ofertas,
         tipo: company.tipo,
         descripcion: company.descripcion,
         provincia: company.provincia,
