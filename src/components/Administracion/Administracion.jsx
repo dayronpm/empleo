@@ -1,5 +1,6 @@
 // src/components/Administracion.jsx
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -10,7 +11,7 @@ import Courses from './pages/Courses';
 import Admins from './pages/Admins';
 import ToastNotification from './components/ToastNotification';
 
-const Administracion = () => {
+const Administracion = ({ adminAuth }) => {
   const [activePage, setActivePage] = useState('dashboard'); // Estado para controlar la página activa
   const [isOpen, setIsOpen] = useState(false); // Estado para controlar el menú hamburguesa
 
@@ -33,7 +34,7 @@ const Administracion = () => {
       case 'courses':
         return <Courses />;
       case 'admins':
-        return <Admins />;
+        return <Admins adminAuth={adminAuth} />;
       default:
         return null;
     }
@@ -42,7 +43,7 @@ const Administracion = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Barra Lateral */}
-      <Sidebar setActivePage={setActivePage} isOpen={isOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar adminAuth={adminAuth} setActivePage={setActivePage} isOpen={isOpen} toggleSidebar={toggleSidebar} />
 
       {/* Contenido Principal */}
       <div
@@ -55,7 +56,11 @@ const Administracion = () => {
 
         {/* Contenido de la Página */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-4">
-          {renderContent()} {/* Renderizamos el contenido según la página activa */}
+          <Routes>
+            <Route path="/" element={renderContent()} />
+            <Route path="/personas" element={renderContent()} />
+            <Route path="/administradores" element={renderContent()} />
+          </Routes>
         </main>
       </div>
 

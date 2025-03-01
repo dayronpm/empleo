@@ -1,8 +1,6 @@
 // src/pages/People.jsx
 import React, { useState, useEffect } from 'react';
 import Table from '../components/Table';
-import Modal from '../components/Modal';
-import Dropdown from '../components/Dropdown';
 import { notifySuccess, notifyError } from '../components/ToastNotification';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import SearchBar from './SearchBar';
@@ -543,20 +541,20 @@ const People = () => {
             setSearchResults={setFilteredPeople}
           />
 
-          <button
+        <button
             className="flex items-center text-green-500 hover:text-green-700"
             onClick={actions.onAdd}
           >
             <FaPlus className="mr-2" /> Agregar
-          </button>
-          <button
-            className={`flex items-center ${
-              isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+        </button>
+        <button
+          className={`flex items-center ${
+            isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
             }`}
-            onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
-          >
+          onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
+        >
             <FaTrash className="mr-2" /> Eliminar
-          </button>
+        </button>
         </div>
       </div>
 
