@@ -192,7 +192,24 @@ const Companies = () => {
 
   const actions = {
     onEdit: (company) => {
-      setSelectedCompany(company);
+      const companyData = {
+        id: company.id,
+        nombre_completo: company.visibleData.nombre_completo,
+        username: company.visibleData.username,
+        tipo: company.tipo,
+        descripcion: company.descripcion,
+        provincia: company.provincia,
+        municipio: company.municipio
+      };
+      
+      setSelectedCompany(companyData);
+      
+      // Establecemos la provincia y los municipios inmediatamente
+      if (companyData.provincia) {
+        setSelectedProvincia(companyData.provincia);
+        setMunicipios(provincesAndMunicipalities[companyData.provincia] || []);
+      }
+      
       setIsEditModalOpen(true);
     },
     onDeleteMultiple: handleDeleteCompanies,
@@ -569,6 +586,7 @@ const Companies = () => {
                   <label className="block text-sm font-medium text-gray-700">Municipio</label>
                   <select
                     name="municipio"
+                    defaultValue={selectedCompany.municipio}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
                     <option value="">Seleccione un municipio</option>
