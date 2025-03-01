@@ -2,7 +2,7 @@ import React from 'react';
 import Table from '../components/Table';
 
 const AdminTable = ({ admins, isMultiDeleteMode, onEdit }) => {
-  const headers = ['Nombre', 'Rol', 'Fecha de Registro'];
+  const headers = ['Nombre Completo',"Nombre de usuario", 'Rol', ];
 
   const actions = {
     onEdit: onEdit, // Pasar la función de edición
