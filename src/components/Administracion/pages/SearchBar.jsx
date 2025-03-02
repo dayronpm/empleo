@@ -8,11 +8,33 @@ const SearchBar = ({ data, setSearchResults }) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
 
-    const filteredData = data.filter((item) =>
-      Object.values(item).some((value) =>
-        String(value).toLowerCase().includes(term)
-      )
-    );
+    if (!term.trim()) {
+      setSearchResults(data);
+      return;
+    }
+
+    const filteredData = data.filter((item) => {
+      // Buscar en propiedades de primer nivel
+      const firstLevelMatch = Object.entries(item).some(([key, value]) => {
+        // Ignorar objetos anidados y arrays en esta parte
+        if (typeof value !== 'object' && value !== null) {
+          return String(value).toLowerCase().includes(term);
+        }
+        return false;
+      });
+
+      if (firstLevelMatch) return true;
+
+      // Buscar en visibleData si existe
+      if (item.visibleData) {
+        return Object.values(item.visibleData).some(value => 
+          String(value).toLowerCase().includes(term)
+        );
+      }
+
+      return false;
+    });
+
     setSearchResults(filteredData);
   };
 

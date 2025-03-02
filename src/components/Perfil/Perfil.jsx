@@ -1,6 +1,6 @@
 import React from 'react';
 import CurriculumII from './CurriculumII'; // Correctly import the CurriculumII component
-import CurriculumE from './CurriculumE'; // Update to import the logic instead
+import EmpresaInfo from './EmpresaInfo';
 
 const Perfil = () => {
     // Obtener el tipo de usuario del localStorage
@@ -13,7 +13,7 @@ const Perfil = () => {
             {userType === 'persona' ? (
                 <CurriculumII/> // Renderizar CurriculumII si es tipo 'persona'
             ) : userType === 'empresa' ? (
-                <CurriculumE /> // Renderizar EmpresaInfo si es tipo 'empresa'
+                <EmpresaInfo /> // Renderizar EmpresaInfo si es tipo 'empresa'
             ) : (
                 <p className="text-red-500">Acceso denegado: solo los usuarios de tipo "persona" o "empresa" pueden ver este contenido.</p>
             )}

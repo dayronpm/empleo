@@ -5,6 +5,7 @@ import { FaPlus, FaTrash } from 'react-icons/fa';
 import { notifySuccess, notifyError } from '../components/ToastNotification';
 import { provincesAndMunicipalities } from '../../Perfil/data';
 import InfoModal from '../components/table/InfoModal';
+import SearchBar from './SearchBar';
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
@@ -17,17 +18,42 @@ const Companies = () => {
   const [municipios, setMunicipios] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedCompanyForInfo, setSelectedCompanyForInfo] = useState(null);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
 
   // Cargar empresas al montar el componente
   useEffect(() => {
     fetchCompanies();
   }, []);
 
+  // Inicializar las empresas filtradas cuando se cargan las empresas
+  useEffect(() => {
+    setFilteredCompanies(companies);
+  }, [companies]);
+
+  // Función para preparar los datos de las empresas para la tabla
+  const prepareCompaniesData = (companiesData) => {
+    return companiesData.map(company => ({
+      id: company.id,
+      visibleData: {
+        nombre_completo: company.nombre_completo,
+        username: company.username,
+        password: '********',
+        total_cursos: company.total_cursos || 0,
+        total_ofertas: company.total_ofertas || 0
+      },
+      tipo: company.tipo,
+      descripcion: company.descripcion,
+      provincia: company.provincia,
+      municipio: company.municipio
+    }));
+  };
+
   const fetchCompanies = async () => {
     try {
       const response = await fetch('http://localhost:3001/getcompaniesinfo');
       const data = await response.json();
       setCompanies(data);
+      setFilteredCompanies(data);
       setIsLoading(false);
     } catch (error) {
       console.error('Error al cargar empresas:', error);
@@ -254,44 +280,37 @@ const Companies = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Empresas</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Empresas</h2>
+        <div className="flex space-x-4">
+          <SearchBar
+            data={companies}
+            setSearchResults={setFilteredCompanies}
+          />
 
-      <div className="flex justify-end mb-4 space-x-4">
-        <button
-          className="flex items-center text-green-500 hover:text-green-700 transition-colors"
-          onClick={actions.onAdd}
-        >
-          <FaPlus size={16} className="mr-1" />
-          Agregar
-        </button>
+          <button
+            className="flex items-center text-green-500 hover:text-green-700 transition-colors"
+            onClick={actions.onAdd}
+          >
+            <FaPlus size={16} className="mr-1" />
+            Agregar
+          </button>
 
-        <button
-          className={`flex items-center ${
-            isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
-          } transition-colors`}
-          onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
-        >
-          <FaTrash size={16} className="mr-1" />
-          Eliminar
-        </button>
+          <button
+            className={`flex items-center ${
+              isMultiDeleteMode ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+            } transition-colors`}
+            onClick={() => setIsMultiDeleteMode(!isMultiDeleteMode)}
+          >
+            <FaTrash size={16} className="mr-1" />
+            Eliminar
+          </button>
+        </div>
       </div>
 
       <Table
         headers={headers}
-        data={companies.map(company => ({
-          id: company.id,
-          visibleData: {
-            nombre_completo: company.nombre_completo,
-            username: company.username,
-            password: '********',
-            total_cursos: company.total_cursos || 0,
-            total_ofertas: company.total_ofertas || 0
-          },
-          tipo: company.tipo,
-          descripcion: company.descripcion,
-          provincia: company.provincia,
-          municipio: company.municipio
-        }))}
+        data={prepareCompaniesData(filteredCompanies)}
         actions={actions}
         isMultiDeleteMode={isMultiDeleteMode}
       />
