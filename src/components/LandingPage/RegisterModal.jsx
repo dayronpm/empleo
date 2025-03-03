@@ -138,6 +138,7 @@ const RegisterModal = ({ isOpen, onClose, openLogin, handleLoginSuccess }) => {
                 localStorage.setItem('username', username);
                 localStorage.setItem('tipo', loginData.tipo);
                 localStorage.setItem('id', loginData.id);
+                localStorage.setItem('password', password);
                 handleLoginSuccess(username);
                 onClose();
             } catch (loginError) {

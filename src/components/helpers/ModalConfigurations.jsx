@@ -138,29 +138,50 @@ export const editInfoModalConfig = {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Teléfonos</label>
           {watch("telefono").map((phone, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => {
-                  const newPhones = [...watch("telefono")];
-                  newPhones[index] = e.target.value;
-                  setValue("telefono", newPhones);
-                }}
-                className="w-full p-2 border rounded"
-                placeholder="Ingrese un número de teléfono"
-              />
-              {watch("telefono").length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newPhones = watch("telefono").filter((_, i) => i !== index);
-                    setValue("telefono", newPhones);
+            <div key={index} className="mb-4">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Solo permitir el signo +, y números
+                    if (!/^[+\d]*$/.test(value) && value !== '') {
+                      return;
+                    }
+                    // Si está vacío o comienza con +53, permitir el cambio
+                    if (value === '' || value === '+' || value === '+5' || value === '+53' || (value.startsWith('+53') && value.length <= 11)) {
+                      const newPhones = [...watch("telefono")];
+                      newPhones[index] = value;
+                      setValue("telefono", newPhones);
+                    }
                   }}
-                  className="ml-2 text-red-500"
-                >
-                  <BsTrash size={16} />
-                </button>
+                  className={`w-full p-2 border rounded ${
+                    phone && !/^\+53\d{6,8}$/.test(phone) ? 'border-red-500' : ''
+                  }`}
+                  placeholder="+53 seguido de 6-8 números"
+                />
+                {watch("telefono").length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (watch("telefono").length === 1) {
+                        setValue("telefono", [""]);
+                      } else {
+                        const newPhones = watch("telefono").filter((_, i) => i !== index);
+                        setValue("telefono", newPhones);
+                      }
+                    }}
+                    className="ml-2 text-red-500"
+                  >
+                    <BsTrash size={16} />
+                  </button>
+                )}
+              </div>
+              {phone && !/^\+53\d{6,8}$/.test(phone) && (
+                <p className="text-red-500 text-xs mt-1">
+                  El teléfono debe comenzar con +53 seguido de 6-8 números
+                </p>
               )}
             </div>
           ))}
