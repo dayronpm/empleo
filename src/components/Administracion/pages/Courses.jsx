@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Table from '../components/Table';
+import TableWithFilters from '../components/TableWithFilters';
 import { notifySuccess, notifyError } from '../components/ToastNotification';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import GenericModal from '../../generics/GenericModal';
 import { courseModalConfig, deleteCourseModalConfig } from '../../helpers/ModalConfigurations';
 import InfoModal from '../components/table/InfoModal';
 import SearchBar from './SearchBar';
+import { useTable, useFilters } from 'react-table';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -212,7 +213,7 @@ const Courses = () => {
         </div>
       </div>
 
-      <Table
+      <TableWithFilters
         headers={headers}
         data={filteredCourses.map(course => ({
           id: course.id,

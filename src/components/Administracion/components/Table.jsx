@@ -5,9 +5,9 @@ import TableRow from './table/TableRow';
 import DeleteConfirmationModal from './table/DeleteConfirmationModal';
 
 const Table = ({ headers, data, actions, isMultiDeleteMode }) => {
-  const [selectedRow, setSelectedRow] = useState(null); // Estado para almacenar la fila seleccionada
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para controlar la visibilidad del modal de confirmación
-  const [selectedRows, setSelectedRows] = useState([]); // Estado para almacenar las filas seleccionadas
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   // Función para abrir el modal principal y mostrar los datos de la fila seleccionada
   const handleRowClick = (row) => {

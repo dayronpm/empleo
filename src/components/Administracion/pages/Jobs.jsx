@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Table from '../components/Table';
+import TableWithFilters from '../components/TableWithFilters';
 import { notifySuccess, notifyError } from '../components/ToastNotification';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import GenericModal from '../../generics/GenericModal';
 import { addEditJobModalConfig } from '../../helpers/ModalConfigurations';
 import InfoModal from '../components/table/InfoModal';
 import SearchBar from './SearchBar';
+import { useTable, useFilters } from 'react-table';
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -226,7 +227,7 @@ const Jobs = () => {
         </div>
       </div>
 
-      <Table
+      <TableWithFilters
         headers={headers}
         data={filteredJobs.map(job => ({
           id: job.id,
@@ -250,7 +251,6 @@ const Jobs = () => {
           salario: job.salario,
           categoria: job.categoria,
           experiencia: job.experiencia,
-          id_empresa: job.id_empresa,
           fecha: job.fecha
         }))}
         actions={actions}
