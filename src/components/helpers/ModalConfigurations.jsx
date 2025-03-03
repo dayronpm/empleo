@@ -20,6 +20,7 @@ export const changePasswordModalConfig = {
             type="password"
             {...register("currentPassword", { required: "La contraseña actual es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.currentPassword && "border-red-500"}`}
+            placeholder="Ingrese su contraseña actual"
           />
           {errors.currentPassword && (
             <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
@@ -32,6 +33,7 @@ export const changePasswordModalConfig = {
             type="password"
             {...register("newPassword", { required: "La nueva contraseña es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.newPassword && "border-red-500"}`}
+            placeholder="Ingrese su nueva contraseña"
           />
           {errors.newPassword && (
             <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
@@ -389,7 +391,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
           <label className="block text-sm font-medium text-gray-700">Título</label>
           <input
             type="text"
-            placeholder="Ingrese el título del trabajo"
+            placeholder="Ej: Desarrollador Web Frontend"
             {...register("titulo", {
               required: "Este campo es obligatorio",
             })}
@@ -447,7 +449,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Descripción</label>
           <textarea
-            placeholder="Ingrese la descripción del trabajo"
+            placeholder="Describa las responsabilidades principales del puesto"
             {...register("descripcion", {
               required: "Este campo es obligatorio",
             })}
@@ -462,7 +464,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Requerimientos</label>
           <textarea
-            placeholder="Ingrese los requerimientos del trabajo"
+            placeholder="Liste los requisitos necesarios para el puesto"
             {...register("requerimientos", {
               required: "Este campo es obligatorio",
             })}
@@ -477,7 +479,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Beneficios</label>
           <textarea
-            placeholder="Ingrese los beneficios del trabajo"
+            placeholder="Describa los beneficios que ofrece el puesto"
             {...register("beneficios", {
               required: "Este campo es obligatorio",
             })}
@@ -492,7 +494,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Proceso de Aplicación</label>
           <textarea
-            placeholder="Ingrese el proceso de aplicación del trabajo"
+            placeholder="Explique el proceso para aplicar al puesto"
             {...register("aplicacion", {
               required: "Este campo es obligatorio",
             })}
@@ -508,7 +510,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
           <label className="block text-sm font-medium text-gray-700">Salario</label>
           <input
             type="number"
-            placeholder="Ingrese el salario"
+            placeholder="Ingrese el salario mensual"
             {...register("salario", {
               required: "Este campo es obligatorio",
               min: { value: 0, message: "El salario debe ser mayor o igual a 0" },
@@ -530,9 +532,12 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
             className={`w-full p-2 border rounded ${errors.categoria && "border-red-500"}`}
           >
             <option value="">Seleccione una categoría</option>
-            <option value="Medio tiempo">Medio tiempo</option>
-            <option value="Tiempo completo">Tiempo completo</option>
-            <option value="Freelance">Freelance</option>
+            <option value="Tecnología">Tecnología</option>
+            <option value="Administración">Administración</option>
+            <option value="Ventas">Ventas</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Diseño">Diseño</option>
+            <option value="Otros">Otros</option>
           </select>
           {errors.categoria && (
             <p className="text-red-500 text-sm mt-1">{errors.categoria.message}</p>
@@ -541,17 +546,18 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
 
         {/* Nivel de Experiencia */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Nivel de Experiencia</label>
+          <label className="block text-sm font-medium text-gray-700">Experiencia</label>
           <select
             {...register("experiencia", {
               required: "Este campo es obligatorio",
             })}
             className={`w-full p-2 border rounded ${errors.experiencia && "border-red-500"}`}
           >
-            <option value="">Seleccione un nivel de experiencia</option>
-            <option value="Junior">Junior</option>
-            <option value="Medio">Medio</option>
-            <option value="Senior">Senior</option>
+            <option value="">Seleccione el nivel de experiencia</option>
+            <option value="Sin experiencia">Sin experiencia</option>
+            <option value="1-2 años">1-2 años</option>
+            <option value="3-5 años">3-5 años</option>
+            <option value="5+ años">5+ años</option>
           </select>
           {errors.experiencia && (
             <p className="text-red-500 text-sm mt-1">{errors.experiencia.message}</p>
@@ -567,7 +573,7 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
             })}
             className={`w-full p-2 border rounded ${errors.tipo && "border-red-500"}`}
           >
-            <option value="">Seleccione un tipo</option>
+            <option value="">Seleccione el tipo de empresa</option>
             <option value="Estatal">Estatal</option>
             <option value="No estatal">No estatal</option>
           </select>
@@ -664,6 +670,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
           <input
             {...register("titulo", { required: "El título es obligatorio" })}
             className={`w-full p-2 border rounded ${errors.titulo && "border-red-500"}`}
+            placeholder="Ingrese el título del curso"
           />
           {errors.titulo && <span className="text-red-500 text-sm">{errors.titulo.message}</span>}
         </div>
@@ -674,6 +681,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
           <textarea
             {...register("descripcion", { required: "La descripción es obligatoria" })}
             className={`w-full p-2 border rounded ${errors.descripcion && "border-red-500"}`}
+            placeholder="Describa brevemente el curso"
           />
           {errors.descripcion && <span className="text-red-500 text-sm">{errors.descripcion.message}</span>}
         </div>
@@ -685,7 +693,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
             {...register("nivel", { required: "El nivel es obligatorio" })}
             className={`w-full p-2 border rounded ${errors.nivel && "border-red-500"}`}
           >
-            <option value="">Selecciona un nivel</option>
+            <option value="">Seleccione el nivel del curso</option>
             <option value="Principiante">Principiante</option>
             <option value="Intermedio">Intermedio</option>
             <option value="Avanzado">Avanzado</option>
@@ -700,7 +708,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
             {...register("modalidad", { required: "La modalidad es obligatoria" })}
             className={`w-full p-2 border rounded ${errors.modalidad && "border-red-500"}`}
           >
-            <option value="">Selecciona una modalidad</option>
+            <option value="">Seleccione la modalidad del curso</option>
             <option value="Online">Online</option>
             <option value="Presencial">Presencial</option>
           </select>
@@ -714,9 +722,11 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
             type="number"
             {...register("precio", { 
               required: "El precio es obligatorio",
-              min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+              min: { value: 0, message: "El precio debe ser mayor o igual a 0" },
+              step: 0.01
             })}
             className={`w-full p-2 border rounded ${errors.precio && "border-red-500"}`}
+            placeholder="Ingrese el precio del curso"
           />
           {errors.precio && <span className="text-red-500 text-sm">{errors.precio.message}</span>}
         </div>
@@ -727,6 +737,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
           <input
             {...register("direccion")}
             className="w-full p-2 border rounded"
+            placeholder="Ingrese la dirección donde se impartirá el curso"
           />
         </div>
 
@@ -736,6 +747,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
           <textarea
             {...register("requisitos")}
             className="w-full p-2 border rounded"
+            placeholder="Especifique los requisitos necesarios para tomar el curso"
           />
         </div>
 
@@ -745,6 +757,7 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
           <textarea
             {...register("descripcionCompleta")}
             className="w-full p-2 border rounded"
+            placeholder="Proporcione una descripción detallada del curso"
           />
         </div>
       </>
@@ -760,7 +773,8 @@ export const courseModalConfig = (course = null, isAdmin = false) => ({
     modalidad: { required: "La modalidad es obligatoria" },
     precio: { 
       required: "El precio es obligatorio",
-      min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+      min: { value: 0, message: "El precio debe ser mayor o igual a 0" },
+      step: 0.01
     },
   },
   initialValues: {
@@ -880,7 +894,7 @@ export const editEmpresaInfoModalConfig = {
               required: "El nombre es obligatorio"
             })}
             className={`w-full p-2 border rounded ${errors.nombre && "border-red-500"}`}
-            placeholder="Ingrese el nombre de la empresa"
+            placeholder="Ingrese el nombre completo de la empresa"
           />
           {errors.nombre && (
             <p className="text-red-500 text-xs">{errors.nombre.message}</p>
@@ -895,7 +909,7 @@ export const editEmpresaInfoModalConfig = {
             onChange={handleProvinceChange}
             className={`w-full p-2 border rounded`}
           >
-            <option value="">Seleccione una provincia</option>
+            <option value="">Seleccione la provincia de la empresa</option>
             {Object.keys(provincesAndMunicipalities).map((province) => (
               <option key={province} value={province}>{province}</option>
             ))}
@@ -909,7 +923,7 @@ export const editEmpresaInfoModalConfig = {
             {...register("municipio")}
             className={`w-full p-2 border rounded`}
           >
-            <option value="">Seleccione un municipio</option>
+            <option value="">Seleccione el municipio de la empresa</option>
             {municipalities.map((municipality) => (
               <option key={municipality} value={municipality}>{municipality}</option>
             ))}
@@ -923,7 +937,7 @@ export const editEmpresaInfoModalConfig = {
             {...register("tipo")}
             className={`w-full p-2 border rounded`}
           >
-            <option value="">Seleccione un tipo</option>
+            <option value="">Seleccione el tipo de empresa</option>
             <option value="Estatal">Estatal</option>
             <option value="No estatal">No estatal</option>
           </select>
@@ -936,7 +950,7 @@ export const editEmpresaInfoModalConfig = {
             {...register("descripcion")}
             className="w-full p-2 border rounded"
             rows="4"
-            placeholder="Descripción de la empresa"
+            placeholder="Describa la actividad principal de la empresa"
           ></textarea>
         </div>
       </>

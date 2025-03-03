@@ -40,17 +40,49 @@ const ProfessionalInfo = () => {
   });
 
   const addItem = (state, setState, newItem) => {
+    // Validar duplicados según el tipo de elemento
+    let isDuplicate = false;
+    let duplicateMessage = '';
+
+    switch(activeSection) {
+      case 'education':
+        isDuplicate = !validateDuplicateEducation(newItem);
+        duplicateMessage = 'Ya existe esta titulación para esta institución';
+        break;
+      case 'experience':
+        isDuplicate = !validateDuplicateExperience(newItem);
+        duplicateMessage = 'Ya existe este cargo para esta empresa';
+        break;
+      case 'skills':
+        isDuplicate = !validateDuplicateSkill(newItem);
+        duplicateMessage = 'Esta habilidad ya está registrada';
+        break;
+      case 'languages':
+        isDuplicate = !validateDuplicateLanguage(newItem);
+        duplicateMessage = 'Este idioma ya está registrado';
+        break;
+      case 'certifications':
+        isDuplicate = !validateDuplicateCertification(newItem);
+        duplicateMessage = 'Ya existe esta certificación para esta institución';
+        break;
+    }
+
+    if (isDuplicate) {
+      showNotification(duplicateMessage, 'error');
+      return;
+    }
+
     setState([...state, { id: Date.now(), ...newItem }]);
   };
 
   const editItem = (state, setState, id, field, value) => {
+    // Validar fechas como antes
     if ((activeSection === "experience" || activeSection === "education") && 
         (field === "startDate" || field === "endDate")) {
       const item = state.find(item => item.id === id);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Resetear la hora para comparar solo fechas
+      today.setHours(0, 0, 0, 0);
       
-      // Validar que ninguna fecha sea posterior a la actual
       if (value && new Date(value) > today) {
         showNotification('La fecha no puede ser posterior a la fecha actual', 'error');
         return;
@@ -73,7 +105,53 @@ const ProfessionalInfo = () => {
       }
     }
 
-    setState(state.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+    // Crear el item actualizado
+    const updatedItem = state.find(item => item.id === id);
+    const newItem = { ...updatedItem, [field]: value };
+
+    // Validar duplicados según el tipo de elemento
+    let isDuplicate = false;
+    let duplicateMessage = '';
+
+    switch(activeSection) {
+      case 'education':
+        if (field === 'institution' || field === 'degree') {
+          isDuplicate = !validateDuplicateEducation(newItem);
+          duplicateMessage = 'Ya existe esta titulación para esta institución';
+        }
+        break;
+      case 'experience':
+        if (field === 'company' || field === 'position') {
+          isDuplicate = !validateDuplicateExperience(newItem);
+          duplicateMessage = 'Ya existe este cargo para esta empresa';
+        }
+        break;
+      case 'skills':
+        if (field === 'name') {
+          isDuplicate = !validateDuplicateSkill(newItem);
+          duplicateMessage = 'Esta habilidad ya está registrada';
+        }
+        break;
+      case 'languages':
+        if (field === 'language') {
+          isDuplicate = !validateDuplicateLanguage(newItem);
+          duplicateMessage = 'Este idioma ya está registrado';
+        }
+        break;
+      case 'certifications':
+        if (field === 'name' || field === 'institution') {
+          isDuplicate = !validateDuplicateCertification(newItem);
+          duplicateMessage = 'Ya existe esta certificación para esta institución';
+        }
+        break;
+    }
+
+    if (isDuplicate) {
+      showNotification(duplicateMessage, 'error');
+      return;
+    }
+
+    setState(state.map((item) => (item.id === id ? newItem : item)));
   };
 
   const deleteItem = (state, setState, id) => {
@@ -613,6 +691,49 @@ const ProfessionalInfo = () => {
       console.error('Error al eliminar el resumen:', error);
       toast.error('Error al eliminar el resumen');
     }
+  };
+
+  const validateDuplicateEducation = (education) => {
+    const duplicates = educations.filter(edu => 
+      edu.institution.trim().toLowerCase() === education.institution.trim().toLowerCase() &&
+      edu.degree.trim().toLowerCase() === education.degree.trim().toLowerCase() &&
+      edu.id !== education.id
+    );
+    return duplicates.length === 0;
+  };
+
+  const validateDuplicateExperience = (experience) => {
+    const duplicates = experiences.filter(exp => 
+      exp.company.trim().toLowerCase() === experience.company.trim().toLowerCase() &&
+      exp.position.trim().toLowerCase() === experience.position.trim().toLowerCase() &&
+      exp.id !== experience.id
+    );
+    return duplicates.length === 0;
+  };
+
+  const validateDuplicateSkill = (skill) => {
+    const duplicates = skills.filter(s => 
+      s.name.trim().toLowerCase() === skill.name.trim().toLowerCase() &&
+      s.id !== skill.id
+    );
+    return duplicates.length === 0;
+  };
+
+  const validateDuplicateLanguage = (language) => {
+    const duplicates = languages.filter(lang => 
+      lang.language.trim().toLowerCase() === language.language.trim().toLowerCase() &&
+      lang.id !== language.id
+    );
+    return duplicates.length === 0;
+  };
+
+  const validateDuplicateCertification = (certification) => {
+    const duplicates = certifications.filter(cert => 
+      cert.name.trim().toLowerCase() === certification.name.trim().toLowerCase() &&
+      cert.institution.trim().toLowerCase() === certification.institution.trim().toLowerCase() &&
+      cert.id !== certification.id
+    );
+    return duplicates.length === 0;
   };
 
   // Cargar datos cuando el componente se monta

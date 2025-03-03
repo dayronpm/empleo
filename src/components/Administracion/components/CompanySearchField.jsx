@@ -46,7 +46,7 @@ const CompanySearchField = ({ onSelect, register, setValue, errors }) => {
                 type="text"
                 value={searchTerm}
                 onChange={handleSearch}
-                placeholder="Buscar empresa..."
+                placeholder="Buscar empresa por nombre o tipo..."
                 className={`w-full p-2 border rounded ${errors?.id_empresa ? 'border-red-500' : ''}`}
             />
             <input

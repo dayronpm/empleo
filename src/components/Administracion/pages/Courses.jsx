@@ -65,6 +65,12 @@ const Courses = () => {
 
   const handleAddCourse = async (courseData) => {
     try {
+      // Validar que el precio no sea negativo
+      if (parseFloat(courseData.precio) < 0) {
+        notifyError('El precio no puede ser negativo');
+        return;
+      }
+
       const response = await fetch('http://localhost:3001/addcourse', {
         method: 'POST',
         headers: {
@@ -92,6 +98,12 @@ const Courses = () => {
 
   const handleEditCourse = async (courseData) => {
     try {
+      // Validar que el precio no sea negativo
+      if (parseFloat(courseData.precio) < 0) {
+        notifyError('El precio no puede ser negativo');
+        return;
+      }
+
       const response = await fetch('http://localhost:3001/editcourse', {
         method: 'POST',
         headers: {

@@ -3,7 +3,17 @@ import { BsPencilSquare, BsTrash, BsPlus } from "react-icons/bs";
 import GenericModal from "./GenericModal";
 import { confirmationModalConfig } from "../helpers/ModalConfigurations";
 
-const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing, readOnlyRender, emptyMessage }) => {
+const Section = ({ 
+  title, 
+  items = [], // Valor por defecto para items
+  onAdd, 
+  onEdit, 
+  onDelete, 
+  fields, 
+  isEditing, 
+  readOnlyRender, 
+  emptyMessage 
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -26,15 +36,18 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing, rea
   const currentYear = new Date().getFullYear();
   const yearsList = Array.from({ length: currentYear - 1949 }, (_, i) => 1950 + i);
 
+  // Validar que items sea un array
+  const itemsArray = Array.isArray(items) ? items : [];
+
   return (
     <div>
       {/* Título de la Sección */}
       <h2 className="text-xl font-bold mt-6 mb-4">{title}</h2>
       <div className="space-y-4">
-        {items.length === 0 && !isEditing ? (
+        {itemsArray.length === 0 && !isEditing ? (
           <div className="text-gray-500 italic">{emptyMessage || "No hay elementos"}</div>
         ) : (
-          items.map((item) => (
+          itemsArray.map((item) => (
             <div key={item.id} className="bg-white rounded-lg p-4 shadow-sm">
               {isEditing ? (
                 // Renderizado en modo edición (el existente)
@@ -47,7 +60,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing, rea
                       {field.customInput(
                         item[field.key],
                         (value) => onEdit(item.id, field.key, value),
-                        items
+                        itemsArray
                       )}
                     </div>
                   ))}
@@ -71,7 +84,7 @@ const Section = ({ title, items, onAdd, onEdit, onDelete, fields, isEditing, rea
                           {field.customInput(
                             item[field.key],
                             () => {},
-                            items
+                            itemsArray
                           )}
                         </div>
                       ))}

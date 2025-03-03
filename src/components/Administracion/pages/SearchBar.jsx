@@ -43,7 +43,7 @@ const SearchBar = ({ data, setSearchResults }) => {
       <FaSearch className="absolute left-3 text-gray-400" />
       <input
         type="text"
-        placeholder="Buscar..."
+        placeholder="Buscar por nombre, tipo, descripción..."
         value={searchTerm}
         onChange={handleSearch}
         className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
