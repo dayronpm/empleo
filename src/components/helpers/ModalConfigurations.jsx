@@ -848,3 +848,114 @@ export const unsavedChangesModalConfig = {
     );
   },
 };
+
+export const editEmpresaInfoModalConfig = {
+  title: "Editar información de la empresa",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Guardar cambios", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[600px]",
+  },
+  formContent: ({ register, errors, watch, setValue }) => {
+    const province = watch("provincia");
+    const municipalities = province ? provincesAndMunicipalities[province] : [];
+    
+    // Función para manejar cambio de provincia
+    const handleProvinceChange = (e) => {
+      setValue("provincia", e.target.value);
+      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+    };
+    
+    return (
+      <>
+        {/* Nombre de la empresa */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Nombre de la empresa</label>
+          <input
+            type="text"
+            {...register("nombre", {
+              required: "El nombre es obligatorio"
+            })}
+            className={`w-full p-2 border rounded ${errors.nombre && "border-red-500"}`}
+            placeholder="Ingrese el nombre de la empresa"
+          />
+          {errors.nombre && (
+            <p className="text-red-500 text-xs">{errors.nombre.message}</p>
+          )}
+        </div>
+
+        {/* Provincia */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Provincia</label>
+          <select
+            {...register("provincia")}
+            onChange={handleProvinceChange}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione una provincia</option>
+            {Object.keys(provincesAndMunicipalities).map((province) => (
+              <option key={province} value={province}>{province}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Municipio */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Municipio</label>
+          <select
+            {...register("municipio")}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione un municipio</option>
+            {municipalities.map((municipality) => (
+              <option key={municipality} value={municipality}>{municipality}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Tipo */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Tipo</label>
+          <select
+            {...register("tipo")}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione un tipo</option>
+            <option value="Estatal">Estatal</option>
+            <option value="No estatal">No estatal</option>
+          </select>
+        </div>
+
+        {/* Descripción */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Descripción</label>
+          <textarea
+            {...register("descripcion")}
+            className="w-full p-2 border rounded"
+            rows="4"
+            placeholder="Descripción de la empresa"
+          ></textarea>
+        </div>
+      </>
+    );
+  },
+  validationSchema: {
+    nombre: {
+      required: "El nombre es obligatorio"
+    },
+    provincia: {},
+    municipio: {},
+    tipo: {},
+    descripcion: {}
+  },
+  initialValues: {
+    nombre: "",
+    provincia: "",
+    municipio: "",
+    tipo: "",
+    descripcion: ""
+  }
+};

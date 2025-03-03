@@ -231,23 +231,33 @@ const useEmpresaInfoLogic = () => {
             setCourseModalOpen(true); // Abre el modal
         };
 
-        const handleEditCourse = async (courseId, updatedData) => {
+        const handleEditCourse = async (data) => {
             try {
                 const response = await fetch(`${API_URL}/editcourse`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: courseId, ...updatedData }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        id: selectedCourse.id
+                    }),
                 });
         
-                if (!response.ok) throw new Error('Error al editar el curso');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error al editar el curso');
+                }
         
-                // Recargar los datos de la empresa para reflejar los cambios
+                setNotificationMessage('Curso actualizado exitosamente');
+                setIsNotificationOpen(true);
                 reloadEmpresaInfo();
-        
-                // Cerrar el modal después de editar
-                handleCloseCourseModal();
+                setCourseModalOpen(false);
+                setSelectedCourse(null);
             } catch (error) {
                 console.error('Error:', error);
+                setNotificationMessage(error.message);
+                setIsNotificationOpen(true);
             }
         };
 
@@ -301,11 +311,32 @@ const useEmpresaInfoLogic = () => {
     };
 
     // Función para confirmar la eliminación de una oferta
-    const handleConfirmDeleteJob = () => {
-        if (selectedJobForDeletion) {
-            deleteJob(selectedJobForDeletion.id); // Llama al método de eliminación
+    const handleConfirmDeleteJob = async () => {
+        try {
+            const response = await fetch(`${API_URL}/deleteoferta`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: selectedJobForDeletion.id
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al eliminar la oferta');
+            }
+
+            setNotificationMessage('Oferta eliminada exitosamente');
+            setIsNotificationOpen(true);
+            reloadEmpresaInfo();
             setIsDeleteJobModalOpen(false);
             setSelectedJobForDeletion(null);
+        } catch (error) {
+            console.error('Error:', error);
+            setNotificationMessage(error.message);
+            setIsNotificationOpen(true);
         }
     };
 
@@ -325,81 +356,122 @@ const useEmpresaInfoLogic = () => {
     // Función para manejar la creación o edición de trabajos
     const handleAddJob = async (data) => {
         try {
-            console.log(data);
-            const response = await fetch("http://localhost:3001/addoferta", {
-                method: "POST",
+            const response = await fetch(`${API_URL}/addoferta`, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     ...data,
-                    id: localStorage.getItem("id"), // ID de la empresa
+                    id: id // ID de la empresa
                 }),
             });
 
             if (!response.ok) {
-                throw new Error("Error al agregar la oferta de trabajo");
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al agregar la oferta');
             }
 
-            window.location.reload(); // Recargar la página después de agregar
+            setNotificationMessage('Oferta agregada exitosamente');
+            setIsNotificationOpen(true);
+            reloadEmpresaInfo();
+            setIsAddJobModalOpen(false);
         } catch (error) {
-            console.error(error);
+            console.error('Error:', error);
+            setNotificationMessage(error.message);
+            setIsNotificationOpen(true);
         }
     };
 
     // Función para manejar la edición de un trabajo
-const handleEditJob = async (data) => {
-    try {
-        const response = await fetch("http://localhost:3001/editoferta", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                ...data,
-                id: selectedJob.id, // Incluye el ID del trabajo seleccionado
-            }),
-        });
+    const handleEditJob = async (data) => {
+        try {
+            const response = await fetch(`${API_URL}/editoferta`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...data,
+                    id: selectedJob.id
+                }),
+            });
 
-        if (!response.ok) {
-            throw new Error("Error al editar la oferta de trabajo");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al editar la oferta');
+            }
+
+            setNotificationMessage('Oferta actualizada exitosamente');
+            setIsNotificationOpen(true);
+            reloadEmpresaInfo();
+            setIsAddJobModalOpen(false);
+            setSelectedJob(null);
+        } catch (error) {
+            console.error('Error:', error);
+            setNotificationMessage(error.message);
+            setIsNotificationOpen(true);
         }
+    };
 
-        window.location.reload(); // Recargar la página después de editar
-    } catch (error) {
-        console.error(error);
-    }
-};
+    // Nueva función para manejar la creación de un curso
+    const handleAddCourse = async (data) => {
+        try {
+            const response = await fetch(`${API_URL}/addcourse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...data,
+                    id_master: id // ID de la empresa
+                }),
+            });
 
-// Nueva función para manejar la creación de un curso
-const handleAddCourse = async (data) => {
-    try {
-        const response = await fetch(`${API_URL}/addcourse`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...data,
-                id_master: id, // ID de la empresa
-            }),
-        });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al agregar el curso');
+            }
 
-        if (!response.ok) {
-            throw new Error('Error al agregar el curso');
+            setNotificationMessage('Curso agregado exitosamente');
+            setIsNotificationOpen(true);
+            reloadEmpresaInfo();
+            handleCloseCourseModal();
+        } catch (error) {
+            console.error('Error:', error);
+            setNotificationMessage(error.message);
+            setIsNotificationOpen(true);
         }
+    };
 
-        window.location.reload(); // Recargar la página después de agregar
-    } catch (error) {
-        console.error(error);
-    }
-};
+    const handleConfirmDeleteCourse = async () => {
+        try {
+            const response = await fetch(`${API_URL}/deletecourse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: selectedCourseForDeletion.id
+                }),
+            });
 
-const handleConfirmDeleteCourse = () => {
-    if (selectedCourseForDeletion) {
-      deleteCourse(selectedCourseForDeletion.id); // Llama al método de eliminación
-      setIsDeleteCourseModalOpen(false); // Cierra el modal
-      setSelectedCourseForDeletion(null); // Limpia el curso seleccionado
-    }
-  };
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al eliminar el curso');
+            }
+
+            setNotificationMessage('Curso eliminado exitosamente');
+            setIsNotificationOpen(true);
+            reloadEmpresaInfo();
+            setIsDeleteCourseModalOpen(false);
+            setSelectedCourseForDeletion(null);
+        } catch (error) {
+            console.error('Error:', error);
+            setNotificationMessage(error.message);
+            setIsNotificationOpen(true);
+        }
+    };
 
     return {
         empresa,
@@ -434,46 +506,34 @@ const handleConfirmDeleteCourse = () => {
         isDeleteModalOpen,
         setDeleteModalOpen,
         isCourseModalOpen,
+        setCourseModalOpen,
         handleOpenCourseModal,
         handleCloseCourseModal,
         courses,
         selectedJob,
-        selectedCourse, // Agregar el estado del curso seleccionado
-        setSelectedCourse, // Agregar la función para actualizar el curso seleccionado
-        handleCourseSelect, // Agregar la función para seleccionar un curso
-        handleEditCourse,
-        deleteJob,
-        deleteCourse,
-        isDeleteJobModalOpen,
-        setIsDeleteJobModalOpen,
-        selectedJobForDeletion,
-        setSelectedJobForDeletion,
-        handleDeleteJob,
-        handleConfirmDeleteJob,
-        handleDeleteCourse,
+        setSelectedJob,
+        selectedCourse,
+        setSelectedCourse,
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
         handleLogout,
-        setSelectedJob,
         isDeleteJobModalOpen,
         setIsDeleteJobModalOpen,
-        handleJobSelect,
         selectedJobForDeletion,
         setSelectedJobForDeletion,
         isAddJobModalOpen,
         setIsAddJobModalOpen,
-        handleDeleteJob,
-        handleConfirmDeleteJob,
         handleAddJob,
         handleEditJob,
+        handleConfirmDeleteJob,
         handleAddCourse,
+        handleEditCourse,
         isDeleteCourseModalOpen,
         setIsDeleteCourseModalOpen,
         selectedCourseForDeletion,
         setSelectedCourseForDeletion,
-        handleConfirmDeleteCourse,
-        handleDeleteCourse 
+        handleConfirmDeleteCourse
     };
 };
 

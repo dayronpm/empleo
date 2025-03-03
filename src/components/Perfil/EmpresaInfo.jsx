@@ -3,12 +3,11 @@ import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobList from '../Ofertas/JobList';
 import CourseList from '../Cursos/CourseList';
 import GenericModal from '../generics/GenericModal';
-import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig, deleteCourseModalConfig, changePasswordModalConfig } from '../helpers/ModalConfigurations';
+import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig, deleteCourseModalConfig, changePasswordModalConfig, editEmpresaInfoModalConfig } from '../helpers/ModalConfigurations';
 import NotificationPopup from '../generics/NotificationPopup';
 import Header from './Header';
 import { BsPencilSquare, BsShieldLock } from "react-icons/bs";
 import { FaFileExport } from "react-icons/fa";
-import { provincesAndMunicipalities } from './data';
 
 const EmpresaInfo = () => {
     const {
@@ -37,35 +36,34 @@ const EmpresaInfo = () => {
         isDeleteModalOpen,
         setDeleteModalOpen,
         isCourseModalOpen,
+        setCourseModalOpen,
         handleOpenCourseModal,
         handleCloseCourseModal,
         courses,
         selectedJob,
+        setSelectedJob,
         selectedCourse,
-        handleCourseSelect,
+        setSelectedCourse,
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
         handleLogout,
         isDeleteJobModalOpen,
         setIsDeleteJobModalOpen,
-        handleJobSelect,
         selectedJobForDeletion,
+        setSelectedJobForDeletion,
         isAddJobModalOpen,
         setIsAddJobModalOpen,
-        handleDeleteJob,
-        handleConfirmDeleteJob,
         handleAddJob,
         handleEditJob,
-        handleDeleteCourse,
-        handleEditCourse,
+        handleConfirmDeleteJob,
         handleAddCourse,
-        setSelectedCourse,
+        handleEditCourse,
         isDeleteCourseModalOpen,
         setIsDeleteCourseModalOpen,
         selectedCourseForDeletion,
-        handleConfirmDeleteCourse,
-        setSelectedJob
+        setSelectedCourseForDeletion,
+        handleConfirmDeleteCourse
     } = useEmpresaInfoLogic();
 
     // Estados para los nuevos modales
@@ -89,102 +87,6 @@ const EmpresaInfo = () => {
         municipio: editedMunicipality,
         tipo: editedType,
         descripcion: editedDescription
-    };
-
-    // Configuración del modal de edición de información de empresa
-    const editEmpresaInfoModalConfig = {
-        title: "Editar información de la empresa",
-        actions: [
-            { label: "Cancelar", onClick: "close" },
-            { label: "Guardar cambios", onClick: "submit", primary: true },
-        ],
-        customStyles: {
-            overlay: "bg-black bg-opacity-70",
-            content: "w-[600px]",
-        },
-        formContent: ({ register, errors, watch, setValue }) => {
-            const province = watch("provincia");
-            const municipalities = province ? provincesAndMunicipalities[province] : [];
-            
-            // Función para manejar cambio de provincia
-            const handleProvinceChange = (e) => {
-                setValue("provincia", e.target.value);
-                setValue("municipio", ""); // Limpiar municipio al cambiar provincia
-            };
-            
-            return (
-                <>
-                    {/* Nombre de la empresa */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Nombre de la empresa</label>
-                        <input
-                            type="text"
-                            {...register("nombre", {
-                                required: "El nombre es obligatorio"
-                            })}
-                            className={`w-full p-2 border rounded ${errors.nombre && "border-red-500"}`}
-                            placeholder="Ingrese el nombre de la empresa"
-                        />
-                        {errors.nombre && (
-                            <p className="text-red-500 text-xs">{errors.nombre.message}</p>
-                        )}
-                    </div>
-
-                    {/* Provincia */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Provincia</label>
-                        <select
-                            {...register("provincia")}
-                            onChange={handleProvinceChange}
-                            className={`w-full p-2 border rounded`}
-                        >
-                            <option value="">Seleccione una provincia</option>
-                            {Object.keys(provincesAndMunicipalities).map((province) => (
-                                <option key={province} value={province}>{province}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Municipio */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Municipio</label>
-                        <select
-                            {...register("municipio")}
-                            className={`w-full p-2 border rounded`}
-                        >
-                            <option value="">Seleccione un municipio</option>
-                            {municipalities.map((municipality) => (
-                                <option key={municipality} value={municipality}>{municipality}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Tipo */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Tipo</label>
-                        <select
-                            {...register("tipo")}
-                            className={`w-full p-2 border rounded`}
-                        >
-                            <option value="">Seleccione un tipo</option>
-                            <option value="Estatal">Estatal</option>
-                            <option value="No estatal">No estatal</option>
-                        </select>
-                    </div>
-
-                    {/* Descripción */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Descripción</label>
-                        <textarea
-                            {...register("descripcion")}
-                            className="w-full p-2 border rounded"
-                            rows="4"
-                            placeholder="Descripción de la empresa"
-                        ></textarea>
-                    </div>
-                </>
-            );
-        }
     };
 
     return (
@@ -260,9 +162,10 @@ const EmpresaInfo = () => {
                             setIsAddJobModalOpen(true);
                         }}
                         onDelete={(job) => {
-                            handleJobSelect(job);
+                            setSelectedJobForDeletion(job);
                             setIsDeleteJobModalOpen(true);
                         }}
+                        showDeleteButton={true}
                     />
                 </div>
 
@@ -278,13 +181,14 @@ const EmpresaInfo = () => {
                     <CourseList
                         courses={courses}
                         onEdit={(course) => {
-                            handleCourseSelect(course);
-                            handleOpenCourseModal();
+                            setSelectedCourse(course);
+                            setCourseModalOpen(true);
                         }}
                         onDelete={(course) => {
-                            handleCourseSelect(course);
+                            setSelectedCourseForDeletion(course);
                             setIsDeleteCourseModalOpen(true);
                         }}
+                        showDeleteButton={true}
                     />
                 </div>
 
@@ -430,32 +334,48 @@ const EmpresaInfo = () => {
                 {...deleteAccountModalConfig}
             />
 
-            <GenericModal
-                isOpen={isDeleteJobModalOpen}
-                onClose={() => setIsDeleteJobModalOpen(false)}
-                onSubmit={handleConfirmDeleteJob}
-                {...deleteJobModalConfig}
-            />
-
+            {/* Modal para editar/agregar ofertas de trabajo */}
             <GenericModal
                 isOpen={isAddJobModalOpen}
-                onClose={() => setIsAddJobModalOpen(false)}
-                onSubmit={selectedJob ? handleEditJob : handleAddJob}
+                onClose={() => {
+                    setIsAddJobModalOpen(false);
+                    setSelectedJob(null);
+                }}
+                onSubmit={(data) => selectedJob ? handleEditJob(data) : handleAddJob(data)}
                 {...addEditJobModalConfig(selectedJob)}
             />
 
+            {/* Modal para eliminar ofertas de trabajo */}
+            <GenericModal
+                isOpen={isDeleteJobModalOpen}
+                onClose={() => {
+                    setIsDeleteJobModalOpen(false);
+                    setSelectedJobForDeletion(null);
+                }}
+                onSubmit={handleConfirmDeleteJob}
+                {...deleteJobModalConfig(selectedJobForDeletion)}
+            />
+
+            {/* Modal para editar/agregar cursos */}
             <GenericModal
                 isOpen={isCourseModalOpen}
-                onClose={handleCloseCourseModal}
-                onSubmit={selectedCourse ? handleEditCourse : handleAddCourse}
+                onClose={() => {
+                    handleCloseCourseModal();
+                    setSelectedCourse(null);
+                }}
+                onSubmit={(data) => selectedCourse ? handleEditCourse(data) : handleAddCourse(data)}
                 {...courseModalConfig(selectedCourse)}
             />
 
+            {/* Modal para eliminar cursos */}
             <GenericModal
                 isOpen={isDeleteCourseModalOpen}
-                onClose={() => setIsDeleteCourseModalOpen(false)}
+                onClose={() => {
+                    setIsDeleteCourseModalOpen(false);
+                    setSelectedCourseForDeletion(null);
+                }}
                 onSubmit={handleConfirmDeleteCourse}
-                {...deleteCourseModalConfig}
+                {...deleteCourseModalConfig(selectedCourseForDeletion)}
             />
 
             {/* Notificación */}

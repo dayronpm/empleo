@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton = false, showMoreInfo = false }) => {
+const CourseList = ({ courses, onEdit, onDelete, showDeleteButton = false, showMoreInfo = false }) => {
     return (
         <div>
             <ul>
@@ -8,7 +8,7 @@ const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton 
                     <li 
                         key={course.id} 
                         className="border p-4 mb-2 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
-                        onClick={() => onCourseSelect(course)} // Agregar onClick para seleccionar el curso
+                        onClick={() => onEdit(course)}
                     >
                         <h4 className="font-bold">{course.titulo}</h4>
                         <p>{course.descripcion}</p>
@@ -27,8 +27,8 @@ const CourseList = ({ courses, onCourseSelect, onDeleteCourse, showDeleteButton 
                         {showDeleteButton && (
                         <button
                             onClick={(e) => {
-                            e.stopPropagation(); // Evita que el clic se propague al elemento padre
-                            onDeleteCourse(course); // Llama a la función de eliminación
+                                e.stopPropagation(); // Evita que el clic se propague al elemento padre
+                                onDelete(course);
                             }}
                             className="mt-2 px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                         >

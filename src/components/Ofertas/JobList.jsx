@@ -1,4 +1,4 @@
-const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false, activeFilters = {} }) => {
+const JobList = ({ jobs, onEdit, onDelete, showDeleteButton = false, activeFilters = {} }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -10,7 +10,7 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false, act
                 <div 
                     key={job.id} 
                     className="p-4 hover:bg-gray-100 cursor-pointer transition duration-200 border-b"
-                    onClick={() => onJobSelect(job)} // Llama a la función pasada desde EmpresaInfo
+                    onClick={() => onEdit(job)} // Cambiado de onJobSelect a onEdit
                 >
                     <div className="flex justify-between mb-2">
                         <div className="flex items-center">
@@ -24,7 +24,7 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false, act
                             <button 
                                 onClick={(e) => {
                                     e.stopPropagation(); // Evita que se seleccione el trabajo al hacer clic en el botón
-                                    onDeleteJob(job); // Llama a la función de eliminación
+                                    onDelete(job); // Cambiado de onDeleteJob a onDelete
                                 }} 
                                 className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
                             >
