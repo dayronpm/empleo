@@ -3,11 +3,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ProfileLink = ({ isAuthenticated, setWarningOpen, children, ...props }) => {
+const ProfileLink = ({ isAuthenticated, setWarningOpen, openLogin, children, ...props }) => {
     const handleClick = (e) => {
         if (!isAuthenticated) {
             e.preventDefault(); // Evitar la navegación
-            setWarningOpen(true); // Abrir el modal de advertencia
+            openLogin(); // Abrir directamente el modal de inicio de sesión en lugar del modal de advertencia
         }
     };
 

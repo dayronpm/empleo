@@ -4,7 +4,7 @@ const SearchBar = ({ onSearch }) => {
     return (
         <input
             type="text"
-            placeholder="Buscar oferta de trabajo"
+            placeholder="Buscar por título, categoría, empresa o ubicación"
             onChange={onSearch}
             className="border border-gray-300 rounded-lg p-2 w-1/3"
         />

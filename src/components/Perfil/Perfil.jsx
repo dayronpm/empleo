@@ -1,6 +1,6 @@
 import React from 'react';
 import CurriculumII from './CurriculumII'; // Correctly import the CurriculumII component
-import EmpresaInfo from './EmpresaInfo'; // Update to import the logic instead
+import EmpresaInfo from './EmpresaInfo';
 
 const Perfil = () => {
     // Obtener el tipo de usuario del localStorage

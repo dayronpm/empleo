@@ -1,3 +1,5 @@
+import CompanySearchField from '../Administracion/components/CompanySearchField';
+
 export const changePasswordModalConfig = {
   title: "Cambiar contraseña",
   actions: [
@@ -18,6 +20,7 @@ export const changePasswordModalConfig = {
             type="password"
             {...register("currentPassword", { required: "La contraseña actual es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.currentPassword && "border-red-500"}`}
+            placeholder="Ingrese su contraseña actual"
           />
           {errors.currentPassword && (
             <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
@@ -30,6 +33,7 @@ export const changePasswordModalConfig = {
             type="password"
             {...register("newPassword", { required: "La nueva contraseña es obligatoria." })}
             className={`w-full p-2 border rounded ${errors.newPassword && "border-red-500"}`}
+            placeholder="Ingrese su nueva contraseña"
           />
           {errors.newPassword && (
             <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
@@ -136,29 +140,50 @@ export const editInfoModalConfig = {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Teléfonos</label>
           {watch("telefono").map((phone, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => {
-                  const newPhones = [...watch("telefono")];
-                  newPhones[index] = e.target.value;
-                  setValue("telefono", newPhones);
-                }}
-                className="w-full p-2 border rounded"
-                placeholder="Ingrese un número de teléfono"
-              />
-              {watch("telefono").length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newPhones = watch("telefono").filter((_, i) => i !== index);
-                    setValue("telefono", newPhones);
+            <div key={index} className="mb-4">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Solo permitir el signo +, y números
+                    if (!/^[+\d]*$/.test(value) && value !== '') {
+                      return;
+                    }
+                    // Si está vacío o comienza con +53, permitir el cambio
+                    if (value === '' || value === '+' || value === '+5' || value === '+53' || (value.startsWith('+53') && value.length <= 11)) {
+                      const newPhones = [...watch("telefono")];
+                      newPhones[index] = value;
+                      setValue("telefono", newPhones);
+                    }
                   }}
-                  className="ml-2 text-red-500"
-                >
-                  <BsTrash size={16} />
-                </button>
+                  className={`w-full p-2 border rounded ${
+                    phone && !/^\+53\d{6,8}$/.test(phone) ? 'border-red-500' : ''
+                  }`}
+                  placeholder="+53 seguido de 6-8 números"
+                />
+                {watch("telefono").length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (watch("telefono").length === 1) {
+                        setValue("telefono", [""]);
+                      } else {
+                        const newPhones = watch("telefono").filter((_, i) => i !== index);
+                        setValue("telefono", newPhones);
+                      }
+                    }}
+                    className="ml-2 text-red-500"
+                  >
+                    <BsTrash size={16} />
+                  </button>
+                )}
+              </div>
+              {phone && !/^\+53\d{6,8}$/.test(phone) && (
+                <p className="text-red-500 text-xs mt-1">
+                  El teléfono debe comenzar con +53 seguido de 6-8 números
+                </p>
               )}
             </div>
           ))}
@@ -229,8 +254,8 @@ export const editInfoModalConfig = {
 export const confirmationModalConfig = (message) => ({
   title: "Confirmación",
   actions: [
-    { label: "Cancelar", onClick: "close" },
     { label: "Aceptar", onClick: "submit", primary: true },
+    { label: "Cancelar", onClick: "close" },
   ],
   customStyles: {
     overlay: "bg-black bg-opacity-70",
@@ -331,7 +356,7 @@ export const deleteJobModalConfig = (job) => ({
   },
 });
 
-export const addEditJobModalConfig = (job = null) => ({
+export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
   title: job ? "Editar Oferta de Trabajo" : "Agregar Nueva Oferta de Trabajo",
   actions: [
     { label: "Cancelar", onClick: "close" },
@@ -345,20 +370,28 @@ export const addEditJobModalConfig = (job = null) => ({
     const province = watch("provincia");
     const municipalities = province ? provincesAndMunicipalities[province] : [];
 
-    // Función para manejar cambio de provincia
     const handleProvinceChange = (e) => {
       setValue("provincia", e.target.value);
-      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+      setValue("municipio", "");
     };
 
     return (
       <>
+        {/* Campo de búsqueda de empresa - solo aparece al agregar nueva oferta desde administración */}
+        {!job && isAdmin && (
+          <CompanySearchField
+            register={register}
+            setValue={setValue}
+            errors={errors}
+          />
+        )}
+
         {/* Título */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Título</label>
           <input
             type="text"
-            placeholder="Ingrese el título del trabajo"
+            placeholder="Ej: Desarrollador Web Frontend"
             {...register("titulo", {
               required: "Este campo es obligatorio",
             })}
@@ -416,7 +449,7 @@ export const addEditJobModalConfig = (job = null) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Descripción</label>
           <textarea
-            placeholder="Ingrese la descripción del trabajo"
+            placeholder="Describa las responsabilidades principales del puesto"
             {...register("descripcion", {
               required: "Este campo es obligatorio",
             })}
@@ -431,7 +464,7 @@ export const addEditJobModalConfig = (job = null) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Requerimientos</label>
           <textarea
-            placeholder="Ingrese los requerimientos del trabajo"
+            placeholder="Liste los requisitos necesarios para el puesto"
             {...register("requerimientos", {
               required: "Este campo es obligatorio",
             })}
@@ -446,7 +479,7 @@ export const addEditJobModalConfig = (job = null) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Beneficios</label>
           <textarea
-            placeholder="Ingrese los beneficios del trabajo"
+            placeholder="Describa los beneficios que ofrece el puesto"
             {...register("beneficios", {
               required: "Este campo es obligatorio",
             })}
@@ -461,14 +494,14 @@ export const addEditJobModalConfig = (job = null) => ({
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Proceso de Aplicación</label>
           <textarea
-            placeholder="Ingrese el proceso de aplicación del trabajo"
-            {...register("proceso_aplicacion", {
+            placeholder="Explique el proceso para aplicar al puesto"
+            {...register("aplicacion", {
               required: "Este campo es obligatorio",
             })}
-            className={`w-full p-2 border rounded ${errors.proceso_aplicacion && "border-red-500"}`}
+            className={`w-full p-2 border rounded ${errors.aplicacion && "border-red-500"}`}
           />
-          {errors.proceso_aplicacion && (
-            <p className="text-red-500 text-sm mt-1">{errors.proceso_aplicacion.message}</p>
+          {errors.aplicacion && (
+            <p className="text-red-500 text-sm mt-1">{errors.aplicacion.message}</p>
           )}
         </div>
 
@@ -477,7 +510,7 @@ export const addEditJobModalConfig = (job = null) => ({
           <label className="block text-sm font-medium text-gray-700">Salario</label>
           <input
             type="number"
-            placeholder="Ingrese el salario"
+            placeholder="Ingrese el salario mensual"
             {...register("salario", {
               required: "Este campo es obligatorio",
               min: { value: 0, message: "El salario debe ser mayor o igual a 0" },
@@ -499,8 +532,8 @@ export const addEditJobModalConfig = (job = null) => ({
             className={`w-full p-2 border rounded ${errors.categoria && "border-red-500"}`}
           >
             <option value="">Seleccione una categoría</option>
-            <option value="Medio tiempo">Medio tiempo</option>
             <option value="Tiempo completo">Tiempo completo</option>
+            <option value="Medio tiempo">Medio tiempo</option>
             <option value="Freelance">Freelance</option>
           </select>
           {errors.categoria && (
@@ -510,20 +543,20 @@ export const addEditJobModalConfig = (job = null) => ({
 
         {/* Nivel de Experiencia */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Nivel de Experiencia</label>
+          <label className="block text-sm font-medium text-gray-700">Experiencia</label>
           <select
-            {...register("nivel_experiencia", {
+            {...register("experiencia", {
               required: "Este campo es obligatorio",
             })}
-            className={`w-full p-2 border rounded ${errors.nivel_experiencia && "border-red-500"}`}
+            className={`w-full p-2 border rounded ${errors.experiencia && "border-red-500"}`}
           >
-            <option value="">Seleccione un nivel de experiencia</option>
+            <option value="">Seleccione el nivel de experiencia</option>
             <option value="Junior">Junior</option>
             <option value="Medio">Medio</option>
             <option value="Senior">Senior</option>
           </select>
-          {errors.nivel_experiencia && (
-            <p className="text-red-500 text-sm mt-1">{errors.nivel_experiencia.message}</p>
+          {errors.experiencia && (
+            <p className="text-red-500 text-sm mt-1">{errors.experiencia.message}</p>
           )}
         </div>
 
@@ -536,7 +569,7 @@ export const addEditJobModalConfig = (job = null) => ({
             })}
             className={`w-full p-2 border rounded ${errors.tipo && "border-red-500"}`}
           >
-            <option value="">Seleccione un tipo</option>
+            <option value="">Seleccione el tipo de empresa</option>
             <option value="Estatal">Estatal</option>
             <option value="No estatal">No estatal</option>
           </select>
@@ -548,6 +581,9 @@ export const addEditJobModalConfig = (job = null) => ({
     );
   },
   validationSchema: {
+    id_empresa: isAdmin ? {
+      required: "Debe seleccionar una empresa",
+    } : {},
     titulo: {
       required: "El título es obligatorio",
     },
@@ -566,7 +602,7 @@ export const addEditJobModalConfig = (job = null) => ({
     beneficios: {
       required: "Los beneficios son obligatorios",
     },
-    proceso_aplicacion: {
+    aplicacion: {
       required: "El proceso de aplicación es obligatorio",
     },
     salario: {
@@ -579,7 +615,7 @@ export const addEditJobModalConfig = (job = null) => ({
     categoria: {
       required: "La categoría es obligatoria",
     },
-    nivel_experiencia: {
+    experiencia: {
       required: "El nivel de experiencia es obligatorio",
     },
     tipo: {
@@ -587,6 +623,7 @@ export const addEditJobModalConfig = (job = null) => ({
     },
   },
   initialValues: {
+    id_empresa: job?.id_empresa || "",
     titulo: job?.titulo || "",
     provincia: job?.provincia || "",
     municipio: job?.municipio || "",
@@ -594,14 +631,14 @@ export const addEditJobModalConfig = (job = null) => ({
     requerimientos: job?.requerimientos || "",
     beneficios: job?.beneficios || "",
     salario: job?.salario || "",
-    proceso_aplicacion: job?.aplicacion || "",
+    aplicacion: job?.aplicacion || "",
     categoria: job?.categoria || "",
-    nivel_experiencia: job?.experiencia || "",
+    experiencia: job?.experiencia || "",
     tipo: job?.tipo || "",
   },
 });
 
-export const courseModalConfig = (course = null) => ({
+export const courseModalConfig = (course = null, isAdmin = false) => ({
   title: course ? "Editar Curso" : "Agregar Nuevo Curso",
   actions: [
     { label: "Cancelar", onClick: "close" },
@@ -614,12 +651,22 @@ export const courseModalConfig = (course = null) => ({
   formContent: ({ register, errors, watch, setValue }) => {
     return (
       <>
+        {/* Campo de búsqueda de empresa - solo aparece al agregar nuevo curso desde administración */}
+        {!course && isAdmin && (
+          <CompanySearchField
+            register={register}
+            setValue={setValue}
+            errors={errors}
+          />
+        )}
+
         {/* Título */}
         <div>
           <label className="block font-medium">Título</label>
           <input
             {...register("titulo", { required: "El título es obligatorio" })}
             className={`w-full p-2 border rounded ${errors.titulo && "border-red-500"}`}
+            placeholder="Ingrese el título del curso"
           />
           {errors.titulo && <span className="text-red-500 text-sm">{errors.titulo.message}</span>}
         </div>
@@ -630,6 +677,7 @@ export const courseModalConfig = (course = null) => ({
           <textarea
             {...register("descripcion", { required: "La descripción es obligatoria" })}
             className={`w-full p-2 border rounded ${errors.descripcion && "border-red-500"}`}
+            placeholder="Describa brevemente el curso"
           />
           {errors.descripcion && <span className="text-red-500 text-sm">{errors.descripcion.message}</span>}
         </div>
@@ -641,7 +689,7 @@ export const courseModalConfig = (course = null) => ({
             {...register("nivel", { required: "El nivel es obligatorio" })}
             className={`w-full p-2 border rounded ${errors.nivel && "border-red-500"}`}
           >
-            <option value="">Selecciona un nivel</option>
+            <option value="">Seleccione el nivel del curso</option>
             <option value="Principiante">Principiante</option>
             <option value="Intermedio">Intermedio</option>
             <option value="Avanzado">Avanzado</option>
@@ -656,7 +704,7 @@ export const courseModalConfig = (course = null) => ({
             {...register("modalidad", { required: "La modalidad es obligatoria" })}
             className={`w-full p-2 border rounded ${errors.modalidad && "border-red-500"}`}
           >
-            <option value="">Selecciona una modalidad</option>
+            <option value="">Seleccione la modalidad del curso</option>
             <option value="Online">Online</option>
             <option value="Presencial">Presencial</option>
           </select>
@@ -670,9 +718,11 @@ export const courseModalConfig = (course = null) => ({
             type="number"
             {...register("precio", { 
               required: "El precio es obligatorio",
-              min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+              min: { value: 0, message: "El precio debe ser mayor o igual a 0" },
+              step: 0.01
             })}
             className={`w-full p-2 border rounded ${errors.precio && "border-red-500"}`}
+            placeholder="Ingrese el precio del curso"
           />
           {errors.precio && <span className="text-red-500 text-sm">{errors.precio.message}</span>}
         </div>
@@ -683,6 +733,7 @@ export const courseModalConfig = (course = null) => ({
           <input
             {...register("direccion")}
             className="w-full p-2 border rounded"
+            placeholder="Ingrese la dirección donde se impartirá el curso"
           />
         </div>
 
@@ -692,6 +743,7 @@ export const courseModalConfig = (course = null) => ({
           <textarea
             {...register("requisitos")}
             className="w-full p-2 border rounded"
+            placeholder="Especifique los requisitos necesarios para tomar el curso"
           />
         </div>
 
@@ -701,22 +753,28 @@ export const courseModalConfig = (course = null) => ({
           <textarea
             {...register("descripcionCompleta")}
             className="w-full p-2 border rounded"
+            placeholder="Proporcione una descripción detallada del curso"
           />
         </div>
       </>
     );
   },
   validationSchema: {
+    id_empresa: isAdmin ? {
+      required: "Debe seleccionar una empresa",
+    } : {},
     titulo: { required: "El título es obligatorio" },
     descripcion: { required: "La descripción es obligatoria" },
     nivel: { required: "El nivel es obligatorio" },
     modalidad: { required: "La modalidad es obligatoria" },
     precio: { 
       required: "El precio es obligatorio",
-      min: { value: 0, message: "El precio debe ser mayor o igual a 0" }
+      min: { value: 0, message: "El precio debe ser mayor o igual a 0" },
+      step: 0.01
     },
   },
   initialValues: {
+    id_empresa: course?.id_empresa || "",
     titulo: course?.titulo || "",
     descripcion: course?.descripcion || "",
     nivel: course?.nivel || "",
@@ -774,3 +832,140 @@ export const deleteCourseModalConfig = (course) => ({
     confirmationWord: "",
   },
 });
+
+export const unsavedChangesModalConfig = {
+  title: "Cambios sin guardar",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Continuar sin guardar", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[400px]",
+  },
+  formContent: ({ register, errors }) => {
+    return (
+      <>
+        <div className="mb-4">
+          <p className="text-gray-700">
+            Hay cambios sin guardar en esta sección. Si continúas, perderás los cambios realizados.
+          </p>
+          <p className="text-gray-700 mt-2">
+            ¿Deseas continuar sin guardar los cambios?
+          </p>
+        </div>
+      </>
+    );
+  },
+};
+
+export const editEmpresaInfoModalConfig = {
+  title: "Editar información de la empresa",
+  actions: [
+    { label: "Cancelar", onClick: "close" },
+    { label: "Guardar cambios", onClick: "submit", primary: true },
+  ],
+  customStyles: {
+    overlay: "bg-black bg-opacity-70",
+    content: "w-[600px]",
+  },
+  formContent: ({ register, errors, watch, setValue }) => {
+    const province = watch("provincia");
+    const municipalities = province ? provincesAndMunicipalities[province] : [];
+    
+    // Función para manejar cambio de provincia
+    const handleProvinceChange = (e) => {
+      setValue("provincia", e.target.value);
+      setValue("municipio", ""); // Limpiar municipio al cambiar provincia
+    };
+    
+    return (
+      <>
+        {/* Nombre de la empresa */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Nombre de la empresa</label>
+          <input
+            type="text"
+            {...register("nombre", {
+              required: "El nombre es obligatorio"
+            })}
+            className={`w-full p-2 border rounded ${errors.nombre && "border-red-500"}`}
+            placeholder="Ingrese el nombre completo de la empresa"
+          />
+          {errors.nombre && (
+            <p className="text-red-500 text-xs">{errors.nombre.message}</p>
+          )}
+        </div>
+
+        {/* Provincia */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Provincia</label>
+          <select
+            {...register("provincia")}
+            onChange={handleProvinceChange}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione la provincia de la empresa</option>
+            {Object.keys(provincesAndMunicipalities).map((province) => (
+              <option key={province} value={province}>{province}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Municipio */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Municipio</label>
+          <select
+            {...register("municipio")}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione el municipio de la empresa</option>
+            {municipalities.map((municipality) => (
+              <option key={municipality} value={municipality}>{municipality}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Tipo */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Tipo</label>
+          <select
+            {...register("tipo")}
+            className={`w-full p-2 border rounded`}
+          >
+            <option value="">Seleccione el tipo de empresa</option>
+            <option value="Estatal">Estatal</option>
+            <option value="No estatal">No estatal</option>
+          </select>
+        </div>
+
+        {/* Descripción */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Descripción</label>
+          <textarea
+            {...register("descripcion")}
+            className="w-full p-2 border rounded"
+            rows="4"
+            placeholder="Describa la actividad principal de la empresa"
+          ></textarea>
+        </div>
+      </>
+    );
+  },
+  validationSchema: {
+    nombre: {
+      required: "El nombre es obligatorio"
+    },
+    provincia: {},
+    municipio: {},
+    tipo: {},
+    descripcion: {}
+  },
+  initialValues: {
+    nombre: "",
+    provincia: "",
+    municipio: "",
+    tipo: "",
+    descripcion: ""
+  }
+};

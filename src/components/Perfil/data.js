@@ -301,7 +301,7 @@ export const provincesAndMunicipalities = {
 'Sancti Spíritus': ['Sancti Spíritus','Cabaigúan','Fomento','Jatibonico','La Sierpe','Taguasco','Trinidad','Yaguajay'],
 'Ciego de Ávila': ['Ciego de Ávila','Ciro Redondo','Baraguá','Bolivia','Chambas','Florencia','Majagua','Morón','Primero de Enero','Venezuela'],
 'Camagüey': ['Camagüey','Carlos Manuel de Céspedes','Esmeralda','Florida','Guaimaro','Jimagüayú','Minas','Najasa','Nuevitas','Santa Cruz del Sur','Sibanicú','Sierra de Cubitas','Vertientes'],
-'Las Tunas': ['Las Tunas','Amancio Rodríguez','Colombia','Jesús Menéndez','Jobabo'],
+'Las Tunas': ['Las Tunas',,'Manatí','Amancio Rodríguez','Colombia','Jesús Menéndez','Jobabo','Puerto Padre', 'Majibacoa'],
 'Holguín': ['Holguín','Antilla','Báguanos','Banes','Cacocum','Calixto García','Cueto','Frank País','Gibara'],
 'Santiago de Cuba': ['Santiago de Cuba ','Contramaestre ','Guamá ','Julio Antonio Mella ','Palma Soriano ','San Luis ','Segundo Frente ','Songo la Maya ','Tercer Frente'],
 'Guantánamo': ['Guantánamo ','Baracoa ','Caimanera ','El Salvador ','Imías ','Maisí ','Manuel Tames ','Niceto Pérez ','San Antonio del Sur ','Yateras'],

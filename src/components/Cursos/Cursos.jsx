@@ -1,52 +1,116 @@
 import React, { useState, useEffect } from 'react';
 import Curso from './Curso';
-import Filtro from './Filtro';
+import GenericFilter from '../generics/GenericFilter';
 
 const Cursos = () => {
-  const [filtroNombre, setFiltroNombre] = useState('');
-  const [filtroModalidad, setFiltroModalidad] = useState('');
-  const [filtroNivel, setFiltroNivel] = useState('');
-  const [filtroRequisitos, setFiltroRequisitos] = useState('');
-  const [filtroPrecio, setFiltroPrecio] = useState('');
+  const [filters, setFilters] = useState({});
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [cursosData, setCursosData] = useState([]); // Estado para almacenar los cursos
-  const [loading, setLoading] = useState(true); // Estado para manejar la carga
-  const [error, setError] = useState(null); // Estado para manejar errores
+  const [cursosData, setCursosData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const API_URL = 'http://localhost:3001'; // URL del servidor
+  const API_URL = 'http://localhost:3001';
 
-  // Función para cargar los cursos desde la API
+  // Configuración de los filtros
+  const filterConfig = [
+    {
+      type: 'text',
+      name: 'search',
+      label: 'Buscar por título',
+      placeholder: 'Buscar cursos...'
+    },
+    {
+      type: 'select',
+      name: 'modalidad',
+      label: 'Modalidad',
+      options: [
+        { value: 'Presencial', label: 'Presencial' },
+        { value: 'Online', label: 'Online' },
+      ]
+    },
+    {
+      type: 'select',
+      name: 'nivel',
+      label: 'Nivel',
+      options: [
+        { value: 'Principiante', label: 'Principiante' },
+        { value: 'Intermedio', label: 'Intermedio' },
+        { value: 'Avanzado', label: 'Avanzado' }
+      ]
+    },
+    {
+      type: 'number',
+      name: 'precio',
+      label: 'Precio máximo',
+      placeholder: 'Ingrese el precio máximo',
+      min: 0,
+      step: 0.01
+    }
+  ];
+
   useEffect(() => {
     const fetchCursos = async () => {
       try {
-        const response = await fetch(`${API_URL}/getallcourses`); // Usar siempre /getallcourses
+        const response = await fetch(`${API_URL}/getallcourses`);
         if (!response.ok) {
           throw new Error('Error al cargar los cursos');
         }
         const data = await response.json();
-        setCursosData(data); // Guardamos los cursos en el estado
-        setLoading(false); // Finalizamos la carga
+        setCursosData(data);
+        setLoading(false);
       } catch (err) {
-        setError(err.message); // Manejamos el error
-        setLoading(false); // Finalizamos la carga incluso si hay un error
+        setError(err.message);
+        setLoading(false);
       }
     };
 
-    fetchCursos(); // Llamamos a la función al montar el componente
-  },[]);
+    fetchCursos();
+  }, []);
 
-  // Filtrar cursos según los filtros aplicados
-  const cursosFiltrados = cursosData.filter((curso) =>
-    curso.titulo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
-    (filtroModalidad === '' || curso.modalidad === filtroModalidad) &&
-    (filtroNivel === '' || curso.nivel === filtroNivel) &&
-    (filtroRequisitos === '' || 
-     (filtroRequisitos === 'Sí' ? curso.requisitos !== "Ninguno." : curso.requisitos === "Ninguno.")) &&
-    (filtroPrecio === '' || parseFloat(curso.precio.replace('$', '')) <= parseFloat(filtroPrecio))
-  );
+  const handleFilterChange = (name, value) => {
+    const newFilters = { ...filters, [name]: value };
+    setFilters(newFilters);
+  };
 
-  // Funciones para abrir y cerrar el popup
+  // Función para restablecer filtros
+  const handleResetFilters = () => {
+    setFilters({});
+  };
+
+  // Aplicar filtros a los cursos
+  const cursosFiltrados = cursosData.filter(curso => {
+    // Filtro por búsqueda
+    if (filters.search && !curso.titulo.toLowerCase().includes(filters.search.toLowerCase())) {
+      return false;
+    }
+
+    // Filtro por modalidad
+    if (filters.modalidad && curso.modalidad !== filters.modalidad) {
+      return false;
+    }
+
+    // Filtro por nivel
+    if (filters.nivel && curso.nivel !== filters.nivel) {
+      return false;
+    }
+
+    // Filtro por requisitos
+    if (filters.requisitos) {
+      const tieneRequisitos = curso.requisitos !== "Ninguno.";
+      if (filters.requisitos === 'Sí' && !tieneRequisitos) return false;
+      if (filters.requisitos === 'No' && tieneRequisitos) return false;
+    }
+
+    // Filtro por precio
+    if (filters.precio) {
+      const precioNumerico = parseFloat(curso.precio.replace('$', ''));
+      if (precioNumerico > parseFloat(filters.precio)) return false;
+    }
+
+    return true;
+  });
+
   const abrirPopup = (curso) => {
     setCursoSeleccionado(curso);
     setIsOpen(true);
@@ -57,7 +121,6 @@ const Cursos = () => {
     setCursoSeleccionado(null);
   };
 
-  // Renderizado condicional mientras se cargan los datos
   if (loading) {
     return (
       <div className="p-6 bg-white text-gray-800">
@@ -68,7 +131,6 @@ const Cursos = () => {
     );
   }
 
-  // Renderizado en caso de error
   if (error) {
     return (
       <div className="p-6 bg-white text-gray-800">
@@ -88,18 +150,30 @@ const Cursos = () => {
       <p className="text-lg text-center mb-6 text-gray-700">
         Explora nuestros cursos diseñados para impulsar tu carrera profesional. ¡Aprende nuevas habilidades y mejora tu futuro!
       </p>
-      <Filtro 
-        setFiltroNombre={setFiltroNombre} 
-        setFiltroModalidad={setFiltroModalidad} 
-        setFiltroNivel={setFiltroNivel}
-        setFiltroRequisitos={setFiltroRequisitos}
-        setFiltroPrecio={setFiltroPrecio}
-      />
+
+      <div className="flex items-end gap-4 mb-6 p-4 bg-white rounded-lg shadow-md">
+        <div className="flex-1 flex flex-wrap gap-4">
+          <GenericFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            config={filterConfig}
+            className="flex flex-wrap gap-4"
+          />
+        </div>
+        <button
+          onClick={handleResetFilters}
+          className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors duration-200 whitespace-nowrap h-[42px]"
+        >
+          Restablecer filtros
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cursosFiltrados.map((curso) => (
           <Curso key={curso.id} curso={curso} onClick={() => abrirPopup(curso)} />
         ))}
       </div>
+
       {isOpen && cursoSeleccionado && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full">

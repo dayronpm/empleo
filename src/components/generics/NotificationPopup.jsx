@@ -3,8 +3,9 @@ import React from "react";
 import { useEffect } from "react";
 
 const NotificationPopup = ({ isOpen, onClose, message, type }) => {
+  // Depuración
+  console.log("NotificationPopup:", { isOpen, message, type });
   
-
   // Definir colores según el tipo de mensaje
   const colors = {
     success: "bg-green-500",
@@ -12,7 +13,15 @@ const NotificationPopup = ({ isOpen, onClose, message, type }) => {
     info: "bg-blue-500",
   };
 
+  // Definir colores de texto según el tipo de mensaje
+  const textColors = {
+    success: "text-black",
+    error: "text-white",
+    info: "text-white",
+  };
+
   const colorClass = colors[type] || colors.info;
+  const textColorClass = textColors[type] || textColors.info;
 
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +36,7 @@ const NotificationPopup = ({ isOpen, onClose, message, type }) => {
     <div className="fixed inset-0 flex justify-center items-center z-50">
       <div className={`p-6 rounded-lg shadow-lg w-[400px] max-w-full ${colorClass}`}>
         {/* Mensaje */}
-        <p className="text-white text-lg mb-4">{message}</p>
+        <p className={`${textColorClass} text-lg mb-4`}>{message || "Operación completada"}</p>
         {/* Botón de aceptar */}
         <div className="flex justify-end">
           <button

@@ -1,224 +1,190 @@
 import React from 'react';
-import { useState } from 'react';
 import useEmpresaInfoLogic from './useEmpresaInfoLogic';
 import JobList from '../Ofertas/JobList';
-import { provincesAndMunicipalities } from './data';
-import EditableField from './EditableField'; // Import the EditableField component
-import CourseList from '../Cursos/CourseList'; // Import CourseList
+import CourseList from '../Cursos/CourseList';
 import GenericModal from '../generics/GenericModal';
-import { deleteAccountModalConfig, deleteJobModalConfig, addEditJobModalConfig, courseModalConfig, deleteCourseModalConfig } from '../helpers/ModalConfigurations';
+import { 
+    deleteAccountModalConfig, 
+    deleteJobModalConfig, 
+    addEditJobModalConfig, 
+    courseModalConfig, 
+    deleteCourseModalConfig, 
+    changePasswordModalConfig, 
+    editEmpresaInfoModalConfig 
+} from '../helpers/ModalConfigurations';
 import NotificationPopup from '../generics/NotificationPopup';
+import Header from './Header';
+import { BsPencilSquare, BsShieldLock } from "react-icons/bs";
+import { FaFileExport } from "react-icons/fa";
 
 const EmpresaInfo = () => {
+    // Custom hook para la lógica de negocio
     const {
         empresa,
         jobOffers,
-        isEditingName,
-        setEditingName,
-        isEditingAddress,
-        setEditingAddress,
-        isEditingType,
-        setEditingType,
-        isEditingDescription,
-        setEditingDescription,
         editedName,
-        setEditedName,
         editedProvince,
-        setEditedProvince,
         editedMunicipality,
-        setEditedMunicipality,
         editedType,
-        setEditedType,
         editedDescription,
-        setEditedDescription,
-        handleSubmit,
         handleDeleteAccount,
         isDeleteModalOpen,
         setDeleteModalOpen,
-        isCourseModalOpen, // Import course modal state
-        handleOpenCourseModal, // Import course modal open function
-        handleCloseCourseModal, // Import course modal close function
+        isCourseModalOpen,
+        setCourseModalOpen,
+        handleOpenCourseModal,
+        handleCloseCourseModal,
         courses,
         selectedJob,
-        selectedCourse, // Agregar el estado del curso seleccionado
-        handleCourseSelect, // Agregar la función para seleccionar un curso
+        setSelectedJob,
+        selectedCourse,
+        setSelectedCourse,
         isNotificationOpen,
         notificationMessage,
         setIsNotificationOpen,
-        handleLogout,
         isDeleteJobModalOpen,
         setIsDeleteJobModalOpen,
-        handleJobSelect,
         selectedJobForDeletion,
+        setSelectedJobForDeletion,
         isAddJobModalOpen,
         setIsAddJobModalOpen,
-        handleDeleteJob,
-        handleConfirmDeleteJob,
         handleAddJob,
         handleEditJob,
-        handleDeleteCourse,
-        handleEditCourse,
+        handleConfirmDeleteJob,
         handleAddCourse,
-        setSelectedCourse,
+        handleEditCourse,
         isDeleteCourseModalOpen,
         setIsDeleteCourseModalOpen,
         selectedCourseForDeletion,
-        handleConfirmDeleteCourse
+        setSelectedCourseForDeletion,
+        handleConfirmDeleteCourse,
+        isEditInfoModalOpen,
+        setIsEditInfoModalOpen,
+        isPasswordModalOpen,
+        setIsPasswordModalOpen,
+        handleUpdateEmpresa,
+        handleUpdatePassword
     } = useEmpresaInfoLogic();
 
-    // Si no hay datos de la empresa, mostrar un mensaje de carga
-    if (!empresa) {
-        return <p>Cargando información de la empresa...</p>;
-    }
+    // Función para regresar a la página anterior
+    const goBack = () => window.history.back();
+
+    // Si no hay datos de la empresa, mostrar mensaje de carga
+    if (!empresa) return <p>Cargando información de la empresa...</p>;
 
     return (
-        <div className="empresa-info bg-white p-6 border border-gray-300 rounded-lg mt-4 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            {/* Campos editables */}
-            <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                <EditableField
-                    label="Nombre"
-                    value={editedName}
-                    isEditing={isEditingName}
-                    onEditToggle={() => setEditingName(!isEditingName)}
-                    onSave={() => {
-                        setEditingName(false);
-                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
-                    }}
-                    onChange={(e) => setEditedName(e.target.value)}
-                />
-                <EditableField
-                    label="Dirección"
-                    value={editedMunicipality}
-                    isEditing={isEditingAddress}
-                    onEditToggle={() => setEditingAddress(!isEditingAddress)}
-                    onSave={() => {
-                        setEditingAddress(false);
-                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
-                    }}
-                    onChange={(e) => setEditedMunicipality(e.target.value)}
-                    provinces={Object.keys(provincesAndMunicipalities)}
-                    municipalities={provincesAndMunicipalities[editedProvince] || []}
-                    selectedProvince={editedProvince}
-                    onProvinceChange={(e) => {
-                        setEditedProvince(e.target.value);
-                        setEditedMunicipality('');
-                    }}
-                />
-                <EditableField
-                    label="Tipo"
-                    value={editedType}
-                    isEditing={isEditingType}
-                    onEditToggle={() => setEditingType(!isEditingType)}
-                    onSave={() => {
-                        setEditingType(false);
-                        handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
-                    }}
-                    onChange={(e) => setEditedType(e.target.value)}
-                    options={["Estatal", "No estatal"]}
-                />
+        <div className="min-h-screen bg-gray-100 font-sans">
+            <Header />
+            
+            <div className="container mx-auto p-6">
+                {/* Información de la empresa */}
+                <div className="bg-[#e0e8f0] p-6 rounded-lg shadow-md mb-6">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800">Información de la empresa</h2>
+                    <div className="flex flex-wrap gap-8">
+                        <InfoField label="Nombre" value={editedName} />
+                        <InfoField label="Provincia" value={editedProvince} />
+                        <InfoField label="Municipio" value={editedMunicipality} />
+                        <InfoField label="Tipo" value={editedType} />
+                        <InfoField label="Descripción" value={editedDescription} />
+                    </div>
+                    <div className="flex items-center gap-8 mt-4">
+                        <ActionButton
+                            onClick={() => setIsEditInfoModalOpen(true)}
+                            icon={<BsPencilSquare size={16} />}
+                            text="Editar información"
+                            className="text-red-500"
+                        />
+                        <ActionButton
+                            onClick={() => setIsPasswordModalOpen(true)}
+                            icon={<BsShieldLock size={16} />}
+                            text="Cambiar contraseña"
+                            className="text-blue-500"
+                        />
+                    </div>
+                </div>
+
+                {/* Ofertas de trabajo */}
+                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 className="text-xl font-bold mb-4">Ofertas de Trabajo</h2>
+                    <button
+                        onClick={() => setIsAddJobModalOpen(true)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600 transition-colors"
+                    >
+                        Agregar Oferta
+                    </button>
+                    <JobList
+                        jobs={jobOffers}
+                        onEdit={(job) => {
+                            setSelectedJob(job);
+                            setIsAddJobModalOpen(true);
+                        }}
+                        onDelete={(job) => {
+                            setSelectedJobForDeletion(job);
+                            setIsDeleteJobModalOpen(true);
+                        }}
+                        showDeleteButton={true}
+                    />
+                </div>
+
+                {/* Cursos */}
+                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 className="text-xl font-bold mb-4">Cursos</h2>
+                    <button
+                        onClick={handleOpenCourseModal}
+                        className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600 transition-colors"
+                    >
+                        Agregar Curso
+                    </button>
+                    <CourseList
+                        courses={courses}
+                        onEdit={(course) => {
+                            setSelectedCourse(course);
+                            setCourseModalOpen(true);
+                        }}
+                        onDelete={(course) => {
+                            setSelectedCourseForDeletion(course);
+                            setIsDeleteCourseModalOpen(true);
+                        }}
+                        showDeleteButton={true}
+                    />
+                </div>
+
+                {/* Botones flotantes */}
+                <button
+                    onClick={goBack}
+                    className="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 transition-colors text-white px-6 py-3 rounded-full shadow-md"
+                >
+                    Cerrar
+                </button>
+                <div className="absolute top-4 right-4">
+                    <button className="bg-blue-500 hover:bg-blue-600 transition-colors text-white p-3 rounded-full shadow-md">
+                        <FaFileExport size={20} />
+                    </button>
+                </div>
             </div>
-            <EditableField
-                label="Descripción"
-                value={editedDescription}
-                isEditing={isEditingDescription}
-                onEditToggle={() => setEditingDescription(!isEditingDescription)}
-                onSave={() => {
-                    setEditingDescription(false);
-                    handleSubmit(localStorage.getItem('id'), 'http://localhost:3001');
+
+            {/* Modales */}
+            <GenericModal
+                isOpen={isEditInfoModalOpen}
+                onClose={() => setIsEditInfoModalOpen(false)}
+                onSubmit={handleUpdateEmpresa}
+                {...editEmpresaInfoModalConfig}
+                initialValues={{
+                    nombre: empresa?.nombre || "",
+                    provincia: empresa?.provincia || "",
+                    municipio: empresa?.municipio || "",
+                    tipo: empresa?.tipo || "",
+                    descripcion: empresa?.descripcion || ""
                 }}
-                onChange={(e) => setEditedDescription(e.target.value)}
             />
-
-            {/* Sección de Ofertas de Trabajo */}
-            <h3 className="text-xl font-semibold mt-4">Ofertas de Trabajo</h3>
-
-            {/* Botón para abrir el modal de agregar trabajo */}
-            <button onClick={() => setIsAddJobModalOpen(true)} className="bg-blue-500 text-white p-2 rounded">
-                Agregar Oferta de Trabajo
-            </button>
 
             <GenericModal
-                isOpen={isAddJobModalOpen}
-                onClose={() => setIsAddJobModalOpen(false)}
-                onSubmit={selectedJob ? handleEditJob : handleAddJob} // Usa handleEditJob si hay un trabajo seleccionado
-                {...addEditJobModalConfig(selectedJob)} // Configuración dinámica para agregar/editar
+                isOpen={isPasswordModalOpen}
+                onClose={() => setIsPasswordModalOpen(false)}
+                onSubmit={handleUpdatePassword}
+                {...changePasswordModalConfig}
             />
 
-            {/* Lista de trabajos */}
-            <JobList
-                jobs={jobOffers}
-                onJobSelect={handleJobSelect}
-                onDeleteJob={handleDeleteJob} // Pasar la función de eliminación
-                showDeleteButton={true}
-            />
-
-            {/* Modal genérico para confirmar la eliminación de un trabajo */}
-            <GenericModal
-                isOpen={isDeleteJobModalOpen}
-                onClose={() => setIsDeleteJobModalOpen(false)}
-                onSubmit={handleConfirmDeleteJob}
-                {...deleteJobModalConfig(selectedJobForDeletion)} // Configuración dinámica para confirmar eliminación
-            />
-
-            {/* Sección de Cursos */}
-            <div className="mt-6">
-            <h2 className="text-xl font-bold mb-4">Cursos</h2>
-
-            {/* Botón para abrir el modal de agregar curso */}
-            <button
-            onClick={() => {
-                setSelectedCourse(null); // Asegurarse de que no haya un curso seleccionado
-                handleOpenCourseModal();
-            }}
-            className="bg-green-500 text-white p-2 rounded mb-4"
-            >
-            Agregar Curso
-            </button>
-
-            {/* Modal genérico para confirmar la eliminación de un curso */}
-            <GenericModal
-            isOpen={isDeleteCourseModalOpen}
-            onClose={() => setIsDeleteCourseModalOpen(false)}
-            {...deleteCourseModalConfig(selectedCourseForDeletion)}
-            onSubmit={handleConfirmDeleteCourse}
-            />
-
-            {/* Lista de cursos */}
-            <CourseList
-            courses={courses}
-            onCourseSelect={handleCourseSelect}
-            onDeleteCourse={handleDeleteCourse} // Pasar la función de eliminación
-            showDeleteButton={true}
-            showMoreInfo={false}
-            />
-            </div>
-
-            {/* MODIFICACIÓN: Reemplazamos CourseModal con GenericModal */}
-            {/* Usamos la nueva configuración courseModalConfig */}
-            <GenericModal
-            isOpen={isCourseModalOpen}
-            onClose={handleCloseCourseModal}
-            {...courseModalConfig(selectedCourse)}
-            onSubmit={async (data) => {
-                if (selectedCourse) {
-                // Si hay un curso seleccionado, editarlo
-                await handleEditCourse(selectedCourse.id, data);
-                } else {
-                // Si no hay un curso seleccionado, agregar uno nuevo
-                await handleAddCourse(data);
-                }
-
-                // Cerrar el modal después de guardar
-                handleCloseCourseModal();
-            }}
-            />
-
-            {/* Botón para eliminar cuenta */}
-            <button onClick={() => setDeleteModalOpen(true)} className="mt-4 bg-red-500 text-white p-2 rounded">
-                Eliminar Cuenta
-            </button>
-
-            {/* Modal genérico para eliminar cuenta */}
             <GenericModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
@@ -226,18 +192,71 @@ const EmpresaInfo = () => {
                 {...deleteAccountModalConfig}
             />
 
-            {/* Popup de notificación */}
+            <GenericModal
+                isOpen={isAddJobModalOpen}
+                onClose={() => {
+                    setIsAddJobModalOpen(false);
+                    setSelectedJob(null);
+                }}
+                onSubmit={(data) => selectedJob ? handleEditJob(data) : handleAddJob(data)}
+                {...addEditJobModalConfig(selectedJob)}
+            />
+
+            <GenericModal
+                isOpen={isDeleteJobModalOpen}
+                onClose={() => {
+                    setIsDeleteJobModalOpen(false);
+                    setSelectedJobForDeletion(null);
+                }}
+                onSubmit={handleConfirmDeleteJob}
+                {...deleteJobModalConfig(selectedJobForDeletion)}
+            />
+
+            <GenericModal
+                isOpen={isCourseModalOpen}
+                onClose={() => {
+                    handleCloseCourseModal();
+                    setSelectedCourse(null);
+                }}
+                onSubmit={(data) => selectedCourse ? handleEditCourse(data) : handleAddCourse(data)}
+                {...courseModalConfig(selectedCourse)}
+            />
+
+            <GenericModal
+                isOpen={isDeleteCourseModalOpen}
+                onClose={() => {
+                    setIsDeleteCourseModalOpen(false);
+                    setSelectedCourseForDeletion(null);
+                }}
+                onSubmit={handleConfirmDeleteCourse}
+                {...deleteCourseModalConfig(selectedCourseForDeletion)}
+            />
+
             <NotificationPopup
                 isOpen={isNotificationOpen}
-                onClose={() => {
-                    setIsNotificationOpen(false);
-                    handleLogout(); // Llamar a handleLogout cuando el popup se cierre
-                }}
                 message={notificationMessage}
-                type="success"
+                onClose={() => setIsNotificationOpen(false)}
+                type={notificationMessage.includes('Error') ? 'error' : 'success'}
             />
         </div>
     );
 };
+
+// Componentes auxiliares
+const InfoField = ({ label, value }) => (
+    <div className="flex items-center gap-2">
+        <strong className="text-gray-700">{label}:</strong>
+        <span>{value}</span>
+    </div>
+);
+
+const ActionButton = ({ onClick, icon, text, className }) => (
+    <button
+        onClick={onClick}
+        className={`flex items-center gap-1 hover:underline ${className}`}
+    >
+        {icon} {text}
+    </button>
+);
 
 export default EmpresaInfo;

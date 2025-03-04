@@ -1,4 +1,4 @@
-const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) => {
+const JobList = ({ jobs, onEdit, onDelete, showDeleteButton = false, activeFilters = {} }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
@@ -10,7 +10,7 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) =
                 <div 
                     key={job.id} 
                     className="p-4 hover:bg-gray-100 cursor-pointer transition duration-200 border-b"
-                    onClick={() => onJobSelect(job)} // Llama a la función pasada desde EmpresaInfo
+                    onClick={() => onEdit(job)} // Cambiado de onJobSelect a onEdit
                 >
                     <div className="flex justify-between mb-2">
                         <div className="flex items-center">
@@ -24,7 +24,7 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) =
                             <button 
                                 onClick={(e) => {
                                     e.stopPropagation(); // Evita que se seleccione el trabajo al hacer clic en el botón
-                                    onDeleteJob(job); // Llama a la función de eliminación
+                                    onDelete(job); // Cambiado de onDeleteJob a onDelete
                                 }} 
                                 className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
                             >
@@ -34,14 +34,22 @@ const JobList = ({ jobs, onJobSelect, onDeleteJob, showDeleteButton = false }) =
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex flex-col">
-                            <p className="text-gray-700 font-semibold"><strong>Provincia:</strong> {job.provincia}</p>
-                            <p className="text-black"><strong>Municipio:</strong> {job.municipio}</p>
+                            {!activeFilters.provincia && (
+                                <p className="text-gray-700 font-semibold"><strong>Provincia:</strong> {job.provincia}</p>
+                            )}
+                            {!activeFilters.municipio && (
+                                <p className="text-black"><strong>Municipio:</strong> {job.municipio}</p>
+                            )}
                             <p className="text-gray-600 font-semibold"><strong>Salario:</strong> {job.salario}</p>
                         </div>
                         <div className="flex flex-col">
                             <p className="text-black text-sm"><strong>Fecha:</strong> {formatDate(job.fecha)}</p>
-                            <p className="text-gray-600"><strong>Nivel de Experiencia:</strong> {job.experiencia}</p>
-                            <p className="text-gray-600"><strong>Categoría:</strong> {job.categoria}</p>
+                            {!activeFilters.experiencia && (
+                                <p className="text-gray-600"><strong>Nivel de Experiencia:</strong> {job.experiencia}</p>
+                            )}
+                            {!activeFilters.categoria && (
+                                <p className="text-gray-600"><strong>Categoría:</strong> {job.categoria}</p>
+                            )}
                         </div>
                     </div>
                     <p className="text-gray-600 line-clamp-2"><strong>Descripción:</strong> {job.descripcion}</p>

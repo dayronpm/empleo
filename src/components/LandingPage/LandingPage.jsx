@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AuthModal from './AuthModal';
 import RegisterModal from './RegisterModal';
-import AuthWarningModal from './AuthWarningModal'; // Importa el nuevo modal
 import { createSections } from './sections';
 import useAuth from './useAuth';
 import ProfileLink from './ProfileLink'; // Importa el nuevo componente
@@ -22,8 +21,6 @@ const LandingPage = () => {
         setLoginOpen,
         setRegisterOpen
     } = useAuth();
-
-    const [isWarningOpen, setWarningOpen] = useState(false); // Estado para el modal de advertencia
 
     // Crear secciones pasando los estados y funciones necesarias
     const sections = createSections(isAuthenticated, openLogin, openRegister, handleLogout);
@@ -54,7 +51,7 @@ const LandingPage = () => {
                                         to={item.link}
                                         aria-label={item.title}
                                         isAuthenticated={isAuthenticated}
-                                        setWarningOpen={setWarningOpen}
+                                        openLogin={openLogin}
                                         className={`flex flex-col items-center text-gray-700 hover:text-red-500 transition-colors duration-200`}
                                     >
                                         <img 
@@ -98,7 +95,7 @@ const LandingPage = () => {
                                 <ProfileLink
                                     to={item.link}
                                     isAuthenticated={isAuthenticated}
-                                    setWarningOpen={setWarningOpen}
+                                    openLogin={openLogin}
                                 >
                                     <h2 className="text-lg font-semibold text-center">{item.title}</h2>
                                 </ProfileLink>
@@ -120,9 +117,6 @@ const LandingPage = () => {
                 handleLoginSuccess={handleLoginSuccess}
             />
             <RegisterModal isOpen={isRegisterOpen} onClose={() => setRegisterOpen(false)} openLogin={openLogin} handleLoginSuccess={handleLoginSuccess} />
-            
-            {/* Modal de advertencia */}
-            <AuthWarningModal isOpen={isWarningOpen} onClose={() => setWarningOpen(false)} />
         </div>
     );
 };
