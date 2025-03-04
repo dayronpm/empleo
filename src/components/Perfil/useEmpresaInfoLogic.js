@@ -63,15 +63,11 @@ const useEmpresaInfoLogic = () => {
             const empresaData = await empresaResponse.json();
             setEmpresa(empresaData);
 
-            // Cargar ofertas de trabajo
-            const offersResponse = await fetch(`${API_URL}/getoferta`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
+            // Cargar ofertas de trabajo usando la nueva ruta RESTful
+            const offersResponse = await fetch(`${API_URL}/api/empresas/${id}/ofertas`);
             if (!offersResponse.ok) throw new Error('Error al cargar las ofertas de trabajo');
             const offersData = await offersResponse.json();
-            setJobOffers(offersData);
+            setJobOffers(offersData.ofertas);
 
             // Cargar cursos
             const coursesResponse = await fetch(`${API_URL}/getcourses`, {
@@ -287,30 +283,33 @@ const useEmpresaInfoLogic = () => {
     // Handlers para información de la empresa
     const handleUpdateEmpresa = async (data) => {
         try {
-            const response = await fetch(`${API_URL}/updateempresa`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+            const response = await fetch(`${API_URL}/api/empresas/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    id,
-                    ...data
+                    nombreCompleto: data.nombre,
+                    tipo: data.tipo,
+                    descripcion: data.descripcion,
+                    provincia: data.provincia,
+                    municipio: data.municipio
                 }),
             });
 
-            if (!response.ok) throw new Error('Error al actualizar la información');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al actualizar la información');
+            }
 
-            // Actualizar estados locales
-            setEditedName(data.nombre);
-            setEditedProvince(data.provincia);
-            setEditedMunicipality(data.municipio);
-            setEditedType(data.tipo);
-            setEditedDescription(data.descripcion);
+            const responseData = await response.json();
+            
+            // Actualizar el estado local con los datos devueltos
+            setEmpresa(responseData.empresa);
             
             setIsEditInfoModalOpen(false);
             setIsNotificationOpen(true);
             setNotificationMessage('Información actualizada exitosamente');
-            await fetchEmpresaData();
-            } catch (error) {
-                console.error('Error:', error);
+        } catch (error) {
+            console.error('Error:', error);
             setIsNotificationOpen(true);
             setNotificationMessage(error.message || 'Error al actualizar la información');
         }
@@ -349,8 +348,8 @@ const useEmpresaInfoLogic = () => {
             console.error('Error:', error);
             setIsNotificationOpen(true);
             setNotificationMessage(error.message || 'Error al cambiar la contraseña');
-    }
-  };
+        }
+    };
 
     return {
         // Datos principales

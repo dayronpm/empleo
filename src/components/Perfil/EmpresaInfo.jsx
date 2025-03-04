@@ -168,14 +168,14 @@ const EmpresaInfo = () => {
                 isOpen={isEditInfoModalOpen}
                 onClose={() => setIsEditInfoModalOpen(false)}
                 onSubmit={handleUpdateEmpresa}
-                initialValues={{
-                    nombre: editedName,
-                    provincia: editedProvince,
-                    municipio: editedMunicipality,
-                    tipo: editedType,
-                    descripcion: editedDescription
-                }}
                 {...editEmpresaInfoModalConfig}
+                initialValues={{
+                    nombre: empresa?.nombre || "",
+                    provincia: empresa?.provincia || "",
+                    municipio: empresa?.municipio || "",
+                    tipo: empresa?.tipo || "",
+                    descripcion: empresa?.descripcion || ""
+                }}
             />
 
             <GenericModal

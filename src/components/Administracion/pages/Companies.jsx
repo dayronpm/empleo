@@ -114,7 +114,7 @@ const Companies = () => {
         }
 
         // Si la verificación es exitosa, procedemos con el update usando el id obtenido
-        const updateResponse = await fetch(`http://localhost:3001/updatecompany/${companyInfo.id}`, {
+        const updateResponse = await fetch(`http://localhost:3001/api/empresas/${companyInfo.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -147,18 +147,26 @@ const Companies = () => {
 
   const handleEditCompany = async (companyData) => {
     try {
-      const response = await fetch(`http://localhost:3001/updatecompany/${companyData.id}`, {
+      const response = await fetch(`http://localhost:3001/api/empresas/${companyData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(companyData),
+        body: JSON.stringify({
+          nombreCompleto: companyData.nombre_completo,
+          nombreUsuario: companyData.username,
+          contraseña: companyData.password,
+          tipo: companyData.tipo,
+          descripcion: companyData.descripcion,
+          provincia: companyData.provincia,
+          municipio: companyData.municipio
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        notifySuccess('Empresa actualizada exitosamente');
+        notifySuccess(data.message || 'Empresa actualizada exitosamente');
         fetchCompanies();
         setIsEditModalOpen(false);
         setSelectedCompany(null);
@@ -504,7 +512,7 @@ const Companies = () => {
               handleEditCompany({
                 id: selectedCompany.id,
                 nombreCompleto: formData.get('nombreCompleto'),
-                nombreUsuario: formData.get('nombreUsuario'),
+                username: formData.get('nombreUsuario'),
                 contraseña: contraseña || undefined,
                 tipo: formData.get('tipo'),
                 descripcion: formData.get('descripcion'),
