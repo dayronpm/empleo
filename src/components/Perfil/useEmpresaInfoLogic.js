@@ -133,10 +133,9 @@ const useEmpresaInfoLogic = () => {
 
     const handleConfirmDeleteJob = async () => {
         try {
-            const response = await fetch(`${API_URL}/deleteoferta`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: selectedJobForDeletion.id }),
+            const response = await fetch(`${API_URL}/api/ofertas/${selectedJobForDeletion.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (!response.ok) {
@@ -194,10 +193,10 @@ const useEmpresaInfoLogic = () => {
 
     const handleEditCourse = async (data) => {
         try {
-            const response = await fetch(`${API_URL}/editcourse`, {
-                method: 'POST',
+            const response = await fetch(`${API_URL}/api/cursos/${selectedCourse.id}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...data, id: selectedCourse.id }),
+                body: JSON.stringify(data),
             });
 
             const responseData = await response.json();
@@ -226,10 +225,9 @@ const useEmpresaInfoLogic = () => {
 
     const handleConfirmDeleteCourse = async () => {
         try {
-            const response = await fetch(`${API_URL}/deletecourse`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: selectedCourseForDeletion.id }),
+            const response = await fetch(`${API_URL}/api/cursos/${selectedCourseForDeletion.id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (!response.ok) {

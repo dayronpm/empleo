@@ -100,15 +100,12 @@ const Courses = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3001/editcourse', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:3001/api/cursos/${selectedCourse.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...courseData,
-          id: selectedCourse.id
-        }),
+        body: JSON.stringify(courseData),
       });
 
       if (response.ok) {
@@ -118,7 +115,14 @@ const Courses = () => {
         setSelectedCourse(null);
       } else {
         const data = await response.json();
-        notifyError(data.error || 'Error al actualizar el curso');
+        if (data.details) {
+          const errorMessages = Object.values(data.details)
+            .filter(msg => msg !== null)
+            .join('\n');
+          notifyError(errorMessages);
+        } else {
+          notifyError(data.error || 'Error al actualizar el curso');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -129,12 +133,11 @@ const Courses = () => {
   const handleDeleteCourses = async (ids) => {
     try {
       const deletePromises = ids.map(id =>
-        fetch('http://localhost:3001/deletecourse', {
-          method: 'POST',
+        fetch(`http://localhost:3001/api/cursos/${id}`, {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id })
+          }
         }).then(response => {
           if (!response.ok) throw new Error('Error al eliminar el curso');
           return response;

@@ -136,12 +136,11 @@ const Jobs = () => {
   const handleDeleteJobs = async (ids) => {
     try {
       const deletePromises = ids.map(id =>
-        fetch('http://localhost:3001/deleteoferta', {
-          method: 'POST',
+        fetch(`http://localhost:3001/api/ofertas/${id}`, {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id })
+          }
         }).then(response => {
           if (!response.ok) throw new Error('Error al eliminar la oferta');
           return response;
