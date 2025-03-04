@@ -153,7 +153,7 @@ const Companies = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          nombreCompleto: companyData.nombre_completo,
+          nombreCompleto: companyData.nombreCompleto || companyData.nombre_completo,
           nombreUsuario: companyData.username,
           contraseña: companyData.password,
           tipo: companyData.tipo,

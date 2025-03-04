@@ -49,22 +49,29 @@ const usePersonalInfo = (showNotification) => {
   //Actualizar datos del usuario
   const updateUserData = async (id, info) => {
     try {
-        const response = await fetch(`${API_URL}/updateusuario`, {
-            method: 'POST',
+        const response = await fetch(`${API_URL}/api/personas/${id}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id, info }), // Send user ID in the body
+            body: JSON.stringify(info),
         });
+
         if (!response.ok) {
-            throw new Error('Error al actualizar la información del usuario');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al actualizar la información del usuario');
         }
-        else{
-        }
+
+        const responseData = await response.json();
+        setInfo(prevInfo => ({
+            ...prevInfo,
+            ...responseData.usuario
+        }));
     } catch (error) {
         console.error(error);
+        throw error;
     }
-};
+  };
 
   //Llamar a la función para cargar datos del usuario
   useEffect(() => {

@@ -219,53 +219,32 @@ const People = () => {
   const handleEditPersonalInfo = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const nombreCompleto = formData.get('nombreCompleto');
     
     try {
-      const response = await fetch('http://localhost:3001/updateusuario', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:3001/api/personas/${selectedPerson.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: selectedPerson.id,
-          info: {
-            nombre: formData.get('nombreCompleto'),
-            provincia: formData.get('provincia'),
-            municipio: formData.get('municipio'),
-            telefono: phones,
-            correo: formData.get('correo') || selectedPerson.correo
-          }
+          nombre: nombreCompleto,
+          provincia: selectedProvince,
+          municipio: selectedMunicipality,
+          telefono: phones,
+          correo: selectedPerson.correo
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al actualizar la información personal');
+        throw new Error(errorData.error || 'Error al actualizar la información');
       }
 
-      // Si hay contraseña nueva, actualizarla
-      if (formData.get('password')) {
-        const passwordResponse = await fetch('http://localhost:3001/updatePassword', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: selectedPerson.id,
-            newPassword: formData.get('password')
-          }),
-        });
-
-        if (!passwordResponse.ok) {
-          throw new Error('Error al actualizar la contraseña');
-        }
-      }
-
+      const responseData = await response.json();
       notifySuccess('Información personal actualizada exitosamente');
       fetchPeople();
       setIsEditModalOpen(false);
-      setSelectedPerson(null);
-      
     } catch (error) {
       console.error('Error:', error);
       notifyError(error.message || 'Error al actualizar la información personal');
