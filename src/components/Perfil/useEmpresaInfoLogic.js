@@ -69,15 +69,11 @@ const useEmpresaInfoLogic = () => {
             const offersData = await offersResponse.json();
             setJobOffers(offersData.ofertas);
 
-            // Cargar cursos
-            const coursesResponse = await fetch(`${API_URL}/getcourses`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
+            // Cargar cursos usando la nueva ruta RESTful
+            const coursesResponse = await fetch(`${API_URL}/api/empresas/${id}/cursos`);
             if (!coursesResponse.ok) throw new Error('Error al cargar los cursos');
             const coursesData = await coursesResponse.json();
-            setCourses(coursesData);
+            setCourses(coursesData.cursos);
         } catch (error) {
             console.error('Error al cargar datos:', error);
             setNotificationMessage('Error al cargar los datos');
@@ -112,10 +108,10 @@ const useEmpresaInfoLogic = () => {
 
     const handleEditJob = async (data) => {
         try {
-            const response = await fetch(`${API_URL}/editoferta`, {
-                method: 'POST',
+            const response = await fetch(`${API_URL}/api/ofertas/${selectedJob.id}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...data, id: selectedJob.id }),
+                body: JSON.stringify({ ...data }),
             });
 
             if (!response.ok) {

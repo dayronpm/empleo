@@ -110,15 +110,12 @@ const Jobs = () => {
 
   const handleEditJob = async (jobData) => {
     try {
-      const response = await fetch('http://localhost:3001/editoferta', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:3001/api/ofertas/${selectedJob.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...jobData,
-          id: selectedJob.id
-        }),
+        body: JSON.stringify({ ...jobData }),
       });
 
       if (response.ok) {

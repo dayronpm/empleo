@@ -532,12 +532,9 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
             className={`w-full p-2 border rounded ${errors.categoria && "border-red-500"}`}
           >
             <option value="">Seleccione una categoría</option>
-            <option value="Tecnología">Tecnología</option>
-            <option value="Administración">Administración</option>
-            <option value="Ventas">Ventas</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Diseño">Diseño</option>
-            <option value="Otros">Otros</option>
+            <option value="Tiempo completo">Tiempo completo</option>
+            <option value="Medio tiempo">Medio tiempo</option>
+            <option value="Freelance">Freelance</option>
           </select>
           {errors.categoria && (
             <p className="text-red-500 text-sm mt-1">{errors.categoria.message}</p>
@@ -554,10 +551,9 @@ export const addEditJobModalConfig = (job = null, isAdmin = false) => ({
             className={`w-full p-2 border rounded ${errors.experiencia && "border-red-500"}`}
           >
             <option value="">Seleccione el nivel de experiencia</option>
-            <option value="Sin experiencia">Sin experiencia</option>
-            <option value="1-2 años">1-2 años</option>
-            <option value="3-5 años">3-5 años</option>
-            <option value="5+ años">5+ años</option>
+            <option value="Junior">Junior</option>
+            <option value="Medio">Medio</option>
+            <option value="Senior">Senior</option>
           </select>
           {errors.experiencia && (
             <p className="text-red-500 text-sm mt-1">{errors.experiencia.message}</p>
