@@ -50,14 +50,9 @@ const Jobs = () => {
       const jobsWithCompanyNames = await Promise.all(
         jobsData.map(async (job) => {
           try {
-            const companyResponse = await fetch('http://localhost:3001/empresa', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ id: job.id_empresa })
-            });
+            const companyResponse = await fetch(`http://localhost:3001/api/empresas/${job.id_empresa}`);
             const companyData = await companyResponse.json();
+            if (!companyResponse.ok) throw new Error(companyData.error || 'Error al obtener empresa');
             return {
               ...job,
               empresa: companyData.nombre || 'Empresa no encontrada',

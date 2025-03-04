@@ -169,19 +169,16 @@ const People = () => {
         const person = people.find(p => p.id === id);
         if (!person) throw new Error('Persona no encontrada');
 
-        return fetch('http://localhost:3001/borrarusuario', {
-          method: 'POST',
+        return fetch(`http://localhost:3001/api/usuarios/${id}`, {
+          method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            id,
-            username: person.username,
-            password: person.password
-          })
+            'x-password': person.password
+          }
         }).then(response => {
           if (!response.ok) {
-            throw new Error('Error al eliminar la persona');
+            return response.json().then(data => {
+              throw new Error(data.error || 'Error al eliminar la persona');
+            });
           }
           return response;
         });
@@ -193,7 +190,7 @@ const People = () => {
       setIsMultiDeleteMode(false);
     } catch (error) {
       console.error('Error:', error);
-      notifyError('Error al eliminar las personas');
+      notifyError(error.message || 'Error al eliminar las personas');
     }
   };
 

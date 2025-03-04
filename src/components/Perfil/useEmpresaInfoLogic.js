@@ -58,11 +58,7 @@ const useEmpresaInfoLogic = () => {
     const fetchEmpresaData = async () => {
         try {
             // Cargar datos de la empresa
-            const empresaResponse = await fetch(`${API_URL}/empresa`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
-            });
+            const empresaResponse = await fetch(`${API_URL}/api/empresas/${id}`);
             if (!empresaResponse.ok) throw new Error('Error al cargar la información de la empresa');
             const empresaData = await empresaResponse.json();
             setEmpresa(empresaData);
@@ -264,10 +260,11 @@ const useEmpresaInfoLogic = () => {
     // Handler para eliminar cuenta
     const handleDeleteAccount = async (password) => {
         try {
-            const response = await fetch(`${API_URL}/borrarusuario`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, password }),
+            const response = await fetch(`${API_URL}/api/usuarios/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'x-password': password
+                }
             });
             
             if (response.ok) {
@@ -275,10 +272,11 @@ const useEmpresaInfoLogic = () => {
                 setIsNotificationOpen(true);
                 localStorage.clear();
                 navigate('/');
-              } else {
-                setNotificationMessage("Error al eliminar la cuenta.");
+            } else {
+                const data = await response.json();
+                setNotificationMessage(data.error || "Error al eliminar la cuenta");
                 setIsNotificationOpen(true);
-              }
+            }
         } catch (error) {
             console.error('Error:', error);
             setNotificationMessage("Error al eliminar la cuenta.");

@@ -174,22 +174,19 @@ const Companies = () => {
   const handleDeleteCompanies = async (ids) => {
     try {
       const deletePromises = ids.map(id => {
-        // Encontrar la empresa correspondiente para obtener su contraseña
         const company = companies.find(c => c.id === id);
         if (!company) throw new Error('Empresa no encontrada');
 
-        return fetch('http://localhost:3001/borrarusuario', {
-          method: 'POST',
+        return fetch(`http://localhost:3001/api/usuarios/${id}`, {
+          method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            id, 
-            password: company.password // Usamos la contraseña que ya tenemos
-          })
+            'x-password': company.password
+          }
         }).then(response => {
           if (!response.ok) {
-            throw new Error('Error al eliminar la empresa');
+            return response.json().then(data => {
+              throw new Error(data.error || 'Error al eliminar la empresa');
+            });
           }
           return response;
         });
@@ -201,7 +198,7 @@ const Companies = () => {
       setIsMultiDeleteMode(false);
     } catch (error) {
       console.error('Error:', error);
-      notifyError('Error al eliminar las empresas');
+      notifyError(error.message || 'Error al eliminar las empresas');
     }
   };
 

@@ -14,12 +14,11 @@ const Header = () => {
     const handleDeleteAccount = async (password) => {
         const id = localStorage.getItem('id'); // Obtener el ID del usuario
         try {
-            const response = await fetch('http://localhost:3001/borrarusuario', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:3001/api/usuarios/${id}`, {
+                method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id, password }), // Enviar ID y contraseña
+                    'x-password': password
+                }
             });
 
             if (response.ok) {
@@ -29,7 +28,8 @@ const Header = () => {
                     window.location.href = '/'; // Redirigir al inicio
                 }, 2000); // Esperar 2 segundos para que el usuario vea la notificación
             } else {
-                notifyError('Error al eliminar la cuenta. Verifica tu contraseña');
+                const data = await response.json();
+                notifyError(data.error || 'Error al eliminar la cuenta');
             }
         } catch (error) {
             console.error('Error:', error);
